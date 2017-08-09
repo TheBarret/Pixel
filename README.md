@@ -49,7 +49,7 @@ Sprites can be made from a binary array of 8x6, compiler assumes only  1's and 0
 	updd [letter_A]
 	end
 
-[letter_A]
+:letter_A
 	.00011000
 	.00100100
 	.01000010
@@ -71,7 +71,7 @@ Variables can be defined with labels followed by number, the compiler assumes an
 	st [foo]
 	end
 		
-[foo]	:5
+:foo	:5
 ```
 
 Pseudo code:
