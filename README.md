@@ -18,7 +18,7 @@ call		        | ([label])			                | Sets pointer to label location
 return		      | no params			                | Returns pointer to caller
 add		          | no params			                | Performs an addition of the two stack values
 sub		          | no params			                | Performs a subtraction of the two stack values
-mul		          | no params			                | Performs a multiplication  of the two stack values
+mul		          | no params			                | Performs a multiplication of the two stack values
 div		          | no params			                | Performs a division of the two stack values
 mod		          | no params			                | Performs a modulus of the two stack values
 and	          	| no params			                | Performs a bitwise AND of the two stack values
@@ -30,7 +30,7 @@ if		          | (#number) (instruction)	      | Performs a condition test x =  y
 ifn		          | (#number) (instruction)	      | Performs a condition test x != y on parameter and stack value, executes next instruction if true
 ifg		          | (#number) (instruction)	      | Performs a condition test x >  y on parameter and stack value, executes next instruction if true
 ifl		          | (#number) (instruction)	      | Performs a condition test x <  y on parameter and stack value, executes next instruction if true
-ifk		          | (#number) (instruction)	      | Performs a condition if key is pressed, if true jumps to label
+ifk		          | (#number) (instruction)	      | Performs a condition if key is pressed, executes next instruction if true
 timer		        | (#number)			                | Sets delay timer with value
 updd		        | ([label])			                | Loads data from label with binary data into vram, assumes x and y are on the stack
 updm		        | ([label])			                | Loads data from label with memory address into vram, assumes x and y are on the stack
