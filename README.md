@@ -72,7 +72,7 @@ Variables can be defined with labels followed by number, the compiler assumes an
 [foo]	:5
 ```
 
-pseudo code:
+Pseudo code:
 ```
 declare i = 5
 i += 5
