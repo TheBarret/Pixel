@@ -196,7 +196,7 @@ Namespace Tasks
             Return Convert.ToByte(Str.Trim(New Char() {"."c, " "c}), 2)
         End Function
         ''' <summary>
-        ''' Writes instruction paramater (number,hexadecimal or label)
+    ''' Writes instruction parameter (number,hexadecimal or label)
         ''' </summary>
         Private Sub WriteValue(Definition As Definition, Line As String)
             Select Case Definition.Type
