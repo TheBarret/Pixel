@@ -7,7 +7,7 @@ Namespace Components
         Private Property Width As UInt16
         Private Property Height As UInt16
         Private Property Offset As UInt16
-        Private Property buffer As Byte(,)
+        Private Property buffer As UInt16(,)
         Private Property Background As Brush
         Private Property Foreground As Brush
         Sub New()
@@ -15,9 +15,9 @@ Namespace Components
             Me.Height = 64
             Me.Offset = 5
             Me.Redraw = False
-            Me.Foreground = Brushes.White
-            Me.Background = Brushes.Black
-            Me.buffer = New Byte(Me.Width - 1, Me.Height - 1) {}
+            Me.Background = New SolidBrush(Color.Black)
+            Me.Foreground = New SolidBrush(Color.White)
+            Me.buffer = New UInt16(Me.Width - 1, Me.Height - 1) {}
         End Sub
         Public Sub Allocate(x As Integer, y As Integer, buffer As Byte())
             Dim px As Integer = x, py As Integer = y
@@ -26,6 +26,7 @@ Namespace Components
                     If Me.BitToString(buffer(i))(j) = Char.Parse("1") Then
                         If px + j < Width AndAlso py + i < Height Then
                             Me.buffer(px + j, py + i) = CByte(Me.buffer(px + j, py + i) Xor &H1)
+                            Me.Redraw = True
                         End If
                     End If
                 Next
@@ -34,7 +35,6 @@ Namespace Components
         Public Sub DrawFrame()
             Using bm As New Bitmap(Me.Width * Me.Offset, Me.Height * Me.Offset)
                 Using g As Graphics = Graphics.FromImage(bm)
-                    g.SmoothingMode = SmoothingMode.None
                     g.CompositingMode = CompositingMode.SourceCopy
                     g.PixelOffsetMode = PixelOffsetMode.Half
                     g.InterpolationMode = InterpolationMode.NearestNeighbor

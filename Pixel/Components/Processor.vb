@@ -158,7 +158,6 @@ Namespace Components
                     Case Opcodes.OP_PUSHDATA
                         If (Me.Stack.Count >= 2) Then
                             Me.Display.Allocate(Me.Stack.Pop, Me.Stack.Pop, Me.ReadBlock(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), 5))
-                            Me.Display.Redraw = True
                         End If
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_PUSHMEMORY

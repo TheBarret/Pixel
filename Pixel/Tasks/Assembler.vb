@@ -16,6 +16,7 @@ Namespace Tasks
                 Me.Labels = New Dictionary(Of String, UShort)
                 Using stream As New StreamReader(Filename, True)
                     Me.Usercode.AddRange(stream.ReadToEnd.Split(CChar(Environment.NewLine)))
+                    Me.StripComments()
                     Me.Normalize()
                 End Using
             Else
@@ -230,6 +231,14 @@ Namespace Tasks
         Private Sub WriteUInt16(Value As UInt16)
             Dim bytes() As Byte = BitConverter.GetBytes(Value)
             Me.Parent.Bytecode.AddRange({bytes(1), bytes(0)})
+        End Sub
+        ''' <summary>
+        ''' Cleans up comments
+        ''' </summary>
+        Private Sub StripComments()
+            For i As Integer = 0 To Me.Usercode.Count - 1
+                Me.Usercode(i) = Regex.Replace(Me.Usercode(i), "\;(.*?)(\r?\n|$)", String.Empty)
+            Next
         End Sub
         ''' <summary>
         ''' Cleans up user code string array
