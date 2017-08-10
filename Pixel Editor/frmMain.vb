@@ -11,6 +11,7 @@ Public Class frmMain
         AddHandler Me.Machine.MachineInactive, AddressOf Me.MachineInactive
         Me.Filename = String.Format("{0}\{1}", Application.StartupPath, "usercode.txt")
         Me.LoadUsercode()
+        Call New Threading.Thread(AddressOf Me.CreateButtonArray).Start()
     End Sub
     Private Sub frmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         Me.Machine.Abort()
@@ -22,6 +23,7 @@ Public Class frmMain
         Me.SaveUsercode()
         Me.AddOutputLog("Compiling...", True)
         Me.Machine.Compile(Me.Filename, True)
+        Me.TabContainer.SelectedTab = Me.tabDisplay
     End Sub
     Private Sub cmdStop_Click(sender As Object, e As EventArgs) Handles cmdStop.Click
         Me.Machine.Abort()

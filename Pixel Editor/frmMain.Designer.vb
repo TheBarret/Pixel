@@ -26,16 +26,23 @@ Partial Class frmMain
         Me.cmdStop = New System.Windows.Forms.Button()
         Me.TabContainer = New System.Windows.Forms.TabControl()
         Me.tabEditor = New System.Windows.Forms.TabPage()
-        Me.tbOutput = New System.Windows.Forms.TextBox()
         Me.Usercode = New System.Windows.Forms.RichTextBox()
+        Me.tabDisplay = New System.Windows.Forms.TabPage()
+        Me.tabTools = New System.Windows.Forms.TabPage()
+        Me.cmdCopySprite = New System.Windows.Forms.Button()
+        Me.cmdResetButtons = New System.Windows.Forms.Button()
+        Me.tbSpriteArray = New System.Windows.Forms.TextBox()
+        Me.tbOutput = New System.Windows.Forms.TextBox()
         Me.Viewport = New Pixel.Viewport()
         Me.TabContainer.SuspendLayout()
         Me.tabEditor.SuspendLayout()
+        Me.tabDisplay.SuspendLayout()
+        Me.tabTools.SuspendLayout()
         Me.SuspendLayout()
         '
         'cmdCompile
         '
-        Me.cmdCompile.Location = New System.Drawing.Point(378, 165)
+        Me.cmdCompile.Location = New System.Drawing.Point(441, 25)
         Me.cmdCompile.Name = "cmdCompile"
         Me.cmdCompile.Size = New System.Drawing.Size(91, 26)
         Me.cmdCompile.TabIndex = 1
@@ -45,7 +52,7 @@ Partial Class frmMain
         'cmdStop
         '
         Me.cmdStop.Enabled = False
-        Me.cmdStop.Location = New System.Drawing.Point(378, 197)
+        Me.cmdStop.Location = New System.Drawing.Point(538, 25)
         Me.cmdStop.Name = "cmdStop"
         Me.cmdStop.Size = New System.Drawing.Size(91, 26)
         Me.cmdStop.TabIndex = 4
@@ -55,65 +62,118 @@ Partial Class frmMain
         'TabContainer
         '
         Me.TabContainer.Controls.Add(Me.tabEditor)
-        Me.TabContainer.Location = New System.Drawing.Point(12, 229)
+        Me.TabContainer.Controls.Add(Me.tabDisplay)
+        Me.TabContainer.Controls.Add(Me.tabTools)
+        Me.TabContainer.Location = New System.Drawing.Point(4, 57)
         Me.TabContainer.Name = "TabContainer"
         Me.TabContainer.SelectedIndex = 0
-        Me.TabContainer.Size = New System.Drawing.Size(457, 446)
+        Me.TabContainer.Size = New System.Drawing.Size(629, 543)
         Me.TabContainer.TabIndex = 5
         '
         'tabEditor
         '
-        Me.tabEditor.Controls.Add(Me.tbOutput)
         Me.tabEditor.Controls.Add(Me.Usercode)
         Me.tabEditor.Location = New System.Drawing.Point(4, 22)
         Me.tabEditor.Name = "tabEditor"
         Me.tabEditor.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabEditor.Size = New System.Drawing.Size(449, 420)
+        Me.tabEditor.Size = New System.Drawing.Size(621, 517)
         Me.tabEditor.TabIndex = 0
         Me.tabEditor.Text = "Editor"
         Me.tabEditor.UseVisualStyleBackColor = True
-        '
-        'tbOutput
-        '
-        Me.tbOutput.BackColor = System.Drawing.Color.White
-        Me.tbOutput.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.tbOutput.Location = New System.Drawing.Point(6, 356)
-        Me.tbOutput.Multiline = True
-        Me.tbOutput.Name = "tbOutput"
-        Me.tbOutput.ReadOnly = True
-        Me.tbOutput.Size = New System.Drawing.Size(437, 58)
-        Me.tbOutput.TabIndex = 4
         '
         'Usercode
         '
         Me.Usercode.AcceptsTab = True
         Me.Usercode.DetectUrls = False
         Me.Usercode.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Usercode.Location = New System.Drawing.Point(6, 3)
+        Me.Usercode.Location = New System.Drawing.Point(2, 4)
         Me.Usercode.Name = "Usercode"
-        Me.Usercode.Size = New System.Drawing.Size(437, 347)
+        Me.Usercode.Size = New System.Drawing.Size(613, 509)
         Me.Usercode.TabIndex = 3
         Me.Usercode.Text = ""
         Me.Usercode.WordWrap = False
         '
+        'tabDisplay
+        '
+        Me.tabDisplay.Controls.Add(Me.Viewport)
+        Me.tabDisplay.Location = New System.Drawing.Point(4, 22)
+        Me.tabDisplay.Name = "tabDisplay"
+        Me.tabDisplay.Size = New System.Drawing.Size(621, 517)
+        Me.tabDisplay.TabIndex = 1
+        Me.tabDisplay.Text = "Display"
+        Me.tabDisplay.UseVisualStyleBackColor = True
+        '
+        'tabTools
+        '
+        Me.tabTools.Controls.Add(Me.cmdCopySprite)
+        Me.tabTools.Controls.Add(Me.cmdResetButtons)
+        Me.tabTools.Controls.Add(Me.tbSpriteArray)
+        Me.tabTools.Location = New System.Drawing.Point(4, 22)
+        Me.tabTools.Name = "tabTools"
+        Me.tabTools.Size = New System.Drawing.Size(621, 517)
+        Me.tabTools.TabIndex = 2
+        Me.tabTools.Text = "Tools"
+        Me.tabTools.UseVisualStyleBackColor = True
+        '
+        'cmdCopySprite
+        '
+        Me.cmdCopySprite.Location = New System.Drawing.Point(365, 109)
+        Me.cmdCopySprite.Name = "cmdCopySprite"
+        Me.cmdCopySprite.Size = New System.Drawing.Size(57, 51)
+        Me.cmdCopySprite.TabIndex = 50
+        Me.cmdCopySprite.Text = "Copy"
+        Me.cmdCopySprite.UseVisualStyleBackColor = True
+        '
+        'cmdResetButtons
+        '
+        Me.cmdResetButtons.Location = New System.Drawing.Point(365, 40)
+        Me.cmdResetButtons.Name = "cmdResetButtons"
+        Me.cmdResetButtons.Size = New System.Drawing.Size(57, 51)
+        Me.cmdResetButtons.TabIndex = 49
+        Me.cmdResetButtons.Text = "Reset"
+        Me.cmdResetButtons.UseVisualStyleBackColor = True
+        '
+        'tbSpriteArray
+        '
+        Me.tbSpriteArray.BackColor = System.Drawing.Color.FromArgb(CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(224, Byte), Integer))
+        Me.tbSpriteArray.Font = New System.Drawing.Font("Consolas", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbSpriteArray.Location = New System.Drawing.Point(224, 40)
+        Me.tbSpriteArray.Multiline = True
+        Me.tbSpriteArray.Name = "tbSpriteArray"
+        Me.tbSpriteArray.ReadOnly = True
+        Me.tbSpriteArray.Size = New System.Drawing.Size(135, 120)
+        Me.tbSpriteArray.TabIndex = 48
+        '
+        'tbOutput
+        '
+        Me.tbOutput.BackColor = System.Drawing.Color.White
+        Me.tbOutput.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbOutput.Location = New System.Drawing.Point(4, 606)
+        Me.tbOutput.Multiline = True
+        Me.tbOutput.Name = "tbOutput"
+        Me.tbOutput.ReadOnly = True
+        Me.tbOutput.Size = New System.Drawing.Size(629, 69)
+        Me.tbOutput.TabIndex = 4
+        '
         'Viewport
         '
         Me.Viewport.BackColor = System.Drawing.Color.Black
+        Me.Viewport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.Viewport.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.Viewport.Location = New System.Drawing.Point(12, 12)
+        Me.Viewport.Location = New System.Drawing.Point(46, 20)
         Me.Viewport.Name = "Viewport"
-        Me.Viewport.Size = New System.Drawing.Size(360, 211)
+        Me.Viewport.Size = New System.Drawing.Size(519, 258)
         Me.Viewport.TabIndex = 6
         '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(484, 680)
-        Me.Controls.Add(Me.Viewport)
+        Me.ClientSize = New System.Drawing.Size(637, 680)
+        Me.Controls.Add(Me.tbOutput)
+        Me.Controls.Add(Me.cmdCompile)
         Me.Controls.Add(Me.TabContainer)
         Me.Controls.Add(Me.cmdStop)
-        Me.Controls.Add(Me.cmdCompile)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.KeyPreview = True
         Me.MaximizeBox = False
@@ -123,8 +183,11 @@ Partial Class frmMain
         Me.Text = "Pixel Assembly Editor"
         Me.TabContainer.ResumeLayout(False)
         Me.tabEditor.ResumeLayout(False)
-        Me.tabEditor.PerformLayout()
+        Me.tabDisplay.ResumeLayout(False)
+        Me.tabTools.ResumeLayout(False)
+        Me.tabTools.PerformLayout()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
     Friend WithEvents cmdCompile As System.Windows.Forms.Button
@@ -134,5 +197,10 @@ Partial Class frmMain
     Friend WithEvents tbOutput As System.Windows.Forms.TextBox
     Friend WithEvents Usercode As System.Windows.Forms.RichTextBox
     Friend WithEvents Viewport As Pixel.Viewport
+    Friend WithEvents tabDisplay As System.Windows.Forms.TabPage
+    Friend WithEvents tabTools As System.Windows.Forms.TabPage
+    Friend WithEvents tbSpriteArray As System.Windows.Forms.TextBox
+    Friend WithEvents cmdResetButtons As System.Windows.Forms.Button
+    Friend WithEvents cmdCopySprite As System.Windows.Forms.Button
 
 End Class
