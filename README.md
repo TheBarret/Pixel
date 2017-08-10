@@ -3,6 +3,54 @@ Tiny 16bit Virtual Machine
 
 ![](http://i.imgur.com/bPnU768.png)
 
+Example of 'Hello, World' in Pixel language
+
+```
+;************************************
+; Program: Hello, World
+;************************************
+
+jmp [main]
+
+:x	:20
+:y	:25
+:i	:0
+
+:string	@"Hello, World!"
+
+:smiley .00100100
+	.00100100
+	.00000000
+	.01111110
+	.01000010
+	.00111100
+
+:main	load [x]		;loads position and index
+	load [y]
+	load [i]
+	print [string]		;print out font index on position
+	call [next]
+	load [i]
+	if #13 jmp [end]	;did we reach end of [string]?
+	jmp [main]
+
+:end	load [x]		;draw smiley before we quit :D
+	push #5
+	add
+	load [y]
+	draw [smiley]
+	end
+
+:next	load [i]	;increase address string[i + 1]
+	push #1
+	add
+	store [i]
+	load [x]	;move x + 5
+	push #6
+	add
+	store [x]
+	return
+```
 
 Instructions
 ```
