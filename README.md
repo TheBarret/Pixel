@@ -1,7 +1,13 @@
 # Pixel [Work in Progress]
 Tiny 16bit Virtual Machine
 
+Assembly Program Running
+
 ![](http://i.imgur.com/bPnU768.png)
+
+Assembly Editor
+
+![](http://i.imgur.com/WVVVVDr.png)
 
 Simple Sprite Editor
 
