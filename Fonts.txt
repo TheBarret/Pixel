@@ -1,0 +1,55 @@
+;************************************
+; Print out build-in fonts table
+;************************************
+jmp [main]
+
+:x	:1
+:y	:1
+:i	:4
+:j	:1
+:cnt	:1
+
+:main	load [j]
+	if #27 call [line]
+	load [cnt]
+	if #64 end
+	call [print]
+	call [next]
+	call [newpos]
+	jmp [main]
+
+:line	push #1
+	store [j]
+	load [y]
+	push #10
+	add
+	store [y]
+	push #0
+	store [x]
+	return
+
+:print	load [cnt]
+	push #1
+	add
+	store [cnt]
+	load [x]
+	load [y]
+	drawm [i]
+	return
+
+:newpos	load [x]
+	push #6
+	add
+	store [x]
+	return
+
+:next	load [i]
+	push #6
+	add
+	store [i]
+	load [j]
+	push #1
+	add
+	store [j]
+	return
+
