@@ -1,7 +1,7 @@
 # Pixel [Work in Progress]
 Tiny 16bit Virtual Machine
 
-![](https://i.imgur.com/VMcQrlU.png)
+![](http://i.imgur.com/KcvxI2s.png)
 
 
 Instructions
