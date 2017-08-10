@@ -68,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\Display.vb" />
-    <Compile Include="Components\Keybaord.vb" />
+    <Compile Include="Components\Keyboard.vb" />
     <Compile Include="Components\Memory.vb" />
     <Compile Include="Components\Processor.vb" />
     <Compile Include="Components\Timer.vb" />

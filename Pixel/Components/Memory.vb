@@ -22,7 +22,7 @@ Namespace Components
                 Me.WriteUInt(CUShort(Locations.Pointer + Offset), value)
             End Set
         End Property
-        Public Sub Dump(Filename As String, Buffer() As Byte)
+        Public Shared Sub Dump(Filename As String, Buffer() As Byte)
             Using fs As New FileStream(Filename, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)
                 Using bw As New BinaryWriter(fs)
                     bw.Write(Buffer)

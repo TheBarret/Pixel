@@ -4,5 +4,5 @@
 End Enum
 Public Enum Locations As UInt16
     Pointer = &H0
-    Entrypoint = &H100
+    Entrypoint = &H200
 End Enum

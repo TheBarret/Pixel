@@ -37,8 +37,9 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Opcodes.OP_SHL))
             Me.Instructions.Add(New Instruction(Opcodes.OP_IFK))
             Me.Instructions.Add(New Instruction(Opcodes.OP_TIMER))
-            Me.Instructions.Add(New Instruction(Opcodes.OP_PUSHDATA))
-            Me.Instructions.Add(New Instruction(Opcodes.OP_PUSHMEMORY))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_PUSHVRAMDATA))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_PUSHVRAMMEMORY))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_PUSHVRAMTEXT))
             Me.Instructions.Add(New Instruction(Opcodes.OP_CLS))
             Me.Instructions.Add(New Instruction(Opcodes.OP_END))
         End Sub
@@ -155,15 +156,27 @@ Namespace Components
                     Case Opcodes.OP_TIMER
                         '// TODO
                         Me.Pointer = CUShort(Me.Pointer + 3)
-                    Case Opcodes.OP_PUSHDATA
+                    Case Opcodes.OP_PUSHVRAMDATA
                         If (Me.Stack.Count >= 2) Then
-                            Me.Display.Allocate(Me.Stack.Pop, Me.Stack.Pop, Me.ReadBlock(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), 5))
+                            Dim y As UInt16 = Me.Stack.Pop
+                            Dim x As UInt16 = Me.Stack.Pop
+                            Me.Display.Allocate(x, y, Me.ReadBlock(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), 5))
                         End If
                         Me.Pointer = CUShort(Me.Pointer + 3)
-                    Case Opcodes.OP_PUSHMEMORY
+                    Case Opcodes.OP_PUSHVRAMMEMORY
                         If (Me.Stack.Count >= 2) Then
-                            Me.Display.Allocate(Me.Stack.Pop, Me.Stack.Pop, Me.ReadBlock(Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))), 5))
+                            Dim y As UInt16 = Me.Stack.Pop
+                            Dim x As UInt16 = Me.Stack.Pop
+                            Me.Display.Allocate(x, y, Me.ReadBlock(Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))), 5))
                             Me.Display.Redraw = True
+                        End If
+                        Me.Pointer = CUShort(Me.Pointer + 3)
+                    Case Opcodes.OP_PUSHVRAMTEXT
+                        If (Me.Stack.Count >= 3) Then
+                            Dim i As UInt16 = Me.Stack.Pop
+                            Dim y As UInt16 = Me.Stack.Pop
+                            Dim x As UInt16 = Me.Stack.Pop
+                            Me.Display.Allocate(x, y, Me.ReadBlock(Me.ReadUInt(CUShort(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)) + (i * 2))), 5))
                         End If
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_CLS

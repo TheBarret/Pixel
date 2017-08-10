@@ -29,8 +29,8 @@ Namespace Tasks
         Public Overrides Sub Initialize()
             Me.Table.Add(New Definition(TType.T_PUSH, "\bPUSH\b"))
             Me.Table.Add(New Definition(TType.T_POP, "\bPOP\b"))
-            Me.Table.Add(New Definition(TType.T_LD, "\bLD\b"))
-            Me.Table.Add(New Definition(TType.T_ST, "\bST\b"))
+            Me.Table.Add(New Definition(TType.T_LD, "\bLOAD\b"))
+            Me.Table.Add(New Definition(TType.T_ST, "\bSTORE\b"))
             Me.Table.Add(New Definition(TType.T_JUMP, "\bJMP\b"))
             Me.Table.Add(New Definition(TType.T_CALL, "\bCALL\b"))
             Me.Table.Add(New Definition(TType.T_RET, "\bRETURN\b"))
@@ -50,8 +50,9 @@ Namespace Tasks
             Me.Table.Add(New Definition(TType.T_SHL, "\bSHL\b"))
             Me.Table.Add(New Definition(TType.T_IFK, "\bIFKEY\b"))
             Me.Table.Add(New Definition(TType.T_TIMER, "\bTIMER\b"))
-            Me.Table.Add(New Definition(TType.T_PUSHDATA, "\bUPDD\b"))
-            Me.Table.Add(New Definition(TType.T_PUSHMEMORY, "\bUPDM\b"))
+            Me.Table.Add(New Definition(TType.T_PUSHVRAMDATA, "\bDRAW\b"))
+            Me.Table.Add(New Definition(TType.T_PUSHVRAMMEMORY, "\bDRAWM\b"))
+            Me.Table.Add(New Definition(TType.T_PUSHVRAMTEXT, "\bPRINT\b"))
             Me.Table.Add(New Definition(TType.T_CLS, "\bCLEAR\b"))
             Me.Table.Add(New Definition(TType.T_END, "\bEND\b"))
             Me.Table.Add(New Definition(TType.T_LABEL, "\:[a-z0-9_]+"))
@@ -60,6 +61,7 @@ Namespace Tasks
             Me.Table.Add(New Definition(TType.T_LOCATION, "\[[a-z0-9_]+\]"))
             Me.Table.Add(New Definition(TType.T_VAR, "\:([0-9]+|\s+[0-9]+)"))
             Me.Table.Add(New Definition(TType.T_DAT, "\.((0|1)|\s+(0|1)){8}"))
+            Me.Table.Add(New Definition(TType.T_STR, "\@("".*?"")"))
         End Sub
         ''' <summary>
         ''' Begins parsing of user code into bytecode
@@ -83,6 +85,8 @@ Namespace Tasks
                                         location += 1
                                     ElseIf (definition.Type = TType.T_VAR) Then
                                         location += 2
+                                    ElseIf (definition.Type = TType.T_STR) Then
+                                        location += (m.Groups(1).Length - 1) * 2
                                     ElseIf (definition.Type <> TType.T_HEX And
                                             definition.Type <> TType.T_NUMBER And
                                             definition.Type <> TType.T_LOCATION) Then
@@ -96,10 +100,11 @@ Namespace Tasks
                         End If
                     Next
                     If (Not found) Then
-                        Throw New Exception(String.Format("Could not match any definitions against '{0}...'", line.Substring(0, 15)))
+                        Throw New Exception(String.Format("Syntax error, unable to parse '{0}...'", line.Substring(0, 15)))
                     End If
                 Loop Until line.Length = 0
             Next
+            Components.Processor.Dump(".\program.bin", Me.Parent.Bytecode.ToArray)
         End Sub
         ''' <summary>
         ''' Write bytecode instruction to stream
@@ -162,9 +167,11 @@ Namespace Tasks
                     Me.WriteByte(Definition.ToBytecode)
                 Case TType.T_TIMER
                     Me.WriteByte(Definition.ToBytecode)
-                Case TType.T_PUSHDATA
+                Case TType.T_PUSHVRAMDATA
                     Me.WriteByte(Definition.ToBytecode)
-                Case TType.T_PUSHMEMORY
+                Case TType.T_PUSHVRAMMEMORY
+                    Me.WriteByte(Definition.ToBytecode)
+                Case TType.T_PUSHVRAMTEXT
                     Me.WriteByte(Definition.ToBytecode)
                 Case TType.T_CLS
                     Me.WriteByte(Definition.ToBytecode)
@@ -176,6 +183,8 @@ Namespace Tasks
                     Me.WriteByte(Me.String2Byte(Line))
                 Case TType.T_VAR
                     Me.WriteUInt16(Me.String2UInt16(Line))
+                Case TType.T_STR
+                    Me.WriteString(Line)
                 Case TType.T_NUMBER
                     Me.WriteValue(Definition, Line)
                 Case TType.T_HEX
@@ -233,6 +242,16 @@ Namespace Tasks
             Me.Parent.Bytecode.AddRange({bytes(1), bytes(0)})
         End Sub
         ''' <summary>
+        ''' Writes string data to the bytecode stream
+        ''' </summary>
+        Private Sub WriteString(Line As String)
+            Dim str As String = Line.Substring(2, Line.Length - 3)
+            For Each ch As Char In str.ToCharArray
+                Me.WriteUInt16(Me.CharToFontAddress(ch))
+            Next
+            Me.WriteUInt16(0)
+        End Sub
+        ''' <summary>
         ''' Cleans up comments
         ''' </summary>
         Private Sub StripComments()
@@ -257,5 +276,71 @@ Namespace Tasks
                 Next
             Loop While changed
         End Sub
+        ''' <summary>
+        ''' Converts char to build-in font address
+        ''' </summary>
+        Private Function CharToFontAddress(ch As Char) As UInt16
+            Select Case Char.ToUpper(ch)
+                Case "A"c : Return 4
+                Case "B"c : Return 10
+                Case "C"c : Return 16
+                Case "D"c : Return 22
+                Case "E"c : Return 28
+                Case "F"c : Return 34
+                Case "G"c : Return 40
+                Case "H"c : Return 46
+                Case "I"c : Return 52
+                Case "J"c : Return 58
+                Case "K"c : Return 64
+                Case "L"c : Return 70
+                Case "M"c : Return 76
+                Case "N"c : Return 82
+                Case "O"c : Return 88
+                Case "P"c : Return 94
+                Case "Q"c : Return 100
+                Case "R"c : Return 106
+                Case "S"c : Return 112
+                Case "T"c : Return 118
+                Case "U"c : Return 124
+                Case "V"c : Return 130
+                Case "W"c : Return 136
+                Case "X"c : Return 142
+                Case "Y"c : Return 148
+                Case "Z"c : Return 154
+                Case "1"c : Return 160
+                Case "2"c : Return 166
+                Case "3"c : Return 172
+                Case "4"c : Return 178
+                Case "5"c : Return 184
+                Case "6"c : Return 190
+                Case "7"c : Return 196
+                Case "8"c : Return 202
+                Case "9"c : Return 208
+                Case "0"c : Return 214
+                Case "!"c : Return 220
+                Case "?"c : Return 226
+                Case "+"c : Return 232
+                Case "-"c : Return 238
+                Case "*"c : Return 244
+                Case "/"c : Return 250
+                Case "."c : Return 256
+                Case ":"c : Return 262
+                Case "→"c : Return 268
+                Case "←"c : Return 274
+                Case "↑"c : Return 280
+                Case "↓"c : Return 286
+                Case "="c : Return 292
+                Case ">"c : Return 298
+                Case "<"c : Return 304
+                Case "'"c : Return 310
+                Case "["c : Return 316
+                Case "|"c : Return 322
+                Case "]"c : Return 328
+                Case "\"c : Return 334
+                Case " "c : Return 340
+                Case ","c : Return 346
+                Case Else : Return 340
+            End Select
+        End Function
     End Class
 End Namespace

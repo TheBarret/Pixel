@@ -39,6 +39,7 @@ Public Class Machine
                 Cpu.WriteBlock(Locations.Entrypoint, Bytecode)
                 If (Me.Running) Then
                     Me.Running = False
+                    Me.Wait.WaitOne(3000)
                 End If
                 Me.Running = True
                 Me.Wait = New ManualResetEvent(False)
@@ -46,13 +47,13 @@ Public Class Machine
                 Do
                     Cpu.Clock()
                 Loop While Me.Running
-                Cpu.Dump(".\Dump.bin", Cpu.ReadBlock(&H0, UInt16.MaxValue - 1))
-                Me.Wait.Set()
+                Memory.Dump(".\Dump.bin", Cpu.ReadBlock(&H0, UInt16.MaxValue - 1))
             End Using
         Catch ex As Exception
             RaiseEvent Failure(ex)
             Me.Running = False
         Finally
+            Me.Wait.Set()
             RaiseEvent MachineInactive()
         End Try
     End Sub

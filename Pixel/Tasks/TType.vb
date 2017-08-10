@@ -23,12 +23,14 @@
         T_SHL
         T_IFK
         T_TIMER
-        T_PUSHDATA
-        T_PUSHMEMORY
+        T_PUSHVRAMDATA
+        T_PUSHVRAMTEXT
+        T_PUSHVRAMMEMORY
         T_CLS
         T_END
         T_DAT
         T_VAR
+        T_STR
         T_LABEL
         T_NUMBER
         T_HEX

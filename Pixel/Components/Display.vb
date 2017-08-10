@@ -11,12 +11,12 @@ Namespace Components
         Private Property Background As Brush
         Private Property Foreground As Brush
         Sub New()
-            Me.Width = 128
-            Me.Height = 64
-            Me.Offset = 5
+            Me.Width = 256 '128
+            Me.Height = 128
+            Me.Offset = 2
             Me.Redraw = False
-            Me.Background = New SolidBrush(Color.Black)
-            Me.Foreground = New SolidBrush(Color.White)
+            Me.Background = New SolidBrush(Color.CornflowerBlue)
+            Me.Foreground = New SolidBrush(Color.Black)
             Me.buffer = New UInt16(Me.Width - 1, Me.Height - 1) {}
         End Sub
         Public Sub Allocate(x As Integer, y As Integer, buffer As Byte())
@@ -55,6 +55,7 @@ Namespace Components
                     Me.buffer(x, y) = &H0
                 Next
             Next
+            Me.Redraw = True
         End Sub
         Private Function BitToString(value As Integer) As Char()
             Return Convert.ToString(value, 2).PadLeft(8, "0"c).ToCharArray()
