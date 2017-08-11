@@ -9,49 +9,42 @@ Example of 'Hello, World' in Pixel language
 
 ```
 ;************************************
-; Program: Hello, World
+; Program: 'Hello, World!' Banner
 ;************************************
-
+clear
 jmp [main]
 
-:x	:20
-:y	:25
-:i	:0
+:x		:10
+:y		:10
+:index		:0
+:timer		:0
+:string		@">> Hello, World! <<"
 
-:string	@"Hello, World!"
+:main	if [index] #19 jmp [a1]			;did we reach end of the string?
 
-:smiley .00100100
-	.00100100
-	.00000000
-	.01111110
-	.01000010
-	.00111100
-
-:main	load [x]		;loads position and index
-	load [y]
-	load [i]
-	print [string]		;print out font index on position
-	call [next]
-	load [i]
-	if #13 jmp [end]	;did we reach end of [string]?
-	jmp [main]
-
-:end	load [x]		;draw smiley before we quit :D
-	push #5
-	add
-	load [y]
-	draw [smiley]
-	end
-
-:next	load [i]	;increase address string[i + 1]
+:loop	print [x][y][index][string]		;print character from string
+	load [index]				;increase index
 	push #1
 	add
-	store [i]
-	load [x]	;move x + 5
-	push #6
+	store [index]
+	load [x]				;increase x
+	push #5
 	add
 	store [x]
-	return
+	jmp [main]				;jump back to begin
+
+:a1	storev [timer] #150			;create a time out
+:a2	ifg [timer] #0 jmp [a3]
+	storev [x] #10				;reset variables
+	storev [y] #10
+	storev [index] #0
+	jmp [loop]				;jump back
+
+:a3	load [timer]				;decrease timer
+	push #1
+	sub
+	store [timer]
+	jmp [a2]
 ```
 
 Instructions
@@ -60,8 +53,9 @@ Function	      	  | Parameters                    		| Description
 --------------------------+---------------------------------------------+---------------------------------------------------
 push 		          | (#<num>|0x<hex>|[label])			| Loads value onto the stack
 pop		          | no params			                | Pops value from the stack
-load		          | ([label])			                | Loads defined variable onto the stack
-store		          | ([label])			                | Stores value from stack into defined variable
+load		          | ([label])			                | Loads variable onto the stack
+store		          | ([label])			                | Stores value from stack to variable
+storev		          | ([label]) (#<num>|0x<hex>)	                | Stores value to variable
 jmp		          | ([label])			                | Jumps to label location
 call		          | ([label])			                | Call procedure
 return		      	  | no params			                | Returns from procedure
@@ -80,7 +74,6 @@ ifn		          | (#number) (instruction)	      		| Performs a condition test x !
 ifg		          | (#number) (instruction)	      		| Performs a condition test x >  y, executes next instruction if true
 ifl		          | (#number) (instruction)	      		| Performs a condition test x <  y, executes next instruction if true
 ifk		          | (#number) (instruction)	      		| Performs a condition if key is pressed, executes next instruction if true
-timer		          | (#number)			                | Sets delay timer with value
 draw		          | ([label])			                | Loads data from label with binary data into vram, assumes x and y are on the stack
 drawm		          | ([label])			                | Loads data from label with memory address into vram, assumes x and y are on the stack
 print			  | ([label])					| Loads char from label with memory address into vram, assumes x, y and index are on the stack
@@ -93,13 +86,17 @@ Sprites
 ----------------------------------------------------------------------------------------------------
 Sprites can be made from a binary array of 8x6, compiler assumes only  1's and 0's in this order
 ```
+jmp [program]
+
+:x	10
+:y	10
+
 :program
-	push #1
-	push #1
-	draw [letter_A]
+	draw [x][y][letter_A]
 	end
 
-:letter_A
+
+[letter_A]
 	.00011000
 	.00100100
 	.01000010
@@ -137,25 +134,26 @@ String data is decoded by the assembler into font address values, the 'print' in
 then enumerate for each character and draw them on the given x and y position.
 
 ```
-:program
-	load [x]
-	load [y]
-	push #0
-	print [string]
-	end
+jmp [program]
 
 :x	:1
 :y	:1
+:i	:0
+
+:program
+	print [x][y][i][string]
+	end
+
 :string @"A"
 ```
+This would print the letter 'A' on the screen, because i is 0 and the string array begins with 0.
 
 ----------------------------------------------------------------------------------------------------
 Loop example with increasing variable and condition test
 ----------------------------------------------------------------------------------------------------
 ```
 :program
-	load [foo]
-	if #10 end
+	if [foo] #10 end
 	call [add]
 	jmp [program]
 
