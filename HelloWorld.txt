@@ -1,45 +1,37 @@
 ;************************************
-; Program: Hello, World
+; Program: 'Hello, World!' Banner
 ;************************************
-
+clear
 jmp [main]
 
-:x	:20
-:y	:25
-:i	:0
+:x		:10
+:y		:10
+:index	:0
+:timer	:0
+:string	@">> Hello, World! <<"
 
-:string	@"Hello, World!"
+:main	if [index] #19 jmp [a1]		;did we reach end of the string?
 
-:smiley .00100100
-	.00100100
-	.00000000
-	.01111110
-	.01000010
-	.00111100
-
-:main	load [x]		;loads position and index
-	load [y]
-	load [i]
-	print [string]		;print out font index on position
-	call [next]
-	load [i]
-	if #13 jmp [end]	;did we reach end of [string]?
-	jmp [main]
-
-:end	load [x]		;draw smiley before we quit :D
-	push #5
-	add
-	load [y]
-	draw [smiley]
-	end
-
-:next	load [i]	;increase address string[i + 1]
+:loop	print [x][y][index][string]		;print character from string
+	load [index]				;increase index
 	push #1
 	add
-	store [i]
-	load [x]	;move x + 5
-	push #6
+	store [index]
+	load [x]				;increase x
+	push #5
 	add
 	store [x]
-	return
+	jmp [main]				;jump back to begin
 
+:a1	storev [timer] #150			;create a time out
+:a2	ifg [timer] #0 jmp [a3]
+	storev [x] #10			;reset variables
+	storev [y] #10
+	storev [index] #0
+	jmp [loop]				;jump back
+
+:a3	load [timer]				;decrease timer
+	push #1
+	sub
+	store [timer]
+	jmp [a2]

@@ -1,0 +1,56 @@
+;************************************
+; Program: Memory writing
+;************************************
+clear
+jmp [main]
+
+:x	:20
+:y	:50
+:i	:0
+:desc	@"Result ->"
+
+:sprite
+.11111111
+.11111111
+.11111111
+.11111111
+.11111111
+.11111111
+
+:s2
+
+:main
+	jmp [text]
+:code
+	load [x]			; Adjust variables
+	push #10
+	add
+	store [x]
+	push #0
+	store [i]
+	draw [x][y][sprite]		;show original sprite
+
+	load [x]			;move away a bit
+	push #10
+	add
+	store [x]
+
+	addressOf [sprite]		;get address of [sprite]
+	store [i]			;store at variable i
+	random 0xffff			;change something random
+	writeAt [i]
+
+	drawm [x][y][i]			;draw result
+	end
+
+:text	print [x][y][i][desc]		; Display text
+	load [i]
+	push #1
+	add
+	store [i]
+	load [x]
+	push #5
+	add
+	store [x]
+	if [i] #9 jmp [code]
+	jmp [text]

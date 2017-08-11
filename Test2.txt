@@ -1,0 +1,36 @@
+;************************************
+; Program: Random drawing
+;************************************
+clear
+jmp [main]
+
+:x	:0
+:y	:0
+:i	:0
+:j	:0
+:string	@"?!/*-+=><[|]\"
+
+:main
+	if [i] #100 call [reset]
+	random #250
+	store [x]
+	random #120
+	store [y]
+
+	print [x][y][j][string]
+
+	load [i]
+	push #1
+	add
+	store [i]
+
+	random #13
+	store [j]
+
+	jmp [main]
+
+:reset
+	clear
+	push #0
+	store [i]
+	return

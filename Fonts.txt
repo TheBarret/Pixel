@@ -1,6 +1,7 @@
 ;************************************
 ; Print out build-in fonts table
 ;************************************
+clear
 jmp [main]
 
 :x	:1
@@ -9,10 +10,8 @@ jmp [main]
 :j	:1
 :cnt	:1
 
-:main	load [j]
-	if #27 call [line]
-	load [cnt]
-	if #64 end
+:main	if [j] #27 call [line]
+	if [cnt] #64 end
 	call [print]
 	call [next]
 	call [newpos]
@@ -32,9 +31,7 @@ jmp [main]
 	push #1
 	add
 	store [cnt]
-	load [x]
-	load [y]
-	drawm [i]
+	drawm [x][y][i]
 	return
 
 :newpos	load [x]
@@ -52,4 +49,3 @@ jmp [main]
 	add
 	store [j]
 	return
-
