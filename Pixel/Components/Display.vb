@@ -32,7 +32,7 @@ Namespace Components
                 Next
             Next
         End Sub
-        Public Sub DrawFrame()
+        Public Sub Refresh()
             Using bm As New Bitmap(Me.Width * Me.Offset, Me.Height * Me.Offset)
                 Using g As Graphics = Graphics.FromImage(bm)
                     g.CompositingMode = CompositingMode.SourceCopy
@@ -48,6 +48,7 @@ Namespace Components
                 End Using
                 Me.Screen = CType(bm.Clone, Bitmap)
             End Using
+            Me.Redraw = False
         End Sub
         Public Sub Clear()
             For y As Integer = 0 To Me.Height - 1

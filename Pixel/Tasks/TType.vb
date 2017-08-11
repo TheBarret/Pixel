@@ -3,6 +3,7 @@
         T_PUSH
         T_LD
         T_ST
+        T_STV
         T_POP
         T_JUMP
         T_CALL
@@ -21,10 +22,13 @@
         T_XOR
         T_SHR
         T_SHL
+        T_OV
+        T_WRITE
+        T_ADDR
+        T_RND
         T_IFK
-        T_TIMER
         T_PUSHVRAMDATA
-        T_PUSHVRAMTEXT
+        T_PUSHVRAMSTRING
         T_PUSHVRAMMEMORY
         T_CLS
         T_END

@@ -23,6 +23,7 @@
     <NoWarn>
     </NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+    <RemoveIntegerChecks>true</RemoveIntegerChecks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -77,6 +78,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Cycle.vb" />
+    <Compile Include="Extensions.vb" />
     <Compile Include="Instructions.vb" />
     <Compile Include="Interfaces\ITask.vb" />
     <Compile Include="Machine.vb" />

@@ -47,7 +47,7 @@ Public Class Machine
                 Do
                     Cpu.Clock()
                 Loop While Me.Running
-                Memory.Dump(".\Dump.bin", Cpu.ReadBlock(&H0, UInt16.MaxValue - 1))
+                Memory.Dump(".\Dump.bin", Cpu.ReadBlock(&H0, &HFFFF))
             End Using
         Catch ex As Exception
             RaiseEvent Failure(ex)

@@ -1,5 +1,5 @@
 ﻿Namespace Components
-    Public Class Keybaord
+    Public Class Keyboard
 
     End Class
 End Namespace

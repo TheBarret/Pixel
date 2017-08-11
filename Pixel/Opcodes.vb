@@ -3,6 +3,7 @@
     OP_PUSH
     OP_LD
     OP_ST
+    OP_STV
     OP_POP
     OP_JUMP
     OP_CALL
@@ -21,11 +22,14 @@
     OP_XOR
     OP_SHR
     OP_SHL
+    OP_OV
+    OP_WRITE
+    OP_ADDR
+    OP_RND
     OP_IFK
-    OP_TIMER
     OP_PUSHVRAMDATA
     OP_PUSHVRAMMEMORY
-    OP_PUSHVRAMTEXT
+    OP_PUSHVRAMSTRING
     OP_CLS
     OP_END
 End Enum

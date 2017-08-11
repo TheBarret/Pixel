@@ -2,23 +2,22 @@
 Namespace Components
     Public Class Processor
         Inherits Memory
-        Implements IDisposable
         Private Property Cycle As Cycle
         Private Property Parent As Machine
         Private Property Display As Display
-        Private Property Stack As Stack(Of UInt16)
-        Private Property Address As Stack(Of UInt16)
+        Private Property Keyboard As Keyboard
         Private Property Instructions As List(Of Instruction)
         Sub New(Parent As Machine)
             Me.Parent = Parent
             Me.Cycle = New Cycle
             Me.Display = New Display
+            Me.Keyboard = New Keyboard
             Me.Pointer = Locations.Entrypoint
-            Me.Stack = New Stack(Of UShort)
-            Me.Address = New Stack(Of UShort)
             Me.Instructions = New List(Of Instruction)
+            Me.Instructions.Add(New Instruction(Opcodes.OP_NOP))
             Me.Instructions.Add(New Instruction(Opcodes.OP_LD))
             Me.Instructions.Add(New Instruction(Opcodes.OP_ST))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_STV))
             Me.Instructions.Add(New Instruction(Opcodes.OP_PUSH))
             Me.Instructions.Add(New Instruction(Opcodes.OP_POP))
             Me.Instructions.Add(New Instruction(Opcodes.OP_JUMP))
@@ -35,150 +34,163 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Opcodes.OP_IFL))
             Me.Instructions.Add(New Instruction(Opcodes.OP_SHR))
             Me.Instructions.Add(New Instruction(Opcodes.OP_SHL))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_WRITE))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_ADDR))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_RND))
             Me.Instructions.Add(New Instruction(Opcodes.OP_IFK))
-            Me.Instructions.Add(New Instruction(Opcodes.OP_TIMER))
             Me.Instructions.Add(New Instruction(Opcodes.OP_PUSHVRAMDATA))
             Me.Instructions.Add(New Instruction(Opcodes.OP_PUSHVRAMMEMORY))
-            Me.Instructions.Add(New Instruction(Opcodes.OP_PUSHVRAMTEXT))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_PUSHVRAMSTRING))
             Me.Instructions.Add(New Instruction(Opcodes.OP_CLS))
             Me.Instructions.Add(New Instruction(Opcodes.OP_END))
         End Sub
         Public Sub Clock()
             Me.Cycle.Begin()
             If (Me.Cycle.Throttle(1500)) Then
-                Select Case Me.GetInstruction(Me.ReadByte(Me.Pointer)).Opcode
+                Dim v = Me.GetInstruction(Me.ReadByte(Me.Pointer)).Opcode
+                Select Case v
+                    Case Opcodes.OP_NOP
+                        Me.Pointer = CUShort(Me.Pointer + 1)
                     Case Opcodes.OP_LD
-                        Me.Stack.Push(Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))))
+                        Me.Push(Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))))
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_ST
-                        Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), Me.Stack.Pop)
+                        Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), Me.Pop)
                         Me.Pointer = CUShort(Me.Pointer + 3)
+                    Case Opcodes.OP_STV
+                        Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), Me.ReadUInt(CUShort(Me.Pointer + 3)))
+                        Me.Pointer = CUShort(Me.Pointer + 5)
                     Case Opcodes.OP_PUSH
-                        Me.Stack.Push(Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                        Me.Push(Me.ReadUInt(CUShort(Me.Pointer + 1)))
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_POP
-                        Me.Stack.Pop()
+                        Me.Pop()
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_JUMP
                         Me.Pointer = Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))
                     Case Opcodes.OP_CALL
-                        Me.Address.Push(CUShort(Me.Pointer + 3))
+                        Me.StoreReturn(CUShort(Me.Pointer + 3))
                         Me.Pointer = Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))
                     Case Opcodes.OP_RET
-                        If (Me.Address.Count >= 1) Then
-                            Me.Pointer = Me.Address.Pop
-                        End If
+                        Me.Pointer = Me.FetchReturn
                     Case Opcodes.OP_ADD
-                        If (Me.Stack.Count >= 2) Then
-                            Me.Stack.Push(Me.Stack.Pop + Me.Stack.Pop)
-                        End If
+                        Dim y As UInt16 = Me.Pop
+                        Dim x As UInt16 = Me.Pop
+                        Dim value As Int32 = x + y
+                        Me.Push(CUShort(value))
+                        Me.Overflow = If(value > &HFFFF, CUShort(1), CUShort(0))
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_SUB
-                        If (Me.Stack.Count >= 2) Then
-                            Me.Stack.Push(Me.Stack.Pop - Me.Stack.Pop)
-                        End If
+                        Dim y As UInt16 = Me.Pop
+                        Dim x As UInt16 = Me.Pop
+                        Dim value As Int32 = x - y
+                        Me.Push(CUShort(value And &HFFFF))
+                        Me.Overflow = If(value > &HFFFF, CUShort(&HFFFF), CUShort(0))
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_MUL
-                        If (Me.Stack.Count >= 2) Then
-                            Me.Stack.Push(Me.Stack.Pop * Me.Stack.Pop)
-                        End If
+                        Dim y As UInt16 = Me.Pop
+                        Dim x As UInt16 = Me.Pop
+                        Dim value As Int32 = x * y
+                        Me.Push(CUShort(value And &HFFFF))
+                        Me.Overflow = CUShort((value >> 16) And &HFFFF)
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_DIV
-                        If (Me.Stack.Count >= 2) Then
-                            Me.Stack.Push(Me.Stack.Pop \ Me.Stack.Pop)
+                        Dim y As UInt16 = Me.Pop
+                        Dim x As UInt16 = Me.Pop
+                        If (y > 0) Then
+                            Dim value As Int32 = x \ y
+                            Me.Push(CUShort(value And &HFFFF))
+                            Me.Overflow = CUShort(((x << 16) \ y) And &HFFFF)
+                        Else
+                            Throw New Exception("Division by zero")
                         End If
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_MOD
-                        If (Me.Stack.Count >= 2) Then
-                            Me.Stack.Push(Me.Stack.Pop Mod Me.Stack.Pop)
+                        Dim y As UInt16 = Me.Pop
+                        Dim x As UInt16 = Me.Pop
+                        If (y > 0) Then
+                            Me.Push(0)
+                        Else
+                            Me.Push(x Mod y)
                         End If
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_AND
-                        If (Me.Stack.Count >= 2) Then
-                            Me.Stack.Push(Me.Stack.Pop And Me.Stack.Pop)
-                        End If
+                        Me.Push(Me.Pop And Me.Pop)
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_OR
-                        If (Me.Stack.Count >= 2) Then
-                            Me.Stack.Push(Me.Stack.Pop Or Me.Stack.Pop)
-                        End If
+                        Me.Push(Me.Pop Or Me.Pop)
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_XOR
-                        If (Me.Stack.Count >= 2) Then
-                            Me.Stack.Push(Me.Stack.Pop Xor Me.Stack.Pop)
-                        End If
+                        Me.Push(Me.Pop Xor Me.Pop)
+                        Me.Pointer = CUShort(Me.Pointer + 3)
+                    Case Opcodes.OP_SHR
+                        Dim x As UInt16 = Me.Pop
+                        Dim y As UInt16 = Me.ReadUInt(CUShort(Me.Pointer + 1))
+                        Dim value As Int32 = x >> y
+                        Me.Push(CUShort(value))
+                        Me.Overflow = CUShort(((x << 16) >> y) And &HFFFF)
+                        Me.Pointer = CUShort(Me.Pointer + 3)
+                    Case Opcodes.OP_SHL
+                        Dim x As UInt16 = Me.Pop
+                        Dim y As UInt16 = Me.ReadUInt(CUShort(Me.Pointer + 1))
+                        Dim value As Int32 = (x << y)
+                        Me.Push(CUShort(value))
+                        Me.Overflow = CUShort((value >> 16) And &HFFFF)
                         Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_IF
-                        If (Me.Stack.Count >= 1) Then
-                            If (Me.Stack.Pop = Me.ReadUInt(CUShort(Me.Pointer + 1))) Then
-                                Me.Pointer = CUShort(Me.Pointer + 3)
-                            Else
-                                Me.Pointer = CUShort(Me.Pointer + 6)
-                            End If
+                        If (Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))) = Me.ReadUInt(CUShort(Me.Pointer + 3))) Then
+                            Me.Pointer = CUShort(Me.Pointer + 5)
+                        Else
+                            Me.Pointer = CUShort(Me.Pointer + 8)
                         End If
                     Case Opcodes.OP_IFN
-                        If (Me.Stack.Count >= 1) Then
-                            If (Me.Stack.Pop <> Me.ReadUInt(CUShort(Me.Pointer + 1))) Then
-                                Me.Pointer = CUShort(Me.Pointer + 6)
-                            Else
-                                Me.Pointer = CUShort(Me.Pointer + 3)
-                            End If
+                        If (Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))) <> Me.ReadUInt(CUShort(Me.Pointer + 3))) Then
+                            Me.Pointer = CUShort(Me.Pointer + 8)
+                        Else
+                            Me.Pointer = CUShort(Me.Pointer + 5)
                         End If
                     Case Opcodes.OP_IFG
-                        If (Me.Stack.Count >= 1) Then
-                            If (Me.Stack.Pop > Me.ReadUInt(CUShort(Me.Pointer + 1))) Then
-                                Me.Pointer = CUShort(Me.Pointer + 3)
-                            Else
-                                Me.Pointer = CUShort(Me.Pointer + 6)
-                            End If
+                        If (Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))) > Me.ReadUInt(CUShort(Me.Pointer + 3))) Then
+                            Me.Pointer = CUShort(Me.Pointer + 5)
+                        Else
+                            Me.Pointer = CUShort(Me.Pointer + 8)
                         End If
                     Case Opcodes.OP_IFL
-                        If (Me.Stack.Count >= 1) Then
-                            If (Me.Stack.Pop < Me.ReadUInt(CUShort(Me.Pointer + 1))) Then
-                                Me.Pointer = CUShort(Me.Pointer + 3)
-                            Else
-                                Me.Pointer = CUShort(Me.Pointer + 6)
-                            End If
+                        If (Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))) < Me.ReadUInt(CUShort(Me.Pointer + 3))) Then
+                            Me.Pointer = CUShort(Me.Pointer + 5)
+                        Else
+                            Me.Pointer = CUShort(Me.Pointer + 8)
                         End If
-                    Case Opcodes.OP_SHR
-                        If (Me.Stack.Count >= 1) Then
-                            Me.Stack.Push(Me.Stack.Pop >> Me.ReadUInt(CUShort(Me.Pointer + 1)))
-                            Me.Pointer = CUShort(Me.Pointer + 3)
-                        End If
-                    Case Opcodes.OP_SHL
-                        If (Me.Stack.Count >= 1) Then
-                            Me.Stack.Push(Me.Stack.Pop << Me.ReadUInt(CUShort(Me.Pointer + 1)))
-                            Me.Pointer = CUShort(Me.Pointer + 3)
-                        End If
+                    Case Opcodes.OP_WRITE
+                        Me.WriteUInt(Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))), Me.Pop)
+                        Me.Pointer = CUShort(Me.Pointer + 3)
+                    Case Opcodes.OP_ADDR
+                        Me.Push(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                        Me.Pointer = CUShort(Me.Pointer + 3)
+                    Case Opcodes.OP_RND
+                        Static rnd As New Random(Environment.TickCount)
+                        Me.Push(CUShort(rnd.Next(0, Me.ReadUInt(CUShort(Me.Pointer + 1)))))
+                        Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_IFK
                         '// TODO
                         Me.Pointer = CUShort(Me.Pointer + 3)
-                    Case Opcodes.OP_TIMER
-                        '// TODO
-                        Me.Pointer = CUShort(Me.Pointer + 3)
                     Case Opcodes.OP_PUSHVRAMDATA
-                        If (Me.Stack.Count >= 2) Then
-                            Dim y As UInt16 = Me.Stack.Pop
-                            Dim x As UInt16 = Me.Stack.Pop
-                            Me.Display.Allocate(x, y, Me.ReadBlock(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), 5))
-                        End If
-                        Me.Pointer = CUShort(Me.Pointer + 3)
+                        Dim x As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                        Dim y As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3)))
+                        Me.Display.Allocate(x, y, Me.ReadBlock(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 5)), 5))
+                        Me.Pointer = CUShort(Me.Pointer + 7)
                     Case Opcodes.OP_PUSHVRAMMEMORY
-                        If (Me.Stack.Count >= 2) Then
-                            Dim y As UInt16 = Me.Stack.Pop
-                            Dim x As UInt16 = Me.Stack.Pop
-                            Me.Display.Allocate(x, y, Me.ReadBlock(Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))), 5))
-                            Me.Display.Redraw = True
-                        End If
-                        Me.Pointer = CUShort(Me.Pointer + 3)
-                    Case Opcodes.OP_PUSHVRAMTEXT
-                        If (Me.Stack.Count >= 3) Then
-                            Dim i As UInt16 = Me.Stack.Pop
-                            Dim y As UInt16 = Me.Stack.Pop
-                            Dim x As UInt16 = Me.Stack.Pop
-                            Me.Display.Allocate(x, y, Me.ReadBlock(Me.ReadUInt(CUShort(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)) + (i * 2))), 5))
-                        End If
-                        Me.Pointer = CUShort(Me.Pointer + 3)
+                        Dim x As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                        Dim y As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3)))
+                        Me.Display.Allocate(x, y, Me.ReadBlock(Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 5))), 5))
+                        Me.Display.Redraw = True
+                        Me.Pointer = CUShort(Me.Pointer + 7)
+                    Case Opcodes.OP_PUSHVRAMSTRING
+                        Dim x As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                        Dim y As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3)))
+                        Dim addr As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 5)))
+                        Me.Display.Allocate(x, y, Me.ReadBlock(Me.ReadUInt(CUShort(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 7)) + (addr * 2))), 5))
+                        Me.Pointer = CUShort(Me.Pointer + 9)
                     Case Opcodes.OP_CLS
                         Me.Display.Clear()
                         Me.Pointer = CUShort(Me.Pointer + 3)
@@ -187,8 +199,7 @@ Namespace Components
                 End Select
 
                 If (Me.Display.Redraw) Then
-                    Me.Display.DrawFrame()
-                    Me.Display.Redraw = False
+                    Me.Display.Refresh()
                     Me.Parent.Viewport.BackgroundImage = Me.Display.Screen
                 End If
             End If
@@ -197,24 +208,13 @@ Namespace Components
             If (Me.Instructions.Where(Function(x) x.Opcode = Opcode).Any) Then
                 Return Me.Instructions.Where(Function(x) x.Opcode = Opcode).FirstOrDefault
             End If
-            Throw New Exception(String.Format("Unkown instruction at {0} '{1}'", Me.Pointer, Opcode.ToString))
+            Throw New Exception(String.Format("Undefined instruction at 0x{0} '{1}'", Me.Pointer.ToString("X"), Opcode.ToString))
         End Function
-#Region "IDisposable Support"
-        Private disposedValue As Boolean
-        Protected Overridable Sub Dispose(disposing As Boolean)
-            If Not Me.disposedValue Then
-                If disposing Then
-                    Me.Reset()
-                    Me.Stack = Nothing
-                    Me.Instructions = Nothing
-                End If
-            End If
-            Me.disposedValue = True
+        Protected Overrides Sub Dispose(disposing As Boolean)
+            Me.Cycle = Nothing
+            Me.Display = Nothing
+            Me.Instructions = Nothing
+            MyBase.Dispose(disposing)
         End Sub
-        Public Sub Dispose() Implements IDisposable.Dispose
-            Dispose(True)
-            GC.SuppressFinalize(Me)
-        End Sub
-#End Region
     End Class
 End Namespace
