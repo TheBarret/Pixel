@@ -56,9 +56,8 @@ jmp [main]
 
 Instructions
 ```
-----------------------------------------------------------------------------------------------------
-Function	      | Parameters                    | Description
-----------------+-------------------------------+---------------------------------------------------
+Function	      	  | Parameters                    		| Description
+--------------------------+---------------------------------------------+---------------------------------------------------
 push 		          | (#<num>|0x<hex>|[label])			| Loads value onto the stack
 pop		          | no params			                | Pops value from the stack
 load		          | ([label])			                | Loads defined variable onto the stack
