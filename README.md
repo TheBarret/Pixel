@@ -69,6 +69,9 @@ or		          | no params			                | Performs a bitwise OR of the two s
 xor		          | no params			                | Performs a bitwise XOR of the two stack values
 shr		          | no params			                | Performs a bitwise shift right of the two stack values
 shl		          | no params			                | Performs a bitwise shift left of the two stack values
+addressOf		  | ([label])					| Pushes memory address of label onto the stack
+writeAt			  | ([label])					| Writes stack value to memory address
+random			  | (#<num>|0x<hex>)				| Pushes random number, starting from 0 and the parameter defines max range
 if		          | (#number) (instruction)	      		| Performs a condition test x =  y, executes next instruction if true
 ifn		          | (#number) (instruction)	      		| Performs a condition test x != y, executes next instruction if true
 ifg		          | (#number) (instruction)	      		| Performs a condition test x >  y, executes next instruction if true
