@@ -77,9 +77,9 @@ ifn		          | (#number) (instruction)	      		| Performs a condition test x !
 ifg		          | (#number) (instruction)	      		| Performs a condition test x >  y, executes next instruction if true
 ifl		          | (#number) (instruction)	      		| Performs a condition test x <  y, executes next instruction if true
 ifk		          | (#number) (instruction)	      		| Performs a condition if key is pressed, executes next instruction if true
-draw		          | ([label])			                | Loads data from label with binary data into vram, assumes x and y are on the stack
-drawm		          | ([label])			                | Loads data from label with memory address into vram, assumes x and y are on the stack
-print			  | ([label])					| Loads char from label with memory address into vram, assumes x, y and index are on the stack
+draw		          | [x][y][label]		                | Writes data to vram from label with x and y coords
+drawm		          | [x][y][label]		                | Writes data to vram from label as memory address with x and y coords
+print			  | [x][y][index][label]			| Writes character index to vram from label as string with x and y coords
 clear		          | no params			                | Clears vram memory (blanks screen)
 end		          | no params 	                  		| Terminates execution of program
 ```
