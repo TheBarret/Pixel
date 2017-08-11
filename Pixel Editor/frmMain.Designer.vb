@@ -22,18 +22,20 @@ Partial Class frmMain
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.cmdCompile = New System.Windows.Forms.Button()
         Me.cmdStop = New System.Windows.Forms.Button()
         Me.TabContainer = New System.Windows.Forms.TabControl()
         Me.tabEditor = New System.Windows.Forms.TabPage()
+        Me.lbSel1 = New System.Windows.Forms.Label()
         Me.Usercode = New System.Windows.Forms.RichTextBox()
         Me.tabDisplay = New System.Windows.Forms.TabPage()
+        Me.Viewport = New Pixel.Viewport()
         Me.tabTools = New System.Windows.Forms.TabPage()
         Me.cmdCopySprite = New System.Windows.Forms.Button()
         Me.cmdResetButtons = New System.Windows.Forms.Button()
         Me.tbSpriteArray = New System.Windows.Forms.TextBox()
         Me.tbOutput = New System.Windows.Forms.TextBox()
-        Me.Viewport = New Pixel.Viewport()
         Me.TabContainer.SuspendLayout()
         Me.tabEditor.SuspendLayout()
         Me.tabDisplay.SuspendLayout()
@@ -72,6 +74,7 @@ Partial Class frmMain
         '
         'tabEditor
         '
+        Me.tabEditor.Controls.Add(Me.lbSel1)
         Me.tabEditor.Controls.Add(Me.Usercode)
         Me.tabEditor.Location = New System.Drawing.Point(4, 22)
         Me.tabEditor.Name = "tabEditor"
@@ -81,14 +84,23 @@ Partial Class frmMain
         Me.tabEditor.Text = "Editor"
         Me.tabEditor.UseVisualStyleBackColor = True
         '
+        'lbSel1
+        '
+        Me.lbSel1.AutoSize = True
+        Me.lbSel1.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lbSel1.Location = New System.Drawing.Point(1, 7)
+        Me.lbSel1.Name = "lbSel1"
+        Me.lbSel1.Size = New System.Drawing.Size(0, 13)
+        Me.lbSel1.TabIndex = 4
+        '
         'Usercode
         '
         Me.Usercode.AcceptsTab = True
         Me.Usercode.DetectUrls = False
-        Me.Usercode.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Usercode.Location = New System.Drawing.Point(2, 4)
+        Me.Usercode.Font = New System.Drawing.Font("Consolas", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Usercode.Location = New System.Drawing.Point(2, 23)
         Me.Usercode.Name = "Usercode"
-        Me.Usercode.Size = New System.Drawing.Size(613, 509)
+        Me.Usercode.Size = New System.Drawing.Size(613, 490)
         Me.Usercode.TabIndex = 3
         Me.Usercode.Text = ""
         Me.Usercode.WordWrap = False
@@ -102,6 +114,16 @@ Partial Class frmMain
         Me.tabDisplay.TabIndex = 1
         Me.tabDisplay.Text = "Display"
         Me.tabDisplay.UseVisualStyleBackColor = True
+        '
+        'Viewport
+        '
+        Me.Viewport.BackColor = System.Drawing.Color.Black
+        Me.Viewport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
+        Me.Viewport.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Viewport.Location = New System.Drawing.Point(46, 20)
+        Me.Viewport.Name = "Viewport"
+        Me.Viewport.Size = New System.Drawing.Size(519, 258)
+        Me.Viewport.TabIndex = 6
         '
         'tabTools
         '
@@ -155,16 +177,6 @@ Partial Class frmMain
         Me.tbOutput.Size = New System.Drawing.Size(629, 69)
         Me.tbOutput.TabIndex = 4
         '
-        'Viewport
-        '
-        Me.Viewport.BackColor = System.Drawing.Color.Black
-        Me.Viewport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.Viewport.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.Viewport.Location = New System.Drawing.Point(46, 20)
-        Me.Viewport.Name = "Viewport"
-        Me.Viewport.Size = New System.Drawing.Size(519, 258)
-        Me.Viewport.TabIndex = 6
-        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -175,6 +187,7 @@ Partial Class frmMain
         Me.Controls.Add(Me.TabContainer)
         Me.Controls.Add(Me.cmdStop)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.KeyPreview = True
         Me.MaximizeBox = False
         Me.MinimizeBox = False
@@ -183,6 +196,7 @@ Partial Class frmMain
         Me.Text = "Pixel Assembly Editor"
         Me.TabContainer.ResumeLayout(False)
         Me.tabEditor.ResumeLayout(False)
+        Me.tabEditor.PerformLayout()
         Me.tabDisplay.ResumeLayout(False)
         Me.tabTools.ResumeLayout(False)
         Me.tabTools.PerformLayout()
@@ -202,5 +216,6 @@ Partial Class frmMain
     Friend WithEvents tbSpriteArray As System.Windows.Forms.TextBox
     Friend WithEvents cmdResetButtons As System.Windows.Forms.Button
     Friend WithEvents cmdCopySprite As System.Windows.Forms.Button
+    Friend WithEvents lbSel1 As System.Windows.Forms.Label
 
 End Class

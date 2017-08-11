@@ -1,17 +1,13 @@
 ﻿Imports Pixel
 Imports System.IO
+Imports System.Text
+Imports System.Threading
 
 Public Class frmMain
     Private Property Filename As String
     Private Property Machine As Machine
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Me.Machine = New Machine(Me.Viewport)
-        AddHandler Me.Machine.Failure, AddressOf Me.Failure
-        AddHandler Me.Machine.MachineActive, AddressOf Me.MachineActive
-        AddHandler Me.Machine.MachineInactive, AddressOf Me.MachineInactive
-        Me.Filename = String.Format("{0}\{1}", Application.StartupPath, "usercode.txt")
-        Me.LoadUsercode()
-        Call New Threading.Thread(AddressOf Me.CreateButtonArray).Start()
+        Call New Thread(AddressOf Me.Initialize).Start()
     End Sub
     Private Sub frmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         Me.Machine.Abort()
@@ -39,6 +35,19 @@ Public Class frmMain
         Me.AddOutputLog("Stopped")
         Me.SwitchGUI(False)
     End Sub
+    Private Sub Initialize()
+        If (Me.InvokeRequired) Then
+            Me.Invoke(Sub() Me.Initialize())
+        Else
+            Me.Machine = New Machine(Me.Viewport)
+            AddHandler Me.Machine.Failure, AddressOf Me.Failure
+            AddHandler Me.Machine.MachineActive, AddressOf Me.MachineActive
+            AddHandler Me.Machine.MachineInactive, AddressOf Me.MachineInactive
+            Me.Filename = String.Format("{0}\{1}", Application.StartupPath, "usercode.txt")
+            Me.LoadUsercode()
+            Me.CreateButtonArray()
+        End If
+    End Sub
     Private Sub SwitchGUI(state As Boolean)
         If (Me.InvokeRequired) Then
             Me.Invoke(Sub() Me.SwitchGUI(state))
@@ -48,10 +57,12 @@ Public Class frmMain
         End If
     End Sub
     Private Sub SaveUsercode()
-        Me.Usercode.SaveFile(Me.Filename, RichTextBoxStreamType.PlainText)
+        File.WriteAllText(Me.Filename, Me.Usercode.Text, Encoding.UTF8)
     End Sub
     Private Sub LoadUsercode()
-        If (File.Exists(Me.Filename)) Then Me.Usercode.LoadFile(Me.Filename, RichTextBoxStreamType.PlainText)
+        If (File.Exists(Me.Filename)) Then
+            Me.Usercode.Text = File.ReadAllText(Me.Filename, Encoding.UTF8)
+        End If
     End Sub
     Private Sub AddOutputLog(Message As String, Optional Clear As Boolean = False)
         If (Me.InvokeRequired) Then
@@ -63,4 +74,17 @@ Public Class frmMain
             Me.tbOutput.ScrollToCaret()
         End If
     End Sub
+    Private Sub Usercode_SelectionChanged(sender As Object, e As EventArgs) Handles Usercode.SelectionChanged
+        If (Me.Usercode.SelectedText.Length > 0) Then
+            Me.lbSel1.Text = String.Format("{0}", Me.Usercode.SelectionLength)
+        Else
+            Me.lbSel1.Text = String.Empty
+        End If
+    End Sub
+    Public Function IsHexadecimal(Value As String) As Boolean
+        Return System.Text.RegularExpressions.Regex.IsMatch(Value, "^\A\b[0-9a-fA-F]+\b\Z$")
+    End Function
+    Public Function IsNumber(Value As String) As Boolean
+        Return System.Text.RegularExpressions.Regex.IsMatch(Value, "^[0-9]+$")
+    End Function
 End Class
