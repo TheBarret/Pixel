@@ -107,7 +107,7 @@ jmp [program]
 	.01000010
 	.01000010
 ```
-This would produce the letter 'A' drawn on the screen at position x=1 y=1
+This would produce the letter 'A' drawn on the screen at position variables x and y
 
 ----------------------------------------------------------------------------------------------------
 Variables
