@@ -72,7 +72,6 @@ shl		          | no params			                | Performs a bitwise shift left of 
 addressOf		  | ([label])					| Pushes memory address of label onto the stack
 writeAt			  | ([label])					| Writes stack value to memory address
 random			  | (#<num>|0x<hex>)				| Pushes random number, starting from 0 and the parameter defines max range
-random			  | (#number)					| Generates random number and pushes value onto stack
 if			  | [label] (#number)				| Performs a condition test x == y, executes next instruction if true
 ifn			  | [label] (#number) 				| Performs a condition test x != y, executes next instruction if true
 ifg			  | [label] (#number)				| Performs a condition test x >  y, executes next instruction if true
