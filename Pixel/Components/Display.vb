@@ -7,16 +7,16 @@ Namespace Components
         Private Property Width As UInt16
         Private Property Height As UInt16
         Private Property Offset As UInt16
-        Private Property buffer As UInt16(,)
+        Private Property Buffer As UInt16(,)
         Private Property Background As Brush
         Private Property Foreground As Brush
         Sub New()
-            Me.Width = 256 '128
+            Me.Width = 256
             Me.Height = 128
             Me.Offset = 2
             Me.Redraw = False
-            Me.Background = New SolidBrush(Color.CornflowerBlue)
-            Me.Foreground = New SolidBrush(Color.Black)
+            Me.Background = New SolidBrush(Color.Black)
+            Me.Foreground = New SolidBrush(Color.WhiteSmoke)
             Me.buffer = New UInt16(Me.Width - 1, Me.Height - 1) {}
         End Sub
         Public Sub Allocate(x As Integer, y As Integer, buffer As Byte())
@@ -50,6 +50,39 @@ Namespace Components
             End Using
             Me.Redraw = False
         End Sub
+        Public Sub Scroll(Direction As UInt16, Value As UInt16)
+            Dim sbuffer(,) As UInt16 = New UInt16(Me.Width, Me.Height) {}
+            For y As Integer = 0 To Me.Height - 1
+                Select Case Direction
+                    Case &H0
+                        For x As Integer = 0 To Me.Width - 1
+                            If (y + Value < Me.Height) Then
+                                sbuffer(x, y + Value Mod Me.Height) = Me.Buffer(x, y)
+                            End If
+                        Next
+                    Case &H1
+                        For x As Integer = 0 To Me.Width - 1
+                            If (y - Value > 0) Then
+                                sbuffer(x, y - Value Mod Me.Height) = Me.Buffer(x, y)
+                            End If
+                        Next
+                    Case &H2
+                        For x As Integer = 0 To Me.Width - 1
+                            If ((x + Value) < Me.Width) Then
+                                sbuffer(x + Value Mod Me.Width, y) = Me.Buffer(x, y)
+                            End If
+                        Next
+                    Case &H3
+                        For x As Integer = 0 To Me.Width - 1
+                            If ((x + Value) < Me.Width) Then
+                                sbuffer(x, y) = Me.Buffer(x + Value Mod Me.Width, y)
+                            End If
+                        Next
+                End Select
+            Next
+            Me.Buffer = sbuffer
+        End Sub
+
         Public Sub Clear()
             For y As Integer = 0 To Me.Height - 1
                 For x As Integer = 0 To Me.Width - 1

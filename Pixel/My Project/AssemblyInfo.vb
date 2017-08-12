@@ -9,9 +9,9 @@ Imports System.Runtime.InteropServices
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("Pixel")> 
-<Assembly: AssemblyDescription("")> 
+<Assembly: AssemblyDescription("Pixel 26bit Virtual Machine")> 
 <Assembly: AssemblyCompany("")> 
-<Assembly: AssemblyProduct("A 16bit Virtual Machine")> 
+<Assembly: AssemblyProduct("Pixel")> 
 <Assembly: AssemblyCopyright("Copyright © Barret 2017")> 
 <Assembly: AssemblyTrademark("")> 
 

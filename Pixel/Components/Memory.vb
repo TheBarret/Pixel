@@ -6,9 +6,6 @@ Namespace Components
         Sub New()
             Me.Reset()
         End Sub
-        Public Sub LoadFonts()
-            Me.WriteBlock(Locations.Fonts, My.Resources.fonts)
-        End Sub
         Public Sub Reset()
             Me.Data = New Byte(UInt16.MaxValue) {}
             For i As UInt16 = 0 To UInt16.MaxValue - 1
@@ -31,28 +28,6 @@ Namespace Components
                 Me.WriteUInt(Locations.AddressPtr, value)
             End Set
         End Property
-        Public Function AddressPeek() As UShort
-            If (Me.Address >= 2) Then
-                Return Me.ReadUInt(CUShort(Locations.Address + Me.Address - 2))
-            End If
-            Throw New Exception("Address stack out of range")
-        End Function
-        Public Function FetchReturn() As UShort
-            If (Me.Address >= 0) Then
-                Dim value As UInt16 = Me.AddressPeek
-                Me.Address = CUShort(Me.Address - 2)
-                Return value
-            End If
-            Throw New Exception("Address stack out of range")
-        End Function
-        Public Sub StoreReturn(Value As UInt16)
-            If (Me.Address <= Locations.AddressMax) Then
-                Me.WriteUInt(CUShort(Locations.Address + Me.Address), Value)
-                Me.Address = CUShort(Me.Address + 2)
-                Return
-            End If
-            Throw New Exception("Address stack out of range")
-        End Sub
         Public Property Stack() As UInt16
             Get
                 Return Me.ReadUInt(Locations.StackPtr)
@@ -61,17 +36,39 @@ Namespace Components
                 Me.WriteUInt(Locations.StackPtr, value)
             End Set
         End Property
-        Public Function Peek() As UShort
-            If (Me.Stack >= 2) Then
-                Return Me.ReadUInt(CUShort(Locations.Stack + Me.Stack - 2))
+        Public Function PeekAddress() As UShort
+            If (Me.Address >= 2) Then Return Me.ReadUInt(CUShort(Locations.Address + Me.Address - 2))
+            Throw New Exception("Address stack out of range")
+        End Function
+        Public Function PopAddress() As UShort
+            If (Me.Address >= 0) Then
+                Try
+                    Return Me.PeekAddress
+                Finally
+                    Me.Address = CUShort(Me.Address - 2)
+                End Try
             End If
+            Throw New Exception("Address stack out of range")
+        End Function
+        Public Sub PushAddress(Value As UInt16)
+            If (Me.Address <= Locations.AddressMax) Then
+                Me.WriteUInt(CUShort(Locations.Address + Me.Address), Value)
+                Me.Address = CUShort(Me.Address + 2)
+                Return
+            End If
+            Throw New Exception("Address stack out of range")
+        End Sub
+        Public Function Peek() As UShort
+            If (Me.Stack >= 2) Then Return Me.ReadUInt(CUShort(Locations.Stack + Me.Stack - 2))
             Throw New Exception("Stack out of range")
         End Function
         Public Function Pop() As UShort
             If (Me.Stack >= 0) Then
-                Dim value As UInt16 = Me.Peek
-                Me.Stack = CUShort(Me.Stack - 2)
-                Return value
+                Try
+                    Return Me.Peek
+                Finally
+                    Me.Stack = CUShort(Me.Stack - 2)
+                End Try
             End If
             Throw New Exception("Stack out of range")
         End Function
@@ -82,6 +79,18 @@ Namespace Components
                 Return
             End If
             Throw New Exception("Stack out of range")
+        End Sub
+        Public Sub Reallocate(offset As UInt16, length As UInt16)
+            If (offset >= 0 AndAlso offset + length <= Me.Data.Length - 1) Then
+                For i As Integer = Me.Data.Length - 1 To offset Step -1
+                    If (i + length <= Me.Data.Length - 1) Then
+                        Me.Data(i + length) = Me.Data(i)
+                    End If
+                Next
+                For i As Integer = offset To offset + length
+                    Me.Data(i) = &H0
+                Next
+            End If
         End Sub
         Public Property Pointer(Optional Offset As UInt16 = 0) As UInt16
             Get

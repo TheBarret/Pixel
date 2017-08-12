@@ -102,7 +102,6 @@
     <Compile Include="Tasks\Definition.vb" />
     <Compile Include="Tasks\Optimizer.vb" />
     <Compile Include="Tasks\Token.vb" />
-    <Compile Include="Tasks\TType.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">

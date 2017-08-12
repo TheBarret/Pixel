@@ -11,11 +11,12 @@ Public Module Extensions
     End Function
     <System.Runtime.CompilerServices.Extension> _
     Public Function String2Byte(Str As String) As Byte
-        Dim value As Byte = 0
-        If (Byte.TryParse(Str.Trim(New Char() {"."c, " "c}), value)) Then
-            Return value
-        End If
-        Throw New Exception(String.Format("Unable to parse number '{0}'", Str))
+        Return Convert.ToByte(Str.Trim.Remove(0, 1), 2)
+    End Function
+    <System.Runtime.CompilerServices.Extension> _
+    Public Function Random(value As UInt16) As UInt16
+        Static rnd As New Random(Environment.TickCount)
+        Return CUShort(rnd.Next(0, value))
     End Function
     <System.Runtime.CompilerServices.Extension> _
     Public Function Truncate(value As String, max As Integer) As String
@@ -27,8 +28,8 @@ Public Module Extensions
         Do
             changed = False
             For i As Integer = 0 To Lines.Count - 1
-                Lines(i) = Lines(i).Trim
                 Lines(i) = Regex.Replace(Lines(i), "\;(.*?)(\r?\n|$)", String.Empty)
+                Lines(i) = Lines(i).Trim
                 If (String.IsNullOrEmpty(Lines(i))) Then
                     Lines.RemoveAt(i)
                     changed = True
@@ -39,67 +40,67 @@ Public Module Extensions
         Return Lines
     End Function
     <System.Runtime.CompilerServices.Extension> _
-    Public Function ToSpriteAddress(ch As Char) As UInt16
+    Public Function ToKeyIndex(ch As Char) As UInt16
         Select Case Char.ToUpper(ch)
-            Case "A"c : Return 4
-            Case "B"c : Return 10
-            Case "C"c : Return 16
-            Case "D"c : Return 22
-            Case "E"c : Return 28
-            Case "F"c : Return 34
-            Case "G"c : Return 40
-            Case "H"c : Return 46
-            Case "I"c : Return 52
-            Case "J"c : Return 58
-            Case "K"c : Return 64
-            Case "L"c : Return 70
-            Case "M"c : Return 76
-            Case "N"c : Return 82
-            Case "O"c : Return 88
-            Case "P"c : Return 94
-            Case "Q"c : Return 100
-            Case "R"c : Return 106
-            Case "S"c : Return 112
-            Case "T"c : Return 118
-            Case "U"c : Return 124
-            Case "V"c : Return 130
-            Case "W"c : Return 136
-            Case "X"c : Return 142
-            Case "Y"c : Return 148
-            Case "Z"c : Return 154
-            Case "1"c : Return 160
-            Case "2"c : Return 166
-            Case "3"c : Return 172
-            Case "4"c : Return 178
-            Case "5"c : Return 184
-            Case "6"c : Return 190
-            Case "7"c : Return 196
-            Case "8"c : Return 202
-            Case "9"c : Return 208
-            Case "0"c : Return 214
-            Case "!"c : Return 220
-            Case "?"c : Return 226
-            Case "+"c : Return 232
-            Case "-"c : Return 238
-            Case "*"c : Return 244
-            Case "/"c : Return 250
-            Case "."c : Return 256
-            Case ":"c : Return 262
-            Case "→"c : Return 268
-            Case "←"c : Return 274
-            Case "↑"c : Return 280
-            Case "↓"c : Return 286
-            Case "="c : Return 292
-            Case ">"c : Return 298
-            Case "<"c : Return 304
-            Case "'"c : Return 310
-            Case "["c : Return 316
-            Case "|"c : Return 322
-            Case "]"c : Return 328
-            Case "\"c : Return 334
-            Case " "c : Return 340
-            Case ","c : Return 346
-            Case Else : Return 340
+            Case "A"c : Return Keys.A
+            Case "B"c : Return Keys.B
+            Case "C"c : Return Keys.C
+            Case "D"c : Return Keys.D
+            Case "E"c : Return Keys.E
+            Case "F"c : Return Keys.F
+            Case "G"c : Return Keys.G
+            Case "H"c : Return Keys.H
+            Case "I"c : Return Keys.I
+            Case "J"c : Return Keys.J
+            Case "K"c : Return Keys.K
+            Case "L"c : Return Keys.L
+            Case "M"c : Return Keys.M
+            Case "N"c : Return Keys.N
+            Case "O"c : Return Keys.O
+            Case "P"c : Return Keys.P
+            Case "Q"c : Return Keys.Q
+            Case "R"c : Return Keys.R
+            Case "S"c : Return Keys.S
+            Case "T"c : Return Keys.T
+            Case "U"c : Return Keys.U
+            Case "V"c : Return Keys.V
+            Case "W"c : Return Keys.W
+            Case "X"c : Return Keys.X
+            Case "Y"c : Return Keys.Y
+            Case "Z"c : Return Keys.Z
+            Case "1"c : Return Keys.D1
+            Case "2"c : Return Keys.D2
+            Case "3"c : Return Keys.D3
+            Case "4"c : Return Keys.D4
+            Case "5"c : Return Keys.D5
+            Case "6"c : Return Keys.D6
+            Case "7"c : Return Keys.D7
+            Case "8"c : Return Keys.D8
+            Case "9"c : Return Keys.D9
+            Case "0"c : Return Keys.D0
+            Case "!"c : Return Keys.EM
+            Case "?"c : Return Keys.QM
+            Case "+"c : Return Keys.Plus
+            Case "-"c : Return Keys.Minus
+            Case "*"c : Return Keys.Multiplication
+            Case "/"c : Return Keys.Division
+            Case "."c : Return Keys.Dot
+            Case ":"c : Return Keys.Colon
+            Case "→"c : Return Keys.Right
+            Case "←"c : Return Keys.Left
+            Case "↑"c : Return Keys.Up
+            Case "↓"c : Return Keys.Down
+            Case "="c : Return Keys.Equality
+            Case ">"c : Return Keys.Greater
+            Case "<"c : Return Keys.Lesser
+            Case "'"c : Return Keys.Quote
+            Case "["c : Return Keys.BracketOpen
+            Case "|"c : Return Keys.Pipe
+            Case "]"c : Return Keys.BracketClose
+            Case "\"c : Return Keys.Slash
+            Case " "c : Return Keys.Space
+            Case ","c : Return Keys.Comma
+            Case Else : Return Keys.Space
         End Select
     End Function
 End Module

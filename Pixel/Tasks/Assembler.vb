@@ -26,45 +26,50 @@ Namespace Tasks
         ''' Initializes instance
         ''' </summary>
         Public Overrides Sub Initialize()
-            Me.Table.Add(New Definition(TType.T_PUSH, "\bPUSH\b"))
-            Me.Table.Add(New Definition(TType.T_POP, "\bPOP\b"))
-            Me.Table.Add(New Definition(TType.T_LD, "\bLOAD\b"))
-            Me.Table.Add(New Definition(TType.T_ST, "\bSTORE\b"))
-            Me.Table.Add(New Definition(TType.T_STV, "\bSTOREV\b"))
-            Me.Table.Add(New Definition(TType.T_JUMP, "\bJMP\b"))
-            Me.Table.Add(New Definition(TType.T_CALL, "\bCALL\b"))
-            Me.Table.Add(New Definition(TType.T_RET, "\bRETURN\b"))
-            Me.Table.Add(New Definition(TType.T_ADD, "\bADD\b"))
-            Me.Table.Add(New Definition(TType.T_SUB, "\bSUB\b"))
-            Me.Table.Add(New Definition(TType.T_MUL, "\bPMUL\b"))
-            Me.Table.Add(New Definition(TType.T_DIV, "\bDIV\b"))
-            Me.Table.Add(New Definition(TType.T_MOD, "\bMOD\b"))
-            Me.Table.Add(New Definition(TType.T_AND, "\bAND\b"))
-            Me.Table.Add(New Definition(TType.T_OR, "\bOR\b"))
-            Me.Table.Add(New Definition(TType.T_XOR, "\bXOR\b"))
-            Me.Table.Add(New Definition(TType.T_IF, "\bIF\b"))
-            Me.Table.Add(New Definition(TType.T_IFN, "\bIFN\b"))
-            Me.Table.Add(New Definition(TType.T_IFG, "\bIFG\b"))
-            Me.Table.Add(New Definition(TType.T_IFG, "\bIFL\b"))
-            Me.Table.Add(New Definition(TType.T_SHR, "\bSHR\b"))
-            Me.Table.Add(New Definition(TType.T_SHL, "\bSHL\b"))
-            Me.Table.Add(New Definition(TType.T_SHL, "\bOVERFLOW\b"))
-            Me.Table.Add(New Definition(TType.T_WRITE, "\bWRITEAT\b"))
-            Me.Table.Add(New Definition(TType.T_ADDR, "\bADDRESSOF\b"))
-            Me.Table.Add(New Definition(TType.T_RND, "\bRANDOM\b"))
-            Me.Table.Add(New Definition(TType.T_IFK, "\bIFKEY\b"))
-            Me.Table.Add(New Definition(TType.T_CLS, "\bCLEAR\b"))
-            Me.Table.Add(New Definition(TType.T_END, "\bEND\b"))
-            Me.Table.Add(New Definition(TType.T_LABEL, "\:[a-z0-9_]+"))
-            Me.Table.Add(New Definition(TType.T_NUMBER, "\#[a-z0-9]+"))
-            Me.Table.Add(New Definition(TType.T_HEX, "0x[a-f0-9]+"))
-            Me.Table.Add(New Definition(TType.T_STR, "\@("".*?"")"))
-            Me.Table.Add(New Definition(TType.T_LOCATION, "\[[a-z0-9_]+\]"))
-            Me.Table.Add(New Definition(TType.T_VAR, "\:([0-9]+|\s+[0-9]+)"))
-            Me.Table.Add(New Definition(TType.T_DAT, "\.((0|1)|\s+(0|1)){8}"))
-            Me.Table.Add(New Definition(TType.T_PUSHVRAMDATA, "\bDRAW\b"))
-            Me.Table.Add(New Definition(TType.T_PUSHVRAMMEMORY, "\bDRAWM\b"))
-            Me.Table.Add(New Definition(TType.T_PUSHVRAMSTRING, "\bPRINT\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_PUSH, "\bPUSH\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_POP, "\bPOP\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_LD, "\bLOAD\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_ST, "\bSTORE\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_STV, "\bSTOREV\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_JUMP, "\bJMP\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_CALL, "\bCALL\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_RET, "\bRETURN\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_ADD, "\bADD\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_SUB, "\bSUB\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_MUL, "\bPMUL\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_DIV, "\bDIV\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_MOD, "\bMOD\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_AND, "\bAND\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_OR, "\bOR\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_XOR, "\bXOR\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_IFN, "\bIFN\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_IFG, "\bIFG\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_IFL, "\bIFL\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_IFV, "\bIFV\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_IFNV, "\bIFNV\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_IFGV, "\bIFGV\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_IFLV, "\bIFLV\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_IF, "\bIF\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_SHR, "\bSHR\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_SHL, "\bSHL\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_OV, "\bOVERFLOW\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_SCR, "\bSCROLL\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_READ, "\bREADAT\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_WRITE, "\bWRITEAT\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_ADDR, "\bADDRESSOF\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_RND, "\bRANDOM\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_IFK, "\bIFKEY\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_CLS, "\bCLEAR\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_END, "\bEND\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_SPRITE, "\bDRAW\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_PRINT, "\bPRINT\b"))
+            Me.Table.Add(New Definition(Opcodes.T_LABEL, "\:[a-z0-9_]+"))
+            Me.Table.Add(New Definition(Opcodes.T_NUMBER, "\#[a-z0-9]+"))
+            Me.Table.Add(New Definition(Opcodes.T_HEX, "0x[a-f0-9]+"))
+            Me.Table.Add(New Definition(Opcodes.T_STR, "\@("".*?"")"))
+            Me.Table.Add(New Definition(Opcodes.T_LOCATION, "\[[a-z0-9_]+\]"))
+            Me.Table.Add(New Definition(Opcodes.T_VAR, "\:([0-9]+|\s+[0-9]+)"))
+            Me.Table.Add(New Definition(Opcodes.T_DAT, "\.((0|1)|\s+(0|1)){8}"))
         End Sub
         ''' <summary>
         ''' Begins parsing of user code into bytecode
@@ -82,7 +87,7 @@ Namespace Tasks
                         If (m.Success) Then
                             Select Case state
                                 Case Mode.Scan
-                                    If (definition.Type = TType.T_LABEL) Then
+                                    If (definition.Type = Opcodes.T_LABEL) Then
                                         Me.Labels.Add(m.Value.Substring(1).ToUpper, CUShort(location))
                                     Else
                                         location += Me.GetOpcodeLength(definition, m)
@@ -106,27 +111,31 @@ Namespace Tasks
         ''' </summary>
         Private Function GetOpcodeLength(Definition As Definition, Match As Match) As Integer
             Select Case Definition.Type
-                Case TType.T_HEX,
-                     TType.T_NUMBER,
-                     TType.T_LOCATION
+                Case Opcodes.T_HEX,
+                     Opcodes.T_NUMBER,
+                     Opcodes.T_LOCATION
                     Return 0
-                Case TType.T_DAT
+                Case Opcodes.T_DAT
                     Return 1
-                Case TType.T_VAR
+                Case Opcodes.T_VAR
                     Return 2
-                Case TType.T_IF,
-                     TType.T_IFN,
-                     TType.T_IFG,
-                     TType.T_IFL,
-                     TType.T_STV,
-                     TType.T_STV
+                Case Opcodes.OP_IF,
+                     Opcodes.OP_IFN,
+                     Opcodes.OP_IFG,
+                     Opcodes.OP_IFL,
+                     Opcodes.OP_IFV,
+                     Opcodes.OP_IFNV,
+                     Opcodes.OP_IFGV,
+                     Opcodes.OP_IFLV,
+                     Opcodes.OP_STV,
+                     Opcodes.OP_STV,
+                     Opcodes.OP_SCR
                     Return 5
-                Case TType.T_PUSHVRAMDATA,
-                     TType.T_PUSHVRAMMEMORY
+                Case Opcodes.OP_SPRITE
                     Return 7
-                Case TType.T_PUSHVRAMSTRING
+                Case Opcodes.OP_PRINT
                     Return 9
-                Case TType.T_STR
+                Case Opcodes.T_STR
                     Return (Match.Groups(1).Length - 1) * 2
                 Case Else
                     Return 3
@@ -137,50 +146,51 @@ Namespace Tasks
         ''' </summary>
         Private Sub WriteInstruction(Definition As Definition, Line As String)
             Select Case Definition.Type
-                Case TType.T_PUSH,
-                     TType.T_LD,
-                     TType.T_ST,
-                     TType.T_STV,
-                     TType.T_JUMP,
-                     TType.T_CALL,
-                     TType.T_IF,
-                     TType.T_IFN,
-                     TType.T_IFG,
-                     TType.T_IFL,
-                     TType.T_SHR,
-                     TType.T_SHL,
-                     TType.T_OV,
-                     TType.T_WRITE,
-                     TType.T_ADDR,
-                     TType.T_RND,
-                     TType.T_IFK,
-                     TType.T_PUSHVRAMDATA,
-                     TType.T_PUSHVRAMMEMORY,
-                     TType.T_PUSHVRAMSTRING
-                    Me.WriteByte(Definition.ToBytecode)
-                Case TType.T_POP,
-                     TType.T_RET,
-                     TType.T_ADD,
-                     TType.T_SUB,
-                     TType.T_MUL,
-                     TType.T_DIV,
-                     TType.T_MOD,
-                     TType.T_AND,
-                     TType.T_OR,
-                     TType.T_XOR,
-                     TType.T_CLS,
-                     TType.T_END
-                    Me.WriteByte(Definition.ToBytecode)
+                Case Opcodes.OP_PUSH,
+                     Opcodes.OP_LD,
+                     Opcodes.OP_ST,
+                     Opcodes.OP_STV,
+                     Opcodes.OP_JUMP,
+                     Opcodes.OP_CALL,
+                     Opcodes.OP_IF,
+                     Opcodes.OP_IFN,
+                     Opcodes.OP_IFG,
+                     Opcodes.OP_IFL,
+                     Opcodes.OP_SHR,
+                     Opcodes.OP_SHL,
+                     Opcodes.OP_OV,
+                     Opcodes.OP_READ,
+                     Opcodes.OP_WRITE,
+                     Opcodes.OP_ADDR,
+                     Opcodes.OP_RND,
+                     Opcodes.OP_IFK,
+                     Opcodes.OP_SCR,
+                     Opcodes.OP_SPRITE,
+                     Opcodes.OP_PRINT
+                    Me.WriteByte(CType(Definition.Type, Byte))
+                Case Opcodes.OP_POP,
+                     Opcodes.OP_RET,
+                     Opcodes.OP_ADD,
+                     Opcodes.OP_SUB,
+                     Opcodes.OP_MUL,
+                     Opcodes.OP_DIV,
+                     Opcodes.OP_MOD,
+                     Opcodes.OP_AND,
+                     Opcodes.OP_OR,
+                     Opcodes.OP_XOR,
+                     Opcodes.OP_CLS,
+                     Opcodes.OP_END
+                    Me.WriteByte(CType(Definition.Type, Byte))
                     Me.WriteUInt16(0)
-                Case TType.T_DAT
+                Case Opcodes.T_DAT
                     Me.WriteByte(Line.String2Byte)
-                Case TType.T_VAR
+                Case Opcodes.T_VAR
                     Me.WriteUInt16(Line.String2UInt16)
-                Case TType.T_STR
+                Case Opcodes.T_STR
                     Me.WriteString(Line)
-                Case TType.T_NUMBER,
-                     TType.T_HEX,
-                     TType.T_LOCATION
+                Case Opcodes.T_NUMBER,
+                     Opcodes.T_HEX,
+                     Opcodes.T_LOCATION
                     Me.WriteValue(Definition, Line)
             End Select
         End Sub
@@ -189,11 +199,11 @@ Namespace Tasks
         ''' </summary>
         Private Sub WriteValue(Definition As Definition, Line As String)
             Select Case Definition.Type
-                Case TType.T_NUMBER
+                Case Opcodes.T_NUMBER
                     Me.WriteUInt16(UInt16.Parse(Line.Substring(1)))
-                Case TType.T_HEX
+                Case Opcodes.T_HEX
                     Me.WriteUInt16(UInt16.Parse(Line.Substring(2), NumberStyles.HexNumber))
-                Case TType.T_LOCATION
+                Case Opcodes.T_LOCATION
                     Me.WriteUInt16(Me.GetLabel(Line))
                 Case Else
                     Throw New Exception(String.Format("Could not convert definition '{0}' to value", Definition.Type))
@@ -226,7 +236,7 @@ Namespace Tasks
         Private Sub WriteString(Line As String)
             Dim str As String = Line.Substring(2, Line.Length - 3)
             For Each ch As Char In str.ToCharArray
-                Me.WriteUInt16(ch.ToSpriteAddress)
+                Me.WriteUInt16(ch.ToKeyIndex)
             Next
             Me.WriteUInt16(0)
         End Sub

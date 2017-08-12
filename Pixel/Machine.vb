@@ -35,7 +35,6 @@ Public Class Machine
     Public Sub Run(Bytecode() As Byte)
         Try
             Using Cpu As New Processor(Me)
-                Cpu.LoadFonts()
                 Cpu.WriteBlock(Locations.Entrypoint, Bytecode)
                 If (Me.Running) Then
                     Me.Running = False

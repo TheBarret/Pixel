@@ -12,6 +12,10 @@
     OP_IFN
     OP_IFL
     OP_IFG
+    OP_IFV
+    OP_IFNV
+    OP_IFLV
+    OP_IFGV
     OP_ADD
     OP_SUB
     OP_MUL
@@ -23,13 +27,22 @@
     OP_SHR
     OP_SHL
     OP_OV
+    OP_READ
     OP_WRITE
     OP_ADDR
     OP_RND
+    OP_SCR
     OP_IFK
-    OP_PUSHVRAMDATA
-    OP_PUSHVRAMMEMORY
-    OP_PUSHVRAMSTRING
+    OP_SPRITE
+    OP_PRINT
     OP_CLS
     OP_END
+    T_RES
+    T_DAT
+    T_VAR
+    T_STR
+    T_LABEL
+    T_NUMBER
+    T_HEX
+    T_LOCATION
 End Enum
