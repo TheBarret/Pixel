@@ -72,11 +72,15 @@ shl		          | no params			                | Performs a bitwise shift left of 
 addressOf		  | ([label])					| Pushes memory address of label onto the stack
 writeAt			  | ([label])					| Writes stack value to memory address
 random			  | (#<num>|0x<hex>)				| Pushes random number, starting from 0 and the parameter defines max range
-if		          | (#number) (instruction)	      		| Performs a condition test x =  y, executes next instruction if true
-ifn		          | (#number) (instruction)	      		| Performs a condition test x != y, executes next instruction if true
-ifg		          | (#number) (instruction)	      		| Performs a condition test x >  y, executes next instruction if true
-ifl		          | (#number) (instruction)	      		| Performs a condition test x <  y, executes next instruction if true
-ifk		          | (#number) (instruction)	      		| Performs a condition if key is pressed, executes next instruction if true
+random			  | (#number)					| Generates random number and pushes value onto stack
+if			  | [label] (#number)				| Performs a condition test x == y, executes next instruction if true
+ifn			  | [label] (#number) 				| Performs a condition test x != y, executes next instruction if true
+ifg			  | [label] (#number)				| Performs a condition test x >  y, executes next instruction if true
+ifl			  | [label] (#number) 				| Performs a condition test x <  y, executes next instruction if true
+ifv			  | [label] [label]				| Performs a condition test x == y, executes next instruction if true
+ifnv			  | [label] [label] 				| Performs a condition test x != y, executes next instruction if true
+ifgv			  | [label] [label]				| Performs a condition test x >  y, executes next instruction if true
+iflv			  | [label] [label] 				| Performs a condition test x <  y, executes next instruction if true
 draw		          | [x][y][label]		                | Writes data to vram from label with x and y coords
 drawm		          | [x][y][label]		                | Writes data to vram from label as memory address with x and y coords
 print			  | [x][y][index][label]			| Writes character index to vram from label as string with x and y coords
