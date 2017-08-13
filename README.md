@@ -3,7 +3,7 @@ Tiny 16bit Virtual Machine
 
 Assembly Program Running
 
-![](http://i.imgur.com/bPnU768.png)
+![](http://i.imgur.com/IHOuVJA.png)
 
 Example of 'Hello, World' in Pixel language
 
@@ -69,8 +69,10 @@ or		          | no params			                | Performs a bitwise OR of the two s
 xor		          | no params			                | Performs a bitwise XOR of the two stack values
 shr		          | no params			                | Performs a bitwise shift right of the two stack values
 shl		          | no params			                | Performs a bitwise shift left of the two stack values
+stov			  | ([label])					| Stores overflow value to variable
 addressOf		  | ([label])					| Pushes memory address of label onto the stack
 writeAt			  | ([label])					| Writes stack value to memory address
+readAt			  | ([label])					| Reads memory address and pushes value onto the stack
 random			  | (#<num>|0x<hex>)				| Pushes random number, starting from 0 and the parameter defines max range
 if			  | [label] (#number)				| Performs a condition test x == y, executes next instruction if true
 ifn			  | [label] (#number) 				| Performs a condition test x != y, executes next instruction if true
@@ -81,8 +83,8 @@ ifnv			  | [label] [label] 				| Performs a condition test x != y, executes next
 ifgv			  | [label] [label]				| Performs a condition test x >  y, executes next instruction if true
 iflv			  | [label] [label] 				| Performs a condition test x <  y, executes next instruction if true
 draw		          | [x][y][label]		                | Writes data to vram from label with x and y coords
-drawm		          | [x][y][label]		                | Writes data to vram from label as memory address with x and y coords
 print			  | [x][y][index][label]			| Writes character index to vram from label as string with x and y coords
+stcol			  | ([label])					| Stores collision value to variable (1 and 0)
 clear		          | no params			                | Clears vram memory (blanks screen)
 end		          | no params 	                  		| Terminates execution of program
 ```
