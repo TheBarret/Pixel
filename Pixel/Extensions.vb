@@ -82,21 +82,21 @@ Public Module Extensions
             Case "?"c : Return Keys.QM
             Case "+"c : Return Keys.Plus
             Case "-"c : Return Keys.Minus
-            Case "*"c : Return Keys.Multiplication
-            Case "/"c : Return Keys.Division
+            Case "*"c : Return Keys.Mult
+            Case "/"c : Return Keys.Div
             Case "."c : Return Keys.Dot
             Case ":"c : Return Keys.Colon
             Case "→"c : Return Keys.Right
             Case "←"c : Return Keys.Left
             Case "↑"c : Return Keys.Up
             Case "↓"c : Return Keys.Down
-            Case "="c : Return Keys.Equality
+            Case "="c : Return Keys.Equal
             Case ">"c : Return Keys.Greater
             Case "<"c : Return Keys.Lesser
             Case "'"c : Return Keys.Quote
-            Case "["c : Return Keys.BracketOpen
+            Case "["c : Return Keys.BOpen
             Case "|"c : Return Keys.Pipe
-            Case "]"c : Return Keys.BracketClose
+            Case "]"c : Return Keys.BClose
             Case "\"c : Return Keys.Slash
             Case " "c : Return Keys.Space
             Case ","c : Return Keys.Comma

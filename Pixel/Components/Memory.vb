@@ -5,6 +5,8 @@ Namespace Components
         Private Property Data As Byte()
         Sub New()
             Me.Reset()
+            Me.WriteBlock(Locations.Fonts, My.Resources.fonts)
+            Me.WriteBlock(Locations.Keys, My.Resources.characters)
         End Sub
         Public Sub Reset()
             Me.Data = New Byte(UInt16.MaxValue) {}
@@ -12,6 +14,22 @@ Namespace Components
                 Me.WriteByte(i, &H0)
             Next
         End Sub
+        Public Property Pointer(Optional Offset As UInt16 = 0) As UInt16
+            Get
+                Return Me.ReadUInt(CUShort(Locations.Pointer + Offset))
+            End Get
+            Set(value As UInt16)
+                Me.WriteUInt(CUShort(Locations.Pointer + Offset), value)
+            End Set
+        End Property
+        Public Property Collision() As UInt16
+            Get
+                Return Me.ReadUInt(Locations.Collision)
+            End Get
+            Set(value As UInt16)
+                Me.WriteUInt(Locations.Collision, value)
+            End Set
+        End Property
         Public Property Overflow() As UInt16
             Get
                 Return Me.ReadUInt(Locations.Overflow)
@@ -36,6 +54,32 @@ Namespace Components
                 Me.WriteUInt(Locations.StackPtr, value)
             End Set
         End Property
+        Public Function SupportsKey(ch As Char) As Boolean
+            For i As UInt16 = Locations.Keys To Locations.KeysMax Step 4
+                If (ch.Equals(ChrW(Me.ReadUInt(i)))) Then
+                    Return True
+                End If
+            Next
+            Return False
+        End Function
+        Public Function KeyToAddress(ch As Char) As UInt16
+            For i As UInt16 = Locations.Keys To Locations.KeysMax Step 4
+                If (ch.Equals(ChrW(Me.ReadUInt(i)))) Then
+                    Return CUShort(i + 2)
+                End If
+            Next
+            Throw New Exception(String.Format("Key index for '{0}' not supported", ch))
+        End Function
+        Public Function AddressToKey(index As UInt16) As Char
+            If (index >= Locations.Keys AndAlso index <= Locations.KeysMax) Then
+                For i As UInt16 = Locations.Keys To Locations.KeysMax Step 4
+                    If (index = Me.ReadUInt(CUShort(i + 2))) Then
+                        Return ChrW(Me.ReadUInt(i))
+                    End If
+                Next
+            End If
+            Throw New Exception(String.Format("Key index '{0}' out of range", index))
+        End Function
         Public Function PeekAddress() As UShort
             If (Me.Address >= 2) Then Return Me.ReadUInt(CUShort(Locations.Address + Me.Address - 2))
             Throw New Exception("Address stack out of range")
@@ -92,14 +136,6 @@ Namespace Components
                 Next
             End If
         End Sub
-        Public Property Pointer(Optional Offset As UInt16 = 0) As UInt16
-            Get
-                Return Me.ReadUInt(CUShort(Locations.Pointer + Offset))
-            End Get
-            Set(value As UInt16)
-                Me.WriteUInt(CUShort(Locations.Pointer + Offset), value)
-            End Set
-        End Property
         Public Shared Sub Dump(Filename As String, Buffer() As Byte)
             If (File.Exists(Filename)) Then File.Delete(Filename)
             Using fs As New FileStream(Filename, FileMode.Create, FileAccess.Write, FileShare.None)
@@ -133,13 +169,6 @@ Namespace Components
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Function
-        Public Sub WriteByte(Address As Byte, Value As Byte)
-            If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
-                Me.Data(Address) = Value
-                Return
-            End If
-            Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
-        End Sub
         Public Sub WriteByte(Address As UInt16, Value As Byte)
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
                 Me.Data(Address) = Value
@@ -175,15 +204,6 @@ Namespace Components
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Function
-        Public Sub WriteBlock(Address As Byte, ParamArray Values() As Byte)
-            If (Address >= 0 AndAlso Address + Values.Length <= UInt16.MaxValue) Then
-                For i As Integer = 0 To Values.Length - 1
-                    Me.Data(Address + i) = Values(i)
-                Next
-                Return
-            End If
-            Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
-        End Sub
         Public Sub WriteBlock(Address As UInt16, ParamArray Values() As Byte)
             If (Address >= 0 AndAlso Address + Values.Length <= UInt16.MaxValue) Then
                 For i As Integer = 0 To Values.Length - 1

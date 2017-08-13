@@ -49,16 +49,17 @@ Namespace Tasks
             Me.Table.Add(New Definition(Opcodes.OP_IFNV, "\bIFNV\b"))
             Me.Table.Add(New Definition(Opcodes.OP_IFGV, "\bIFGV\b"))
             Me.Table.Add(New Definition(Opcodes.OP_IFLV, "\bIFLV\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_STKEY, "\bKEY\b"))
             Me.Table.Add(New Definition(Opcodes.OP_IF, "\bIF\b"))
             Me.Table.Add(New Definition(Opcodes.OP_SHR, "\bSHR\b"))
             Me.Table.Add(New Definition(Opcodes.OP_SHL, "\bSHL\b"))
-            Me.Table.Add(New Definition(Opcodes.OP_OV, "\bOVERFLOW\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_OV, "\bSTOV\b"))
+            Me.Table.Add(New Definition(Opcodes.OP_COL, "\bSTCOL\b"))
             Me.Table.Add(New Definition(Opcodes.OP_SCR, "\bSCROLL\b"))
             Me.Table.Add(New Definition(Opcodes.OP_READ, "\bREADAT\b"))
             Me.Table.Add(New Definition(Opcodes.OP_WRITE, "\bWRITEAT\b"))
             Me.Table.Add(New Definition(Opcodes.OP_ADDR, "\bADDRESSOF\b"))
             Me.Table.Add(New Definition(Opcodes.OP_RND, "\bRANDOM\b"))
-            Me.Table.Add(New Definition(Opcodes.OP_IFK, "\bIFKEY\b"))
             Me.Table.Add(New Definition(Opcodes.OP_CLS, "\bCLEAR\b"))
             Me.Table.Add(New Definition(Opcodes.OP_END, "\bEND\b"))
             Me.Table.Add(New Definition(Opcodes.OP_SPRITE, "\bDRAW\b"))
@@ -70,6 +71,7 @@ Namespace Tasks
             Me.Table.Add(New Definition(Opcodes.T_LOCATION, "\[[a-z0-9_]+\]"))
             Me.Table.Add(New Definition(Opcodes.T_VAR, "\:([0-9]+|\s+[0-9]+)"))
             Me.Table.Add(New Definition(Opcodes.T_DAT, "\.((0|1)|\s+(0|1)){8}"))
+            Me.Table.Add(New Definition(Opcodes.T_KEY, "\{([a-z0-9\s\!\?\+\-\*\/\.\,\:\→\←\↑\↓\=\>\<\[\]\|\'\\]{1})\}"))
         End Sub
         ''' <summary>
         ''' Begins parsing of user code into bytecode
@@ -117,7 +119,8 @@ Namespace Tasks
                     Return 0
                 Case Opcodes.T_DAT
                     Return 1
-                Case Opcodes.T_VAR
+                Case Opcodes.T_VAR,
+                     Opcodes.T_KEY
                     Return 2
                 Case Opcodes.OP_IF,
                      Opcodes.OP_IFN,
@@ -156,6 +159,10 @@ Namespace Tasks
                      Opcodes.OP_IFN,
                      Opcodes.OP_IFG,
                      Opcodes.OP_IFL,
+                     Opcodes.OP_IFV,
+                     Opcodes.OP_IFNV,
+                     Opcodes.OP_IFGV,
+                     Opcodes.OP_IFLV,
                      Opcodes.OP_SHR,
                      Opcodes.OP_SHL,
                      Opcodes.OP_OV,
@@ -163,10 +170,11 @@ Namespace Tasks
                      Opcodes.OP_WRITE,
                      Opcodes.OP_ADDR,
                      Opcodes.OP_RND,
-                     Opcodes.OP_IFK,
                      Opcodes.OP_SCR,
                      Opcodes.OP_SPRITE,
-                     Opcodes.OP_PRINT
+                     Opcodes.OP_PRINT,
+                     Opcodes.OP_STKEY,
+                     Opcodes.OP_COL
                     Me.WriteByte(CType(Definition.Type, Byte))
                 Case Opcodes.OP_POP,
                      Opcodes.OP_RET,
@@ -186,6 +194,8 @@ Namespace Tasks
                     Me.WriteByte(Line.String2Byte)
                 Case Opcodes.T_VAR
                     Me.WriteUInt16(Line.String2UInt16)
+                Case Opcodes.T_KEY
+                    Me.WriteKey(Line.Substring(1, Line.Length - 2).ToUpper)
                 Case Opcodes.T_STR
                     Me.WriteString(Line)
                 Case Opcodes.T_NUMBER,
@@ -229,6 +239,20 @@ Namespace Tasks
         Private Sub WriteUInt16(Value As UInt16)
             Dim bytes() As Byte = BitConverter.GetBytes(Value)
             Me.Parent.Bytecode.AddRange({bytes(1), bytes(0)})
+        End Sub
+        ''' <summary>
+        ''' Writes key index to the bytestream
+        ''' </summary>
+        Private Sub WriteKey(ch As String)
+            Dim chrindex As Integer = AscW(ch)
+            For i As Integer = 0 To My.Resources.characters.Length - 1 Step 4
+                Dim chrint As UInt16 = BitConverter.ToUInt16(New Byte(1) {My.Resources.characters(i + 1), My.Resources.characters(i)}, 0)
+                Dim chraddr As UInt16 = BitConverter.ToUInt16(New Byte(1) {My.Resources.characters(i + 3), My.Resources.characters(i + 2)}, 0)
+                If (chrint = chrindex) Then
+                    Me.WriteUInt16(chraddr)
+                    Exit For
+                End If
+            Next
         End Sub
         ''' <summary>
         ''' Writes string data to the bytecode stream

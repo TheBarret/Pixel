@@ -1,19 +1,19 @@
 ﻿Imports System.Threading
+Imports System.Windows.Forms
 Namespace Components
     Public Class Processor
         Inherits Memory
+        Protected Friend Property Display As Display
+        Protected Friend Property Keyboard As Keyboard
         Private Property Cycle As Cycle
         Private Property Parent As Machine
-        Private Property Display As Display
-        Private Property Keyboard As Keyboard
         Private Property Instructions As List(Of Instruction)
         Sub New(Parent As Machine)
             Me.Parent = Parent
             Me.Cycle = New Cycle
-            Me.Display = New Display
-            Me.Keyboard = New Keyboard
+            Me.Display = New Display(Me)
+            Me.Keyboard = New Keyboard(Me)
             Me.Pointer = Locations.Entrypoint
-            Me.WriteBlock(Locations.Fonts, My.Resources.fonts)
             Me.Instructions = New List(Of Instruction)
             Me.Instructions.Add(New Instruction(Opcodes.OP_NOP))
             Me.Instructions.Add(New Instruction(Opcodes.OP_LD))
@@ -40,12 +40,13 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Opcodes.OP_SHR))
             Me.Instructions.Add(New Instruction(Opcodes.OP_SHL))
             Me.Instructions.Add(New Instruction(Opcodes.OP_OV))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_COL))
+            Me.Instructions.Add(New Instruction(Opcodes.OP_STKEY))
             Me.Instructions.Add(New Instruction(Opcodes.OP_SCR))
             Me.Instructions.Add(New Instruction(Opcodes.OP_READ))
             Me.Instructions.Add(New Instruction(Opcodes.OP_WRITE))
             Me.Instructions.Add(New Instruction(Opcodes.OP_ADDR))
             Me.Instructions.Add(New Instruction(Opcodes.OP_RND))
-            Me.Instructions.Add(New Instruction(Opcodes.OP_IFK))
             Me.Instructions.Add(New Instruction(Opcodes.OP_SPRITE))
             Me.Instructions.Add(New Instruction(Opcodes.OP_PRINT))
             Me.Instructions.Add(New Instruction(Opcodes.OP_CLS))
@@ -93,14 +94,17 @@ Namespace Components
                          Opcodes.OP_READ,
                          Opcodes.OP_ADDR
                         Me.MemoryOperations(instruction)
-                    Case Opcodes.OP_RND,
-                         Opcodes.OP_IFK
-                        Me.ExtendedOperations(instruction)
                     Case Opcodes.OP_SPRITE,
                          Opcodes.OP_PRINT,
                          Opcodes.OP_CLS,
                          Opcodes.OP_SCR
                         Me.VRamOperations(instruction)
+                    Case Opcodes.OP_STKEY
+                        Me.KeyboardOperations(instruction)
+                    Case Opcodes.OP_RND,
+                         Opcodes.OP_OV,
+                         Opcodes.OP_COL
+                        Me.ExtendedOperations(instruction)
                 End Select
                 If (Me.Display.Redraw) Then
                     Me.Display.Refresh()
@@ -134,6 +138,13 @@ Namespace Components
                     Me.Pointer = Me.PopAddress
                 Case Opcodes.OP_END
                     Me.Parent.Abort()
+            End Select
+        End Sub
+        Private Sub KeyboardOperations(instruction As Instruction)
+            Select Case instruction.Opcode
+                Case Opcodes.OP_STKEY
+                    Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), Me.Keyboard.GetKeyValue())
+                    Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
         Private Sub CompareOperations(instruction As Instruction)
@@ -244,9 +255,6 @@ Namespace Components
                         Me.Push(x Mod y)
                     End If
                     Me.Pointer = CUShort(Me.Pointer + 3)
-                Case Opcodes.OP_OV
-                    '//TODO
-                    Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
         Private Sub BitwiseOperations(instruction As Instruction)
@@ -304,8 +312,11 @@ Namespace Components
                 Case Opcodes.OP_RND
                     Me.Push(Me.ReadUInt(CUShort(Me.Pointer + 1)).Random)
                     Me.Pointer = CUShort(Me.Pointer + 3)
-                Case Opcodes.OP_IFK
-                    '// TODO
+                Case Opcodes.OP_COL
+                    Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), Me.Collision)
+                    Me.Pointer = CUShort(Me.Pointer + 3)
+                Case Opcodes.OP_OV
+                    Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), Me.Overflow)
                     Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub

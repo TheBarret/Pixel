@@ -16,6 +16,7 @@
     OP_IFNV
     OP_IFLV
     OP_IFGV
+    OP_STKEY
     OP_ADD
     OP_SUB
     OP_MUL
@@ -27,12 +28,12 @@
     OP_SHR
     OP_SHL
     OP_OV
+    OP_COL
     OP_READ
     OP_WRITE
     OP_ADDR
     OP_RND
     OP_SCR
-    OP_IFK
     OP_SPRITE
     OP_PRINT
     OP_CLS
@@ -45,4 +46,5 @@
     T_NUMBER
     T_HEX
     T_LOCATION
+    T_KEY
 End Enum

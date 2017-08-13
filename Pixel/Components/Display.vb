@@ -7,26 +7,34 @@ Namespace Components
         Private Property Width As UInt16
         Private Property Height As UInt16
         Private Property Offset As UInt16
-        Private Property Buffer As UInt16(,)
+        Private Property Buffer As Byte(,)
         Private Property Background As Brush
         Private Property Foreground As Brush
-        Sub New()
+        Private Property Parent As Processor
+        Sub New(Parent As Processor)
             Me.Width = 256
             Me.Height = 128
             Me.Offset = 2
             Me.Redraw = False
+            Me.Parent = Parent
             Me.Background = New SolidBrush(Color.Black)
-            Me.Foreground = New SolidBrush(Color.WhiteSmoke)
-            Me.buffer = New UInt16(Me.Width - 1, Me.Height - 1) {}
+            Me.Foreground = New SolidBrush(Color.White)
+            Me.Buffer = New Byte(Me.Width - 1, Me.Height - 1) {}
         End Sub
         Public Sub Allocate(x As Integer, y As Integer, buffer As Byte())
-            Dim px As Integer = x, py As Integer = y
+            Dim px As Integer = x, py As Integer = y, before As Byte, after As Byte
+            Me.Parent.Collision = &H0
             For i As Integer = 0 To buffer.Length - 1
                 For j As Integer = 0 To 7
                     If Me.BitToString(buffer(i))(j) = Char.Parse("1") Then
                         If px + j < Width AndAlso py + i < Height Then
-                            Me.buffer(px + j, py + i) = CByte(Me.buffer(px + j, py + i) Xor &H1)
+                            before = Me.Buffer(px + j, py + i)
+                            Me.Buffer(px + j, py + i) = CByte(Me.Buffer(px + j, py + i) Xor &H1)
+                            after = Me.Buffer(px + j, py + i)
                             Me.Redraw = True
+                            If (before = 1 AndAlso after = 0) Then              '// Collision occoured
+                                Me.Parent.Collision = &H1
+                            End If
                         End If
                     End If
                 Next
@@ -51,7 +59,7 @@ Namespace Components
             Me.Redraw = False
         End Sub
         Public Sub Scroll(Direction As UInt16, Value As UInt16)
-            Dim sbuffer(,) As UInt16 = New UInt16(Me.Width, Me.Height) {}
+            Dim sbuffer(,) As Byte = New Byte(Me.Width, Me.Height) {}
             For y As Integer = 0 To Me.Height - 1
                 Select Case Direction
                     Case &H0

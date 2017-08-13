@@ -12,7 +12,10 @@ Public Enum Locations As UInt16
     AddressPtr = &H1C7
     Address = &H1C9
     AddressMax = &H1FE
-    Entrypoint = &H200
+    Keys = &H200
+    KeysMax = &H2E6
+    Collision = &H2E8
+    Entrypoint = &H300
 End Enum
 Public Enum Keys As UInt16
     A = 4
@@ -55,21 +58,21 @@ Public Enum Keys As UInt16
     QM = 226
     Plus = 232
     Minus = 238
-    Multiplication = 244
-    Division = 250
+    Mult = 244
+    Div = 250
     Dot = 256
     Colon = 262
     Right = 268
     Left = 274
     Up = 280
     Down = 286
-    Equality = 292
+    Equal = 292
     Greater = 298
     Lesser = 304
     Quote = 310
-    BracketOpen = 316
+    BOpen = 316
     Pipe = 322
-    BracketClose = 328
+    BClose = 328
     Slash = 334
     Space = 340
     Comma = 346

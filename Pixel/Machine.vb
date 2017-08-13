@@ -7,6 +7,7 @@ Public Class Machine
     Public Property Running As Boolean
     Public Property Wait As ManualResetEvent
     Protected Friend Property Viewport As Control
+    Protected Friend Property Processor As Processor
     Protected Friend Property Tasks As List(Of Task)
     Protected Friend Property Bytecode As List(Of Byte)
     Public Event MachineActive()
@@ -34,20 +35,20 @@ Public Class Machine
     End Sub
     Public Sub Run(Bytecode() As Byte)
         Try
-            Using Cpu As New Processor(Me)
-                Cpu.WriteBlock(Locations.Entrypoint, Bytecode)
-                If (Me.Running) Then
-                    Me.Running = False
-                    Me.Wait.WaitOne(3000)
-                End If
-                Me.Running = True
-                Me.Wait = New ManualResetEvent(False)
-                RaiseEvent MachineActive()
-                Do
-                    Cpu.Clock()
-                Loop While Me.Running
-                Memory.Dump(".\Dump.bin", Cpu.ReadBlock(&H0, &HFFFF))
-            End Using
+            Me.Processor = New Processor(Me)
+            Processor.WriteBlock(Locations.Entrypoint, Bytecode)
+            If (Me.Running) Then
+                Me.Running = False
+                Me.Wait.WaitOne()
+            End If
+            Me.Running = True
+            Me.Wait = New ManualResetEvent(False)
+            RaiseEvent MachineActive()
+            Do
+                Processor.Clock()
+            Loop While Me.Running
+            Memory.Dump(".\Dump.bin", Processor.ReadBlock(&H0, &HFFFF))
+            Processor.Dispose()
         Catch ex As Exception
             RaiseEvent Failure(ex)
             Me.Running = False
@@ -56,7 +57,18 @@ Public Class Machine
             RaiseEvent MachineInactive()
         End Try
     End Sub
+    Public Sub KeyPressed(Params As KeyEventArgs)
+        If (Me.Processor IsNot Nothing AndAlso Me.Running) Then
+            Me.Processor.Keyboard.PressKey(ChrW(Params.KeyValue))
+        End If
+    End Sub
+    Public Sub KeyReleased(Params As KeyEventArgs)
+        If (Me.Processor IsNot Nothing AndAlso Me.Running) Then
+            Me.Processor.Keyboard.ReleaseKey(ChrW(Params.KeyValue))
+        End If
+    End Sub
     Public Sub Abort()
         Me.Running = False
     End Sub
+
 End Class

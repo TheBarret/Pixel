@@ -17,4 +17,7 @@ Public Class Cycle
         End If
         Return False
     End Function
+    Public Overrides Function ToString() As String
+        Return String.Format("Cycle: {0}ms", Me.Timer.ElapsedMilliseconds)
+    End Function
 End Class
