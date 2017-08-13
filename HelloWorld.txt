@@ -4,14 +4,15 @@
 clear
 jmp [main]
 
-:x		:10
-:y		:10
-:index	:0
-:timer	:0
-:string	@">> Hello, World! <<"
+:x		:50
+:y		:50
+:steps		:10
+:direction	:1
+:index		:0
+:timer		:0
+:string	@"Hello, World!"
 
-:main	if [index] #19 jmp [a1]		;did we reach end of the string?
-
+:main	if [index] #13 jmp [a1]		;did we reach end of the string?
 :loop	print [x][y][index][string]		;print character from string
 	load [index]				;increase index
 	push #1
@@ -23,10 +24,11 @@ jmp [main]
 	store [x]
 	jmp [main]				;jump back to begin
 
-:a1	storev [timer] #150			;create a time out
+:a1	storev [timer] #10			;create a time out
+	scroll [direction][steps]
 :a2	ifg [timer] #0 jmp [a3]
-	storev [x] #10			;reset variables
-	storev [y] #10
+	storev [x] #50			;reset variables
+	storev [y] #50
 	storev [index] #0
 	jmp [loop]				;jump back
 
