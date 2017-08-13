@@ -4,16 +4,31 @@ Imports System.Text
 Imports System.Threading
 
 Public Class frmMain
+    Private Property ExitLock As Object
+    Private Property ExitFlag As Boolean
     Private Property Filename As String
     Private Property Machine As Machine
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Call New Thread(AddressOf Me.Initialize).Start()
+        Me.ExitFlag = False
+        Me.ExitLock = New Object
+        Me.Machine = New Machine(Me.Viewport)
+        AddHandler Me.Machine.Failure, AddressOf Me.Failure
+        AddHandler Me.Machine.MachineActive, AddressOf Me.MachineActive
+        AddHandler Me.Machine.MachineInactive, AddressOf Me.MachineInactive
+        Me.Filename = String.Format("{0}\{1}", Application.StartupPath, "usercode.txt")
+        Me.LoadUsercode()
+        Me.InitializeSpriteEditor()
     End Sub
     Private Sub frmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+        Me.FlagForShutdown()
         Me.Machine.Abort()
     End Sub
     Private Sub frmMain_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
-        If (e.Control AndAlso e.KeyCode = Keys.S) Then Me.SaveUsercode()
+        If (Me.Machine.Running) Then Me.Machine.KeyPressed(e)
+        If (e.Control AndAlso e.KeyCode = Windows.Forms.Keys.S) Then Me.SaveUsercode()
+    End Sub
+    Private Sub frmMain_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+        If (Me.Machine.Running) Then Me.Machine.KeyReleased(e)
     End Sub
     Private Sub cmdCompile_Click(sender As Object, e As EventArgs) Handles cmdCompile.Click
         Me.SaveUsercode()
@@ -35,18 +50,10 @@ Public Class frmMain
         Me.AddOutputLog("Stopped")
         Me.SwitchGUI(False)
     End Sub
-    Private Sub Initialize()
-        If (Me.InvokeRequired) Then
-            Me.Invoke(Sub() Me.Initialize())
-        Else
-            Me.Machine = New Machine(Me.Viewport)
-            AddHandler Me.Machine.Failure, AddressOf Me.Failure
-            AddHandler Me.Machine.MachineActive, AddressOf Me.MachineActive
-            AddHandler Me.Machine.MachineInactive, AddressOf Me.MachineInactive
-            Me.Filename = String.Format("{0}\{1}", Application.StartupPath, "usercode.txt")
-            Me.LoadUsercode()
-            Me.CreateButtonArray()
-        End If
+    Private Sub FlagForShutdown()
+        SyncLock Me.ExitLock
+            Me.ExitFlag = True
+        End SyncLock
     End Sub
     Private Sub SwitchGUI(state As Boolean)
         If (Me.InvokeRequired) Then
@@ -65,13 +72,15 @@ Public Class frmMain
         End If
     End Sub
     Private Sub AddOutputLog(Message As String, Optional Clear As Boolean = False)
-        If (Me.InvokeRequired) Then
-            Me.Invoke(Sub() Me.AddOutputLog(Message, Clear))
-        Else
-            If (Clear) Then Me.tbOutput.Clear()
-            Me.tbOutput.AppendText(String.Format("{0}{1}", Message, Environment.NewLine))
-            Me.tbOutput.SelectionLength = Me.tbOutput.Text.Length
-            Me.tbOutput.ScrollToCaret()
+        If (Not Me.ExitFlag) Then
+            If (Me.InvokeRequired) Then
+                Me.Invoke(Sub() Me.AddOutputLog(Message, Clear))
+            Else
+                If (Clear) Then Me.tbOutput.Clear()
+                Me.tbOutput.AppendText(String.Format("{0}{1}", Message, Environment.NewLine))
+                Me.tbOutput.SelectionLength = Me.tbOutput.Text.Length
+                Me.tbOutput.ScrollToCaret()
+            End If
         End If
     End Sub
     Private Sub Usercode_SelectionChanged(sender As Object, e As EventArgs) Handles Usercode.SelectionChanged
@@ -81,10 +90,4 @@ Public Class frmMain
             Me.lbSel1.Text = String.Empty
         End If
     End Sub
-    Public Function IsHexadecimal(Value As String) As Boolean
-        Return System.Text.RegularExpressions.Regex.IsMatch(Value, "^\A\b[0-9a-fA-F]+\b\Z$")
-    End Function
-    Public Function IsNumber(Value As String) As Boolean
-        Return System.Text.RegularExpressions.Regex.IsMatch(Value, "^[0-9]+$")
-    End Function
 End Class
