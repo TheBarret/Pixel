@@ -35,7 +35,7 @@ jmp [main]
 	store [x]
 	jmp [main]				;jump back to begin
 
-:a1	storev [timer] #10			;create a time out
+:a1	storev [timer] #100			;create a time out
 	scroll [direction][steps]
 :a2	ifg [timer] #0 jmp [a3]
 	storev [x] #50				;reset variables
