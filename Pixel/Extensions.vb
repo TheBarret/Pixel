@@ -4,7 +4,7 @@ Public Module Extensions
     <System.Runtime.CompilerServices.Extension> _
     Public Function String2UInt16(Str As String) As UInt16
         Dim value As UInt16 = 0
-        If (UInt16.TryParse(Str.Trim(New Char() {":"c, " "c}), value)) Then
+        If (UInt16.TryParse(Str.Trim(New Char() {" "c}), value)) Then
             Return value
         End If
         Throw New Exception(String.Format("Unable to parse number '{0}'", Str))

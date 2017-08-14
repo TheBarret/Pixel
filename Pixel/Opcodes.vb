@@ -38,13 +38,13 @@
     OP_PRINT
     OP_CLS
     OP_END
-    T_RES
-    T_DAT
-    T_VAR
-    T_STR
+    T_SPACE
+    T_SPRITEDATA
+    T_VARIABLE
+    T_STRING
     T_LABEL
     T_NUMBER
-    T_HEX
+    T_HEXADECIMAL
     T_LOCATION
     T_KEY
 End Enum

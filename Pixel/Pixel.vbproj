@@ -99,6 +99,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Opcodes.vb" />
+    <Compile Include="SyntaxError.vb" />
     <Compile Include="Tasks\Assembler.vb" />
     <Compile Include="Tasks\Definition.vb" />
     <Compile Include="Tasks\Optimizer.vb" />

@@ -26,6 +26,7 @@ Namespace Tasks
         ''' Initializes instance
         ''' </summary>
         Public Overrides Sub Initialize()
+            Me.Table.Add(New Definition(Opcodes.OP_PUSH, "\s+"))
             Me.Table.Add(New Definition(Opcodes.OP_PUSH, "\bPUSH\b"))
             Me.Table.Add(New Definition(Opcodes.OP_POP, "\bPOP\b"))
             Me.Table.Add(New Definition(Opcodes.OP_LD, "\bLOAD\b"))
@@ -64,13 +65,13 @@ Namespace Tasks
             Me.Table.Add(New Definition(Opcodes.OP_END, "\bEND\b"))
             Me.Table.Add(New Definition(Opcodes.OP_SPRITE, "\bDRAW\b"))
             Me.Table.Add(New Definition(Opcodes.OP_PRINT, "\bPRINT\b"))
-            Me.Table.Add(New Definition(Opcodes.T_LABEL, "\:[a-z0-9_]+"))
+            Me.Table.Add(New Definition(Opcodes.T_LABEL, "\:(?:[a-z][a-z0-9_]*)"))
             Me.Table.Add(New Definition(Opcodes.T_NUMBER, "\#[a-z0-9]+"))
-            Me.Table.Add(New Definition(Opcodes.T_HEX, "0x[a-f0-9]+"))
-            Me.Table.Add(New Definition(Opcodes.T_STR, "\@("".*?"")"))
-            Me.Table.Add(New Definition(Opcodes.T_LOCATION, "\[[a-z0-9_]+\]"))
-            Me.Table.Add(New Definition(Opcodes.T_VAR, "\:([0-9]+|\s+[0-9]+)"))
-            Me.Table.Add(New Definition(Opcodes.T_DAT, "\.((0|1)|\s+(0|1)){8}"))
+            Me.Table.Add(New Definition(Opcodes.T_HEXADECIMAL, "0x[a-f0-9]+"))
+            Me.Table.Add(New Definition(Opcodes.T_STRING, "("".*?"")"))
+            Me.Table.Add(New Definition(Opcodes.T_LOCATION, "\[(?:[a-z][a-z0-9_]*)\]"))
+            Me.Table.Add(New Definition(Opcodes.T_VARIABLE, "[0-9]+"))
+            Me.Table.Add(New Definition(Opcodes.T_SPRITEDATA, "\.((0|1)|\s+(0|1)){8}"))
             Me.Table.Add(New Definition(Opcodes.T_KEY, "\{([a-z0-9\s\!\?\+\-\*\/\.\,\:\→\←\↑\↓\=\>\<\[\]\|\'\\]{1})\}"))
         End Sub
         ''' <summary>
@@ -92,7 +93,7 @@ Namespace Tasks
                                     If (definition.Type = Opcodes.T_LABEL) Then
                                         Me.Labels.Add(m.Value.Substring(1).ToUpper, CUShort(location))
                                     Else
-                                        location += Me.GetOpcodeLength(definition, m)
+                                        location += Me.GetLength(definition, m)
                                     End If
                                 Case Mode.Write
                                     Me.WriteInstruction(definition, m.Value)
@@ -111,98 +112,25 @@ Namespace Tasks
         ''' <summary>
         ''' Returns instruction byte length
         ''' </summary>
-        Private Function GetOpcodeLength(Definition As Definition, Match As Match) As Integer
-            Select Case Definition.Type
-                Case Opcodes.T_HEX,
-                     Opcodes.T_NUMBER,
-                     Opcodes.T_LOCATION
-                    Return 0
-                Case Opcodes.T_DAT
-                    Return 1
-                Case Opcodes.T_VAR,
-                     Opcodes.T_KEY
-                    Return 2
-                Case Opcodes.OP_IF,
-                     Opcodes.OP_IFN,
-                     Opcodes.OP_IFG,
-                     Opcodes.OP_IFL,
-                     Opcodes.OP_IFV,
-                     Opcodes.OP_IFNV,
-                     Opcodes.OP_IFGV,
-                     Opcodes.OP_IFLV,
-                     Opcodes.OP_STV,
-                     Opcodes.OP_STV,
-                     Opcodes.OP_SCR
-                    Return 5
-                Case Opcodes.OP_SPRITE
-                    Return 7
-                Case Opcodes.OP_PRINT
-                    Return 9
-                Case Opcodes.T_STR
-                    Return (Match.Groups(1).Length - 1) * 2
-                Case Else
-                    Return 3
-            End Select
+        Private Function GetLength(Definition As Definition, Match As Match) As Integer
+            If (Definition.Type = Opcodes.T_STRING) Then
+                Return (Match.Groups(1).Length - 1) * 2
+            Else
+                Return Definition.Length
+            End If
         End Function
         ''' <summary>
         ''' Write bytecode instruction to stream
         ''' </summary>
         Private Sub WriteInstruction(Definition As Definition, Line As String)
-            Select Case Definition.Type
-                Case Opcodes.OP_PUSH,
-                     Opcodes.OP_LD,
-                     Opcodes.OP_ST,
-                     Opcodes.OP_STV,
-                     Opcodes.OP_JUMP,
-                     Opcodes.OP_CALL,
-                     Opcodes.OP_IF,
-                     Opcodes.OP_IFN,
-                     Opcodes.OP_IFG,
-                     Opcodes.OP_IFL,
-                     Opcodes.OP_IFV,
-                     Opcodes.OP_IFNV,
-                     Opcodes.OP_IFGV,
-                     Opcodes.OP_IFLV,
-                     Opcodes.OP_SHR,
-                     Opcodes.OP_SHL,
-                     Opcodes.OP_OV,
-                     Opcodes.OP_READ,
-                     Opcodes.OP_WRITE,
-                     Opcodes.OP_ADDR,
-                     Opcodes.OP_RND,
-                     Opcodes.OP_SCR,
-                     Opcodes.OP_SPRITE,
-                     Opcodes.OP_PRINT,
-                     Opcodes.OP_STKEY,
-                     Opcodes.OP_COL
-                    Me.WriteByte(CType(Definition.Type, Byte))
-                Case Opcodes.OP_POP,
-                     Opcodes.OP_RET,
-                     Opcodes.OP_ADD,
-                     Opcodes.OP_SUB,
-                     Opcodes.OP_MUL,
-                     Opcodes.OP_DIV,
-                     Opcodes.OP_MOD,
-                     Opcodes.OP_AND,
-                     Opcodes.OP_OR,
-                     Opcodes.OP_XOR,
-                     Opcodes.OP_CLS,
-                     Opcodes.OP_END
-                    Me.WriteByte(CType(Definition.Type, Byte))
-                    Me.WriteUInt16(0)
-                Case Opcodes.T_DAT
-                    Me.WriteByte(Line.String2Byte)
-                Case Opcodes.T_VAR
-                    Me.WriteUInt16(Line.String2UInt16)
-                Case Opcodes.T_KEY
-                    Me.WriteKey(Line.Substring(1, Line.Length - 2).ToUpper)
-                Case Opcodes.T_STR
-                    Me.WriteString(Line)
-                Case Opcodes.T_NUMBER,
-                     Opcodes.T_HEX,
-                     Opcodes.T_LOCATION
-                    Me.WriteValue(Definition, Line)
-            End Select
+            If (Definition.GetActualLength = 1) Then
+                Me.WriteByte(Definition.ToByte)
+                Me.WriteUInt16(0)
+            ElseIf (Definition.GetActualLength = 3) Then
+                Me.WriteByte(Definition.ToByte)
+            ElseIf (Definition.GetActualLength > 3) Then
+                Me.WriteValue(Definition, Line)
+            End If
         End Sub
         ''' <summary>
         ''' Writes instruction parameter (number,hexadecimal or label)
@@ -211,10 +139,18 @@ Namespace Tasks
             Select Case Definition.Type
                 Case Opcodes.T_NUMBER
                     Me.WriteUInt16(UInt16.Parse(Line.Substring(1)))
-                Case Opcodes.T_HEX
+                Case Opcodes.T_HEXADECIMAL
                     Me.WriteUInt16(UInt16.Parse(Line.Substring(2), NumberStyles.HexNumber))
                 Case Opcodes.T_LOCATION
                     Me.WriteUInt16(Me.GetLabel(Line))
+                Case Opcodes.T_STRING
+                    Me.WriteString(Line)
+                Case Opcodes.T_KEY
+                    Me.WriteKey(Line.Substring(1, Line.Length - 2).ToUpper)
+                Case Opcodes.T_VARIABLE
+                    Me.WriteUInt16(Line.String2UInt16)
+                Case Opcodes.T_SPRITEDATA
+                    Me.WriteByte(Line.String2Byte)
                 Case Else
                     Throw New Exception(String.Format("Could not convert definition '{0}' to value", Definition.Type))
             End Select
@@ -258,8 +194,7 @@ Namespace Tasks
         ''' Writes string data to the bytecode stream
         ''' </summary>
         Private Sub WriteString(Line As String)
-            Dim str As String = Line.Substring(2, Line.Length - 3)
-            For Each ch As Char In str.ToCharArray
+            For Each ch As Char In Line.Substring(1, Line.Length - 2).ToCharArray
                 Me.WriteUInt16(ch.ToKeyIndex)
             Next
             Me.WriteUInt16(0)

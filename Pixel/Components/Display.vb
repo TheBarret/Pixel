@@ -90,14 +90,12 @@ Namespace Components
             Next
             Me.Buffer = sbuffer
         End Sub
-
         Public Sub Clear()
             For y As Integer = 0 To Me.Height - 1
                 For x As Integer = 0 To Me.Width - 1
-                    Me.buffer(x, y) = &H0
+                    Me.Buffer(x, y) = &H0
                 Next
             Next
-            Me.Redraw = True
         End Sub
         Private Function BitToString(value As Integer) As Char()
             Return Convert.ToString(value, 2).PadLeft(8, "0"c).ToCharArray()
