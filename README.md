@@ -73,6 +73,7 @@ iflv			  | [label] [label] 				| Performs a condition test x <  y, executes next
 draw		          | [x][y][label]		                | Writes data to vram from label with x and y coords
 print			  | [x][y][index][label]			| Writes character index to vram from label as string with x and y coords
 stcol			  | ([label])					| Stores collision value to variable (1 or 0)
+key			  | ([label])					| Stores keystroke value to variable
 clear		          | no params			                | Clears vram memory (blanks screen)
 end		          | no params 	                  		| Terminates execution of program
 ```
@@ -146,14 +147,14 @@ jmp [program]
 This would print the letter 'A' on the screen, because i is 0 and the string array begins with 0.
 
 ----------------------------------------------------------------------------------------------------
-Hooking keyboard input
+keyboard input
 ----------------------------------------------------------------------------------------------------
 Keys can be defined with { and }, the assembler will convert the keys to memory address values
 that corresponds with an address offset within the memory data.
 The format is the same as defining variables except you set your keys between the braces.
 
-The instruction 'key [var]' will store the current keystroke that is equal to the defined key variables.
-If no keystroke was set, it will store a 0 instead.
+The instruction 'key [var]' will store the current keystroke that is equal to the defined key variable.
+If no keystroke was recorded, it will store a 0 instead.
 
 Supported characters:
 ```
