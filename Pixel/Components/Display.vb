@@ -27,13 +27,15 @@ Namespace Components
             For i As Integer = 0 To buffer.Length - 1
                 For j As Integer = 0 To 7
                     If Me.BitToString(buffer(i))(j) = Char.Parse("1") Then
-                        If px + j < Width AndAlso py + i < Height Then
-                            before = Me.Buffer(px + j, py + i)
-                            Me.Buffer(px + j, py + i) = CByte(Me.Buffer(px + j, py + i) Xor &H1)
-                            after = Me.Buffer(px + j, py + i)
-                            Me.Redraw = True
-                            If (before = 1 AndAlso after = 0) Then              '// Collision occoured
-                                Me.Parent.Collision = &H1
+                        If (px + j >= 0 And px + j <= Me.Width) And (py + i >= 0 And py + i <= Me.Height) Then
+                            If px + j < Width AndAlso py + i < Height Then
+                                before = Me.Buffer(px + j, py + i)
+                                Me.Buffer(px + j, py + i) = CByte(Me.Buffer(px + j, py + i) Xor &H1)
+                                after = Me.Buffer(px + j, py + i)
+                                Me.Redraw = True
+                                If (before = 1 AndAlso after = 0) Then              '// Collision occoured
+                                    Me.Parent.Collision = &H1
+                                End If
                             End If
                         End If
                     End If
