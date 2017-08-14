@@ -110,6 +110,8 @@ This would produce the letter 'A' drawn on the screen at position variables x an
 Variables
 ----------------------------------------------------------------------------------------------------
 Variables can be defined with labels followed by number, the compiler assumes an UInt16 value
+The value of a variable must be in a plain number format, no hexadecimals or such.
+
 ```
 :program
 	load [foo]
