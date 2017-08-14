@@ -1,53 +1,38 @@
 # Pixel [Work in Progress]
 Tiny 16bit Virtual Machine
 
-Assembly Program Running
-
-![](http://i.imgur.com/IHOuVJA.png)
+![](http://i.imgur.com/nccezv3.png)
 
 Example of 'Hello, World' in Pixel language
 
 ```
 ;************************************
-; Program: 'Hello, World!' Banner
+; Program: Hello, World!
 ;************************************
-clear
 jmp [main]
 
-:x		:50
-:y		:50
-:steps		:10
-:direction	:1
-:index		:0
-:timer		:0
 
-:string	@"Hello, World!"
+:x		50
+:y		50
+:i		0
+:str		"Hello, World!"
 
-:main	if [index] #13 jmp [a1]			;did we reach end of the string?
-:loop	print [x][y][index][string]		;print character from string
-	load [index]				;increase index
+:main
+	call [next]
+	if [i] #13 end
+	jmp [main]
+
+:next
+	print [x][y][i][str]
+	load [i]
 	push #1
 	add
-	store [index]
-	load [x]				;increase x
+	store [i]
+	load [x]
 	push #5
 	add
 	store [x]
-	jmp [main]				;jump back to begin
-
-:a1	storev [timer] #100			;create a time out
-	scroll [direction][steps]
-:a2	ifg [timer] #0 jmp [a3]
-	storev [x] #50				;reset variables
-	storev [y] #50
-	storev [index] #0
-	jmp [loop]				;jump back
-
-:a3	load [timer]				;decrease timer
-	push #1
-	sub
-	store [timer]
-	jmp [a2]
+	return
 ```
 
 Instructions
@@ -107,7 +92,7 @@ jmp [program]
 	end
 
 
-[letter_A]
+:letter_A
 	.00011000
 	.00100100
 	.01000010
@@ -129,35 +114,73 @@ Variables can be defined with labels followed by number, the compiler assumes an
 	store [foo]
 	end
 		
-:foo	:5
+:foo	5
 ```
 
 Pseudo code:
 ```
-declare i = 5
-i += 5
+declare foo = 5
+foo += 5
 exit 
 ```
 ----------------------------------------------------------------------------------------------------
 Strings
 ----------------------------------------------------------------------------------------------------
 String data is decoded by the assembler into font address values, the 'print' instruction can
-then enumerate for each character and draw them on the given x and y position.
+then enumerate for each character index and draw them on the given x and y position.
 
 ```
 jmp [program]
 
-:x	:1
-:y	:1
-:i	:0
+:x		:1
+:y		:1
+:i		:0
+:string 	"A"
 
 :program
 	print [x][y][i][string]
 	end
 
-:string @"A"
+
 ```
 This would print the letter 'A' on the screen, because i is 0 and the string array begins with 0.
+
+----------------------------------------------------------------------------------------------------
+Hooking keyboard input
+----------------------------------------------------------------------------------------------------
+Keys can be defined with { and }, the assembler will convert the keys to memory address values
+that corresponds with an address offset within the memory data.
+The format is the same as defining variables except you set your keys between the braces.
+
+The instruction 'key [var]' will store the current keystroke that is equal to the defined key variables.
+If no keystroke was set, it will store a 0 instead.
+
+Supported characters:
+```
+abcdefghijklmnopqrstuvwxyz
+1234567890 +-*/[|]!?,.:<>\'↑↓←→
+```
+
+Example of a simple key hook
+```
+:program
+	key [input]
+	if [input] [exit] end
+	jmp [program]
+
+:exit		{Q}
+:input		0
+```
+
+Psuedo code:
+```
+declare exit = key{q}
+declare input = 0
+
+do
+	if (input == exit) { exit }
+Loop
+```
 
 ----------------------------------------------------------------------------------------------------
 Loop example with increasing variable and condition test
