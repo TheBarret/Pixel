@@ -5,13 +5,14 @@
 clear
 jmp [main]
 
-:x	:0
-:y	:0
-:i	:1
-:d	:0
-:s	:6
+:x		8
+:y		1
+:i		1
+:d		0
+:s		6
 
-:main	random #4
+:main	
+	random #4
 	store [i]
 	if [i] #0 call [left]
 	if [i] #1 call [right]
@@ -21,8 +22,8 @@ jmp [main]
 	push #8
 	add
 	store [x]
-	ifl [x] #256 jmp [main]
-	storev [x] #0
+	ifl [x] #248 jmp [main]
+	storev [x] #8
 	scroll [d][s]
 	jmp [main]
 :left 	draw [x][y][a]

@@ -5,17 +5,18 @@
 clear
 jmp [main]
 
-:up		{W}			;define keys
+:up			{W}			;define keys
 :down		{S}
 :right		{D}
 :left		{A}
+:exit		{Q}
 
-:input		:0			;key input buffer
-:x		:100
-:y		:50
-:d		:2
-:s		:8
-:c		:0
+:input		0			;key input buffer
+:x			100
+:y			50
+:d			2
+:s			8
+:c			0
 
 :main
 	key [input]					;fetch key buffer
@@ -29,6 +30,7 @@ jmp [main]
 	ifv [input] [down] call [draw_down]
 	ifv [input] [right] call [draw_right]
 	ifv [input] [left] call [draw_left]
+	ifv [input] [exit] end
 	return
 :draw_up
 	storev [d] #0
@@ -75,4 +77,3 @@ jmp [main]
 		.11111100
 		.01100000
 		.00100000
-
