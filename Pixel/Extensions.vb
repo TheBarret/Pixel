@@ -1,16 +1,17 @@
 ﻿Imports System.Text.RegularExpressions
+Imports System.Globalization
 
 Public Module Extensions
     <System.Runtime.CompilerServices.Extension> _
-    Public Function String2UInt16(Str As String) As UInt16
+    Public Function StringToUInt16(Str As String) As UInt16
         Dim value As UInt16 = 0
-        If (UInt16.TryParse(Str.Trim(New Char() {" "c}), value)) Then
+        If (UInt16.TryParse(Str.Trim, value)) Then
             Return value
         End If
-        Throw New Exception(String.Format("Unable to parse number '{0}'", Str))
+        Throw New Exception(String.Format("Unable to convert '{0}' to number", Str))
     End Function
     <System.Runtime.CompilerServices.Extension> _
-    Public Function String2Byte(Str As String) As Byte
+    Public Function StringToByte(Str As String) As Byte
         Return Convert.ToByte(Str.Trim.Remove(0, 1), 2)
     End Function
     <System.Runtime.CompilerServices.Extension> _
@@ -21,23 +22,6 @@ Public Module Extensions
     <System.Runtime.CompilerServices.Extension> _
     Public Function Truncate(value As String, max As Integer) As String
         Return If(value.Length <= max, value, value.Substring(0, max) + "...")
-    End Function
-    <System.Runtime.CompilerServices.Extension> _
-    Public Function Normalize(Lines As List(Of String)) As List(Of String)
-        Dim changed As Boolean
-        Do
-            changed = False
-            For i As Integer = 0 To Lines.Count - 1
-                Lines(i) = Regex.Replace(Lines(i), "\;(.*?)(\r?\n|$)", String.Empty)
-                Lines(i) = Lines(i).Trim
-                If (String.IsNullOrEmpty(Lines(i))) Then
-                    Lines.RemoveAt(i)
-                    changed = True
-                    Exit For
-                End If
-            Next
-        Loop While changed
-        Return Lines
     End Function
     <System.Runtime.CompilerServices.Extension> _
     Public Function ToKeyIndex(ch As Char) As UInt16

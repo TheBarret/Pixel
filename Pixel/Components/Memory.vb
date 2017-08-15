@@ -54,32 +54,6 @@ Namespace Components
                 Me.WriteUInt(Locations.StackPtr, value)
             End Set
         End Property
-        Public Function SupportsKey(ch As Char) As Boolean
-            For i As UInt16 = Locations.Keys To Locations.KeysMax Step 4
-                If (ch.Equals(ChrW(Me.ReadUInt(i)))) Then
-                    Return True
-                End If
-            Next
-            Return False
-        End Function
-        Public Function KeyToAddress(ch As Char) As UInt16
-            For i As UInt16 = Locations.Keys To Locations.KeysMax Step 4
-                If (ch.Equals(ChrW(Me.ReadUInt(i)))) Then
-                    Return CUShort(i + 2)
-                End If
-            Next
-            Throw New Exception(String.Format("Key index for '{0}' not supported", ch))
-        End Function
-        Public Function AddressToKey(index As UInt16) As Char
-            If (index >= Locations.Keys AndAlso index <= Locations.KeysMax) Then
-                For i As UInt16 = Locations.Keys To Locations.KeysMax Step 4
-                    If (index = Me.ReadUInt(CUShort(i + 2))) Then
-                        Return ChrW(Me.ReadUInt(i))
-                    End If
-                Next
-            End If
-            Throw New Exception(String.Format("Key index '{0}' out of range", index))
-        End Function
         Public Function PeekAddress() As UShort
             If (Me.Address >= 2) Then Return Me.ReadUInt(CUShort(Locations.Address + Me.Address - 2))
             Throw New Exception("Address stack out of range")
@@ -136,6 +110,23 @@ Namespace Components
                 Next
             End If
         End Sub
+        Public Function NumberToSprite(num As Char) As Byte()
+            If (Char.IsNumber(num)) Then
+                Select Case num
+                    Case "1"c : Return Me.ReadBlock(160, 5)
+                    Case "2"c : Return Me.ReadBlock(166, 5)
+                    Case "3"c : Return Me.ReadBlock(172, 5)
+                    Case "4"c : Return Me.ReadBlock(178, 5)
+                    Case "5"c : Return Me.ReadBlock(184, 5)
+                    Case "6"c : Return Me.ReadBlock(190, 5)
+                    Case "7"c : Return Me.ReadBlock(196, 5)
+                    Case "8"c : Return Me.ReadBlock(202, 5)
+                    Case "9"c : Return Me.ReadBlock(208, 5)
+                    Case "0"c : Return Me.ReadBlock(214, 5)
+                End Select
+            End If
+            Return Me.ReadBlock(340, 5)
+        End Function
         Public Shared Sub Dump(Filename As String, Buffer() As Byte)
             If (File.Exists(Filename)) Then File.Delete(Filename)
             Using fs As New FileStream(Filename, FileMode.Create, FileAccess.Write, FileShare.None)

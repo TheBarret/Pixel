@@ -17,8 +17,8 @@ Namespace Components
             Me.Offset = 2
             Me.Redraw = False
             Me.Parent = Parent
-            Me.Background = New SolidBrush(Color.Black)
-            Me.Foreground = New SolidBrush(Color.White)
+            Me.Background = New SolidBrush(Color.White)
+            Me.Foreground = New SolidBrush(Color.Red)
             Me.Buffer = New Byte(Me.Width - 1, Me.Height - 1) {}
         End Sub
         Public Sub Allocate(x As Integer, y As Integer, buffer As Byte())

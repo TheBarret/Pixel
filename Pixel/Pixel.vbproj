@@ -68,20 +68,23 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assembler\IGrammar.vb" />
+    <Compile Include="Assembler\Rule.vb" />
+    <Compile Include="Assembler\ByteStream.vb" />
+    <Compile Include="Assembler\Lexer.vb" />
+    <Compile Include="Assembler\Token.vb" />
     <Compile Include="BinaryWriterBigEndian.vb" />
     <Compile Include="Components\Display.vb" />
     <Compile Include="Components\Keyboard.vb" />
     <Compile Include="Components\Memory.vb" />
     <Compile Include="Components\Processor.vb" />
-    <Compile Include="Components\Timer.vb" />
     <Compile Include="Constants.vb" />
     <Compile Include="Controls\Viewport.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Cycle.vb" />
     <Compile Include="Extensions.vb" />
+    <Compile Include="Grammars\Pixel.vb" />
     <Compile Include="Instructions.vb" />
-    <Compile Include="Interfaces\ITask.vb" />
     <Compile Include="Machine.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -98,12 +101,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Opcodes.vb" />
-    <Compile Include="SyntaxError.vb" />
-    <Compile Include="Tasks\Assembler.vb" />
-    <Compile Include="Tasks\Definition.vb" />
-    <Compile Include="Tasks\Optimizer.vb" />
-    <Compile Include="Tasks\Token.vb" />
+    <Compile Include="Types.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
