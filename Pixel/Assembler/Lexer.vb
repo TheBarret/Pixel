@@ -47,6 +47,8 @@ Namespace Assembler
                 Loop
                 Me.Add(New Token(Types.T_EOF))
             End If
+            Me.Usercode = Nothing
+            Me.Grammar = Nothing
             Return Me
         End Function
     End Class
