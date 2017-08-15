@@ -7,6 +7,7 @@ Public Class frmMain
     Private Property ExitLock As Object
     Private Property ExitFlag As Boolean
     Private Property Filename As String
+    Private Property Timer As Timers.Timer
     Private Property Machine As Machine
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.ExitFlag = False
@@ -32,28 +33,47 @@ Public Class frmMain
     End Sub
     Private Sub cmdCompile_Click(sender As Object, e As EventArgs) Handles cmdCompile.Click
         Me.SaveUsercode()
+
         Me.AddOutputLog("Compiling...", True)
-        Me.Machine.Compile(Me.Filename, True)
+        Me.Machine.Compile(Me.Filename)
+
+        Me.AddOutputLog("Executing...")
+        Me.Machine.Start(700)
+
         Me.TabContainer.SelectedTab = Me.tabDisplay
     End Sub
     Private Sub cmdStop_Click(sender As Object, e As EventArgs) Handles cmdStop.Click
         Me.Machine.Abort()
     End Sub
+    Private Sub FpsTick(sender As Object, e As Timers.ElapsedEventArgs)
+        Me.UpdateFps(Me.Machine.GetFps)
+    End Sub
     Private Sub Failure(ex As Exception)
         Me.AddOutputLog(String.Format("Error: {0}", ex.Message))
     End Sub
     Private Sub MachineActive()
-        Me.AddOutputLog("Executing...")
+        Me.Timer = New Timers.Timer(1000) With {.Enabled = True}
+        AddHandler Me.Timer.Elapsed, AddressOf Me.FpsTick
+        Me.Timer.Start()
         Me.SwitchGUI(True)
     End Sub
     Private Sub MachineInactive()
-        Me.AddOutputLog("Stopped")
+        Me.Timer.Stop()
+        RemoveHandler Me.Timer.Elapsed, AddressOf Me.FpsTick
+        Me.AddOutputLog("Program has stopped")
         Me.SwitchGUI(False)
     End Sub
     Private Sub FlagForShutdown()
         SyncLock Me.ExitLock
             Me.ExitFlag = True
         End SyncLock
+    End Sub
+    Private Sub UpdateFps(fps As Int64)
+        If (Me.InvokeRequired) Then
+            Me.Invoke(Sub() Me.UpdateFps(fps))
+        Else
+            Me.lbFps.Text = String.Format("Framerate: {0}", fps)
+        End If
     End Sub
     Private Sub SwitchGUI(state As Boolean)
         If (Me.InvokeRequired) Then

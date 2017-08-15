@@ -30,12 +30,13 @@ Partial Class frmMain
         Me.lbSel1 = New System.Windows.Forms.Label()
         Me.Usercode = New System.Windows.Forms.RichTextBox()
         Me.tabDisplay = New System.Windows.Forms.TabPage()
-        Me.Viewport = New Pixel.Viewport()
         Me.tabTools = New System.Windows.Forms.TabPage()
         Me.cmdCopySprite = New System.Windows.Forms.Button()
         Me.cmdResetButtons = New System.Windows.Forms.Button()
         Me.tbSpriteArray = New System.Windows.Forms.TextBox()
         Me.tbOutput = New System.Windows.Forms.TextBox()
+        Me.lbFps = New System.Windows.Forms.Label()
+        Me.Viewport = New Pixel.Viewport()
         Me.TabContainer.SuspendLayout()
         Me.tabEditor.SuspendLayout()
         Me.tabDisplay.SuspendLayout()
@@ -107,6 +108,7 @@ Partial Class frmMain
         '
         'tabDisplay
         '
+        Me.tabDisplay.Controls.Add(Me.lbFps)
         Me.tabDisplay.Controls.Add(Me.Viewport)
         Me.tabDisplay.Location = New System.Drawing.Point(4, 22)
         Me.tabDisplay.Name = "tabDisplay"
@@ -114,16 +116,6 @@ Partial Class frmMain
         Me.tabDisplay.TabIndex = 1
         Me.tabDisplay.Text = "Display"
         Me.tabDisplay.UseVisualStyleBackColor = True
-        '
-        'Viewport
-        '
-        Me.Viewport.BackColor = System.Drawing.Color.Black
-        Me.Viewport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.Viewport.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.Viewport.Location = New System.Drawing.Point(46, 20)
-        Me.Viewport.Name = "Viewport"
-        Me.Viewport.Size = New System.Drawing.Size(519, 258)
-        Me.Viewport.TabIndex = 6
         '
         'tabTools
         '
@@ -177,6 +169,25 @@ Partial Class frmMain
         Me.tbOutput.Size = New System.Drawing.Size(629, 69)
         Me.tbOutput.TabIndex = 4
         '
+        'lbFps
+        '
+        Me.lbFps.AutoSize = True
+        Me.lbFps.Location = New System.Drawing.Point(43, 281)
+        Me.lbFps.Name = "lbFps"
+        Me.lbFps.Size = New System.Drawing.Size(69, 13)
+        Me.lbFps.TabIndex = 7
+        Me.lbFps.Text = "Framerate: ..."
+        '
+        'Viewport
+        '
+        Me.Viewport.BackColor = System.Drawing.Color.Black
+        Me.Viewport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
+        Me.Viewport.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.Viewport.Location = New System.Drawing.Point(46, 20)
+        Me.Viewport.Name = "Viewport"
+        Me.Viewport.Size = New System.Drawing.Size(516, 258)
+        Me.Viewport.TabIndex = 6
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -198,6 +209,7 @@ Partial Class frmMain
         Me.tabEditor.ResumeLayout(False)
         Me.tabEditor.PerformLayout()
         Me.tabDisplay.ResumeLayout(False)
+        Me.tabDisplay.PerformLayout()
         Me.tabTools.ResumeLayout(False)
         Me.tabTools.PerformLayout()
         Me.ResumeLayout(False)
@@ -217,5 +229,6 @@ Partial Class frmMain
     Friend WithEvents cmdResetButtons As System.Windows.Forms.Button
     Friend WithEvents cmdCopySprite As System.Windows.Forms.Button
     Friend WithEvents lbSel1 As System.Windows.Forms.Label
+    Friend WithEvents lbFps As System.Windows.Forms.Label
 
 End Class
