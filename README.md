@@ -12,26 +12,24 @@ Example of 'Hello, World' in Pixel language
 ;************************************
 ; Program: Hello, World!
 ;************************************
+clear					;clear screen before we start
 jmp [main]
 
-
-:x		50
+:x		50			;variable block
 :y		50
 :i		0
 :str		"Hello, World!"
 
-:main
-	call [next]
-	if [i] #13 end
-	jmp [main]
+:main	call [next]
+	if [i] #13 end			;determine if we reached end of string
+	jmp [main]			;keep looping until we do so
 
-:next
-	print [x][y][i][str]
-	load [i]
+:next	print [x][y][i][str]		;print out character index on x and y from 'str' variable
+	load [i]			;increase index
 	push #1
 	add
 	store [i]
-	load [x]
+	load [x]			;increase x position
 	push #5
 	add
 	store [x]
