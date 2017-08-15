@@ -83,6 +83,12 @@ end		          | no params 	                  		| Terminates execution of progra
 ```
 
 ----------------------------------------------------------------------------------------------------
+Limitations
+----------------------------------------------------------------------------------------------------
+- The 'if' type statements assume the skipped instruction to be a 8 bytes, this means instructions
+that take up more bytes will not work.
+
+----------------------------------------------------------------------------------------------------
 Sprites
 ----------------------------------------------------------------------------------------------------
 Sprites can be made from a binary array of 8x6, compiler assumes only  1's and 0's in this order
