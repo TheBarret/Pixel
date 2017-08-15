@@ -73,7 +73,6 @@
     <Compile Include="Assembler\ByteStream.vb" />
     <Compile Include="Assembler\Lexer.vb" />
     <Compile Include="Assembler\Token.vb" />
-    <Compile Include="BinaryWriterBigEndian.vb" />
     <Compile Include="Components\Display.vb" />
     <Compile Include="Components\Keyboard.vb" />
     <Compile Include="Components\Memory.vb" />
