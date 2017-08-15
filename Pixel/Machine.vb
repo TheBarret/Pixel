@@ -7,7 +7,7 @@ Public Class Machine
     Public Event MachineInactive()
     Public Event Failure(Ex As Exception)
     Public Property Running As Boolean
-    Private Property FrameRate As Long
+    Private Property FrameRate As Integer
     Private Property Check As DateTime
     Private Property Timer As Stopwatch
     Private Property Wait As ManualResetEvent
@@ -42,8 +42,8 @@ Public Class Machine
             Me.Processor.Keyboard.ReleaseKey(ChrW(Params.KeyValue))
         End If
     End Sub
-    Public Function GetFps() As Int64
-        Dim current As Int64 = CLng(Interlocked.Exchange(Me.FrameRate, 0) / (DateTime.Now - Me.Check).TotalSeconds)
+    Public Function GetFps() As Integer
+        Dim current As Integer = CInt(Interlocked.Exchange(Me.FrameRate, 0) / (DateTime.Now - Me.Check).TotalSeconds)
         Me.Check = DateTime.Now
         Return current
     End Function
