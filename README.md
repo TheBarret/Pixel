@@ -196,6 +196,7 @@ declare exit = key{q}
 declare input = 0
 
 do
+	input = key_press()
 	if (input == exit) { exit }
 Loop
 ```
