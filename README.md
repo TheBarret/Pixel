@@ -1,10 +1,9 @@
 # Pixel [Work in Progress]
 Tiny 16bit Virtual Machine
 
-The current assembler is not a final solution, just a quick work and test, 
-bear in mind that many aspects are subject to change along the way of development, frequent updates are to be expected.
+Elements of this project are subject to change along the way of development, frequent updates are to be expected.
 
-![](http://i.imgur.com/nccezv3.png)
+![](http://i.imgur.com/OpMIVK3.png)
 
 Visualization of Memory
 
