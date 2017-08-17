@@ -25,14 +25,8 @@ jmp [main]
 	jmp [main]			;keep looping until we do so
 
 :next	print [x][y][i][str]		;print out character index on x and y from 'str' variable
-	load [i]			;increase index
-	push #1
-	add
-	store [i]
-	load [x]			;increase x position
-	push #5
-	add
-	store [x]
+	inc [i]	#1			;increase index
+	inc [x] #5			;increase x position
 	return
 ```
 
@@ -48,11 +42,14 @@ storev		          | ([label]) (#<num>|0x<hex>)	                | Stores value to
 jmp		          | ([label])			                | Jumps to label location
 call		          | ([label])			                | Call procedure
 return		      	  | no params			                | Returns from procedure
+rsp			  | no params					| Reset stack pointer to zero
 add		          | no params			                | Performs an addition of the two stack values
 sub		          | no params			                | Performs a subtraction of the two stack values
 mul		          | no params			                | Performs a multiplication of the two stack values
 div		          | no params			                | Performs a division of the two stack values
 mod		          | no params			                | Performs a modulus of the two stack values
+inc			  | ([label])  (#<num>|0x<hex>)			| Increases variable by given number
+dec			  | ([label])  (#<num>|0x<hex>)			| Decreases variable by given number
 and			  | no params			                | Performs a bitwise AND of the two stack values
 or		          | no params			                | Performs a bitwise OR of the two stack values
 xor		          | no params			                | Performs a bitwise XOR of the two stack values
@@ -62,6 +59,7 @@ stov			  | ([label])					| Stores overflow value to variable
 addressOf		  | ([label])					| Pushes memory address of label onto the stack
 writeAt			  | ([label])					| Writes stack value to memory address
 readAt			  | ([label])					| Reads memory address and pushes value onto the stack
+seed			  | (#number)					| Number used to calculate a starting value for the pseudo-random number sequence (0 = default)
 random			  | (#<num>|0x<hex>)				| Pushes random number, starting from 0 and the parameter defines max range
 if			  | [label] (#number)				| Performs a condition test x == y, executes next instruction if true
 ifn			  | [label] (#number) 				| Performs a condition test x != y, executes next instruction if true
@@ -127,9 +125,7 @@ The value of a variable must be in a plain number format, no hexadecimals or suc
 ```
 :program
 	load [foo]
-	push #5
-	add
-	store [foo]
+	inc [foo] #5
 	end
 		
 :foo	5
@@ -212,9 +208,7 @@ Loop example with increasing variable and condition test
 
 :add
 	load [i]
-	push #1
-	add
-	store [i]
+	inc [i] #1
 	return
 
 :i	:0
