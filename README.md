@@ -91,6 +91,7 @@ The following instructions do not work with if-statements:
 - print
 - printv
 - draw
+- inc/dec
 - if-types
 - storev
 
