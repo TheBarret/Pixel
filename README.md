@@ -6,6 +6,10 @@ bear in mind that many aspects are subject to change along the way of developmen
 
 ![](http://i.imgur.com/nccezv3.png)
 
+Visualization of Memory
+
+![](http://i.imgur.com/Fg7wTpx.png)
+
 Example of 'Hello, World' in Pixel language
 
 ```
