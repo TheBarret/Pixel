@@ -2,23 +2,26 @@
 Imports System.IO
 Imports System.Text
 Imports System.Threading
-
+Imports Timer = System.Timers.Timer
 Public Class frmMain
+    Private Property VMem As Vmem
+    Private Property Timer As Timer
+    Private Property Machine As Machine
     Private Property ExitLock As Object
     Private Property ExitFlag As Boolean
     Private Property Filename As String
-    Private Property Timer As Timers.Timer
-    Private Property Machine As Machine
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.ExitFlag = False
         Me.ExitLock = New Object
+        Me.VMem = New Vmem(Me.vpVmem, &H40, &H0)
         Me.Machine = New Machine(Me.Viewport)
         AddHandler Me.Machine.Failure, AddressOf Me.Failure
         AddHandler Me.Machine.MachineActive, AddressOf Me.MachineActive
         AddHandler Me.Machine.MachineInactive, AddressOf Me.MachineInactive
-        Me.Filename = String.Format("{0}\{1}", Application.StartupPath, "usercode.txt")
+        Me.Filename = String.Format("{0}\{1}", Application.StartupPath, "usercode.tmp")
         Me.LoadUsercode()
         Me.InitializeSpriteEditor()
+        Me.PopulateDropdownList()
     End Sub
     Private Sub frmMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         Me.FlagForShutdown()
@@ -31,28 +34,41 @@ Public Class frmMain
     Private Sub frmMain_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
         If (Me.Machine.Running) Then Me.Machine.KeyReleased(e)
     End Sub
-    Private Sub cmdCompile_Click(sender As Object, e As EventArgs) Handles cmdCompile.Click
+    Private Sub stripBtnStart_Click(sender As Object, e As EventArgs) Handles stripBtnStart.Click
         Me.SaveUsercode()
-
         Me.AddOutputLog("Compiling...", True)
-        Me.Machine.Compile(Me.Filename)
-
-        Me.AddOutputLog("Executing...")
-        Me.Machine.Start(700)
-
-        Me.TabContainer.SelectedTab = Me.tabDisplay
+        If (Me.Machine.Compile(Me.Filename)) Then
+            Me.TabContainer.SelectedTab = Me.tabDisplay
+            Me.AddOutputLog("Executing...")
+            Me.Machine.Start(400)
+        End If
     End Sub
-    Private Sub cmdStop_Click(sender As Object, e As EventArgs) Handles cmdStop.Click
+    Private Sub stripBtnStop_Click(sender As Object, e As EventArgs) Handles stripBtnStop.Click
         Me.Machine.Abort()
+        Me.lbStripFramerate.Text = "Framerate: 0"
+    End Sub
+    Private Sub cbFiles_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbFiles.SelectedIndexChanged
+        Dim filename As String = Me.cbFiles.Items(Me.cbFiles.SelectedIndex).ToString
+        If (File.Exists(String.Format(".\{0}", filename))) Then
+            Me.Usercode.Text = File.ReadAllText(String.Format(".\{0}", filename), Encoding.UTF8)
+        End If
+    End Sub
+    Private Sub Usercode_SelectionChanged(sender As Object, e As EventArgs) Handles Usercode.SelectionChanged
+        If (Me.Usercode.SelectedText.Length > 0) Then
+            Me.lbStripSelected.Text = String.Format("Selected: {0}", Me.Usercode.SelectionLength)
+        Else
+            Me.lbStripSelected.Text = "Selected: 0"
+        End If
     End Sub
     Private Sub FpsTick(sender As Object, e As Timers.ElapsedEventArgs)
         Me.UpdateFps(Me.Machine.GetFps)
+        Call New Thread(Sub() Me.VMem.Update(Me.Machine.Processor.Memory)) With {.IsBackground = True}.Start()
     End Sub
     Private Sub Failure(ex As Exception)
         Me.AddOutputLog(String.Format("Error: {0}", ex.Message))
     End Sub
     Private Sub MachineActive()
-        Me.Timer = New Timers.Timer(1000) With {.Enabled = True}
+        Me.Timer = New Timers.Timer(250) With {.Enabled = True}
         AddHandler Me.Timer.Elapsed, AddressOf Me.FpsTick
         Me.Timer.Start()
         Me.SwitchGUI(True)
@@ -62,6 +78,7 @@ Public Class frmMain
         RemoveHandler Me.Timer.Elapsed, AddressOf Me.FpsTick
         Me.AddOutputLog("Program has stopped")
         Me.SwitchGUI(False)
+        Me.VMem.Clear()
     End Sub
     Private Sub FlagForShutdown()
         SyncLock Me.ExitLock
@@ -72,15 +89,15 @@ Public Class frmMain
         If (Me.InvokeRequired) Then
             Me.Invoke(Sub() Me.UpdateFps(fps))
         Else
-            Me.lbFps.Text = String.Format("Framerate: {0}", fps)
+            Me.lbStripFramerate.Text = String.Format("Framerate: {0}", fps)
         End If
     End Sub
     Private Sub SwitchGUI(state As Boolean)
         If (Me.InvokeRequired) Then
             Me.Invoke(Sub() Me.SwitchGUI(state))
         Else
-            Me.cmdStop.Enabled = state
-            Me.cmdCompile.Enabled = Not state
+            Me.stripBtnStop.Enabled = state
+            Me.stripBtnStart.Enabled = Not state
         End If
     End Sub
     Private Sub SaveUsercode()
@@ -103,11 +120,10 @@ Public Class frmMain
             End If
         End If
     End Sub
-    Private Sub Usercode_SelectionChanged(sender As Object, e As EventArgs) Handles Usercode.SelectionChanged
-        If (Me.Usercode.SelectedText.Length > 0) Then
-            Me.lbSel1.Text = String.Format("{0}", Me.Usercode.SelectionLength)
-        Else
-            Me.lbSel1.Text = String.Empty
-        End If
+    Private Sub PopulateDropdownList()
+        Me.cbFiles.Items.Clear()
+        For Each File As String In Directory.GetFiles(".\", "*.asm")
+            Me.cbFiles.Items.Add(Path.GetFileName(File))
+        Next
     End Sub
 End Class
