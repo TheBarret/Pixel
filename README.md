@@ -5,7 +5,7 @@ Elements of this project are subject to change along the way of development, fre
 
 ![](http://i.imgur.com/OpMIVK3.png)
 
-Visualization of Memory
+Memory Visualization
 
 ![](http://i.imgur.com/Fg7wTpx.png)
 
