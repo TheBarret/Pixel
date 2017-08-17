@@ -19,12 +19,14 @@ Namespace Assembler
         End Sub
         Public Function Parse() As List(Of Token)
             If (Me.Usercode.Length > 0 And Me.Grammar.Rules.Count > 0) Then
-                Dim i As Integer = 0, match As Match, ltype As Types
-                Do While (i < Me.Usercode.Length)
+                Dim i As Integer = 0, match As Match, last As Types, flagged As Boolean
+                Do
+                    flagged = False
                     For Each rule As Rule In Me.Grammar.Rules
                         match = rule.Regex.Match(Me.Usercode.ToString)
                         If (match.Success) Then
-                            If (rule.Type = Types.T_END AndAlso ltype = rule.Type) Then
+                            flagged = True
+                            If (rule.Type = Types.T_END AndAlso last = rule.Type) Then
                                 i = match.Length
                                 Me.Usercode.Remove(0, i)
                                 Exit For
@@ -38,13 +40,16 @@ Namespace Assembler
                                 Exit For
                             End If
                             i = match.Length
-                            Me.Add(New Token(rule.Type, match))
+                            Me.Add(New Token(rule.Type, match, rule))
                             Me.Usercode.Remove(0, i)
-                            ltype = rule.Type
+                            last = rule.Type
                             Exit For
                         End If
                     Next
-                Loop
+                    If (Not flagged) Then
+                        Throw New Exception(String.Format("No syntax pattern defined for '{0}'", Me.Usercode.ToString.Truncate(10)))
+                    End If
+                Loop While (Me.Usercode.Length > 0)
                 Me.Add(New Token(Types.T_EOF))
             End If
             Me.Usercode = Nothing

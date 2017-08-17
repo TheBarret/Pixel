@@ -15,9 +15,10 @@ Public Module Extensions
         Return Convert.ToByte(Str.Trim.Remove(0, 1), 2)
     End Function
     <System.Runtime.CompilerServices.Extension> _
-    Public Function Random(value As UInt16) As UInt16
-        Static rnd As New Random(Environment.TickCount)
-        Return CUShort(rnd.Next(0, value))
+    Public Function Random(value As UInt16, Optional Seed As Integer = 0) As UInt16
+        If (Seed = 0) Then Seed = Environment.TickCount
+        Static rnd As New Random(Seed)
+        Return CUShort(rnd.Next(0, value + 1))
     End Function
     <System.Runtime.CompilerServices.Extension> _
     Public Function Truncate(value As String, max As Integer) As String

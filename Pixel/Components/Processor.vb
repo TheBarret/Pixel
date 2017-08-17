@@ -1,14 +1,19 @@
 ﻿Imports System.Threading
 Imports System.Windows.Forms
+Imports System.Drawing
+
 Namespace Components
     Public Class Processor
         Inherits Memory
+        Protected Friend Property Seed As UInt16
         Protected Friend Property Display As Display
         Protected Friend Property Keyboard As Keyboard
-        Private Property Parent As Machine
+        Protected Friend Property Parent As Machine
         Private Property Instructions As List(Of Instruction)
+        Public Event OnViewportUpdate(im As Image)
         Sub New(Parent As Machine)
             Me.Parent = Parent
+            Me.Seed = &H0
             Me.Display = New Display(Me)
             Me.Keyboard = New Keyboard(Me)
             Me.Pointer = Locations.Entrypoint
@@ -18,7 +23,7 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Types.OP_ST))
             Me.Instructions.Add(New Instruction(Types.OP_STV))
             Me.Instructions.Add(New Instruction(Types.OP_PUSH))
-            Me.Instructions.Add(New Instruction(Types.OP_POP))
+            Me.Instructions.Add(New Instruction(Types.OP_RSP))
             Me.Instructions.Add(New Instruction(Types.OP_JUMP))
             Me.Instructions.Add(New Instruction(Types.OP_RET))
             Me.Instructions.Add(New Instruction(Types.OP_CALL))
@@ -27,6 +32,8 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Types.OP_MUL))
             Me.Instructions.Add(New Instruction(Types.OP_DIV))
             Me.Instructions.Add(New Instruction(Types.OP_MOD))
+            Me.Instructions.Add(New Instruction(Types.OP_INC))
+            Me.Instructions.Add(New Instruction(Types.OP_DEC))
             Me.Instructions.Add(New Instruction(Types.OP_IF))
             Me.Instructions.Add(New Instruction(Types.OP_IFN))
             Me.Instructions.Add(New Instruction(Types.OP_IFG))
@@ -44,12 +51,14 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Types.OP_READ))
             Me.Instructions.Add(New Instruction(Types.OP_WRITE))
             Me.Instructions.Add(New Instruction(Types.OP_ADDR))
+            Me.Instructions.Add(New Instruction(Types.OP_SEED))
             Me.Instructions.Add(New Instruction(Types.OP_RND))
             Me.Instructions.Add(New Instruction(Types.OP_DRAW))
             Me.Instructions.Add(New Instruction(Types.OP_PRINT))
             Me.Instructions.Add(New Instruction(Types.OP_PRINTV))
             Me.Instructions.Add(New Instruction(Types.OP_CLS))
             Me.Instructions.Add(New Instruction(Types.OP_END))
+            Me.Instructions.Add(New Instruction(Types.OP_SEED))
         End Sub
         Public Sub Clock()
             Dim instruction As Instruction = Me.GetInstruction(Me.ReadByte(Me.Pointer))
@@ -60,7 +69,7 @@ Namespace Components
                      Types.OP_ST,
                      Types.OP_STV,
                      Types.OP_PUSH,
-                     Types.OP_POP,
+                     Types.OP_RSP,
                      Types.OP_JUMP,
                      Types.OP_CALL,
                      Types.OP_RET,
@@ -70,11 +79,14 @@ Namespace Components
                      Types.OP_SUB,
                      Types.OP_MUL,
                      Types.OP_DIV,
-                     Types.OP_MOD
+                     Types.OP_MOD,
+                     Types.OP_INC,
+                     Types.OP_DEC
                     Me.ArithmeticOperations(instruction)
                 Case Types.OP_AND,
                      Types.OP_OR,
                      Types.OP_XOR,
+                     Types.OP_NOT,
                      Types.OP_SHR,
                      Types.OP_SHL
                     Me.BitwiseOperations(instruction)
@@ -101,13 +113,10 @@ Namespace Components
                     Me.KeyboardOperations(instruction)
                 Case Types.OP_RND,
                      Types.OP_OV,
-                     Types.OP_COL
+                     Types.OP_COL,
+                     Types.OP_SEED
                     Me.ExtendedOperations(instruction)
             End Select
-            If (Me.Display.Redraw) Then
-                Me.Display.Refresh()
-                Me.Parent.Viewport.BackgroundImage = Me.Display.Screen
-            End If
         End Sub
         Private Sub BasicOperations(instruction As Instruction)
             Select Case instruction.Opcode
@@ -123,8 +132,10 @@ Namespace Components
                 Case Types.OP_PUSH
                     Me.Push(Me.ReadUInt(CUShort(Me.Pointer + 1)))
                     Me.Pointer = CUShort(Me.Pointer + 3)
-                Case Types.OP_POP
-                    Me.Pop()
+                Case Types.OP_RSP
+                    Do Until Me.Stack = 0
+                        Me.Pop()
+                    Loop
                     Me.Pointer = CUShort(Me.Pointer + 3)
                 Case Types.OP_JUMP
                     Me.Pointer = Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))
@@ -246,12 +257,22 @@ Namespace Components
                 Case Types.OP_MOD
                     Dim y As UInt16 = Me.Pop
                     Dim x As UInt16 = Me.Pop
-                    If (y > 0) Then
-                        Me.Push(0)
-                    Else
-                        Me.Push(x Mod y)
-                    End If
+                    If (y > 0) Then Me.Push(0) Else Me.Push(x Mod y)
                     Me.Pointer = CUShort(Me.Pointer + 3)
+                Case Types.OP_INC
+                    Dim v As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                    Dim inc As UInt16 = Me.ReadUInt(CUShort(Me.Pointer + 3))
+                    Dim sum As Int32 = v + inc
+                    Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), CUShort(sum))
+                    Me.Overflow = If(sum > &HFFFF, CUShort(1), CUShort(0))
+                    Me.Pointer = CUShort(Me.Pointer + 5)
+                Case Types.OP_DEC
+                    Dim v As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                    Dim inc As UInt16 = Me.ReadUInt(CUShort(Me.Pointer + 3))
+                    Dim sum As Int32 = v - inc
+                    Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), CUShort(sum And &HFFFF))
+                    Me.Overflow = If(sum > &HFFFF, CUShort(1), CUShort(0))
+                    Me.Pointer = CUShort(Me.Pointer + 5)
             End Select
         End Sub
         Private Sub BitwiseOperations(instruction As Instruction)
@@ -264,6 +285,9 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 3)
                 Case Types.OP_XOR
                     Me.Push(Me.Pop Xor Me.Pop)
+                    Me.Pointer = CUShort(Me.Pointer + 3)
+                Case Types.OP_NOT
+                    Me.Push(Not Me.Pop)
                     Me.Pointer = CUShort(Me.Pointer + 3)
                 Case Types.OP_SHR
                     Dim x As UInt16 = Me.Pop
@@ -316,8 +340,11 @@ Namespace Components
         End Sub
         Private Sub ExtendedOperations(instruction As Instruction)
             Select Case instruction.Opcode
+                Case Types.OP_SEED
+                    Me.Seed = Me.ReadUInt(CUShort(Me.Pointer + 1))
+                    Me.Pointer = CUShort(Me.Pointer + 3)
                 Case Types.OP_RND
-                    Me.Push(Me.ReadUInt(CUShort(Me.Pointer + 1)).Random)
+                    Me.Push(Me.ReadUInt(CUShort(Me.Pointer + 1)).Random(Me.Seed))
                     Me.Pointer = CUShort(Me.Pointer + 3)
                 Case Types.OP_COL
                     Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), Me.Collision)
@@ -333,6 +360,9 @@ Namespace Components
             End If
             Throw New Exception(String.Format("Undefined instruction at 0x{0} '{1}'", Me.Pointer.ToString("X"), Opcode.ToString))
         End Function
+        Protected Friend Sub UpdateViewport(im As Image)
+            RaiseEvent OnViewportUpdate(im)
+        End Sub
         Protected Overrides Sub Dispose(disposing As Boolean)
             Me.Display = Nothing
             Me.Instructions = Nothing

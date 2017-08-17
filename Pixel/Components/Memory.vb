@@ -2,14 +2,14 @@
 Namespace Components
     Public MustInherit Class Memory
         Implements IDisposable
-        Private Property Data As Byte()
+        Public Property Memory As Byte()
         Sub New()
             Me.Reset()
             Me.WriteBlock(Locations.Fonts, My.Resources.fonts)
             Me.WriteBlock(Locations.Keys, My.Resources.characters)
         End Sub
         Public Sub Reset()
-            Me.Data = New Byte(UInt16.MaxValue) {}
+            Me.Memory = New Byte(UInt16.MaxValue) {}
             For i As UInt16 = 0 To UInt16.MaxValue - 1
                 Me.WriteByte(i, &H0)
             Next
@@ -98,18 +98,6 @@ Namespace Components
             End If
             Throw New Exception("Stack out of range")
         End Sub
-        Public Sub Reallocate(offset As UInt16, length As UInt16)
-            If (offset >= 0 AndAlso offset + length <= Me.Data.Length - 1) Then
-                For i As Integer = Me.Data.Length - 1 To offset Step -1
-                    If (i + length <= Me.Data.Length - 1) Then
-                        Me.Data(i + length) = Me.Data(i)
-                    End If
-                Next
-                For i As Integer = offset To offset + length
-                    Me.Data(i) = &H0
-                Next
-            End If
-        End Sub
         Public Function NumberToSprite(num As Char) As Byte()
             If (Char.IsNumber(num)) Then
                 Select Case num
@@ -138,13 +126,13 @@ Namespace Components
         End Sub
         Public Function ReadByte(Address As Byte) As Byte
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
-                Return Me.Data(Address)
+                Return Me.Memory(Address)
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Function
         Public Function ReadByte(Address As UInt16) As Byte
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
-                Return Me.Data(Address)
+                Return Me.Memory(Address)
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Function
@@ -162,7 +150,7 @@ Namespace Components
         End Function
         Public Sub WriteByte(Address As UInt16, Value As Byte)
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
-                Me.Data(Address) = Value
+                Me.Memory(Address) = Value
                 Return
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
@@ -198,7 +186,7 @@ Namespace Components
         Public Sub WriteBlock(Address As UInt16, ParamArray Values() As Byte)
             If (Address >= 0 AndAlso Address + Values.Length <= UInt16.MaxValue) Then
                 For i As Integer = 0 To Values.Length - 1
-                    Me.Data(Address + i) = Values(i)
+                    Me.Memory(Address + i) = Values(i)
                 Next
                 Return
             End If
@@ -209,7 +197,7 @@ Namespace Components
         Protected Overridable Sub Dispose(disposing As Boolean)
             If Not Me.disposedValue Then
                 If disposing Then
-                    Me.Data = Nothing
+                    Me.Memory = Nothing
                 End If
             End If
             Me.disposedValue = True

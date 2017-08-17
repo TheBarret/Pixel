@@ -3,7 +3,6 @@ Imports System.Drawing.Drawing2D
 Namespace Components
     Public Class Display
         Public Property Redraw As Boolean
-        Public Property Screen As Bitmap
         Private Property Width As UInt16
         Private Property Height As UInt16
         Private Property Offset As UInt16
@@ -12,9 +11,9 @@ Namespace Components
         Private Property Foreground As Brush
         Private Property Parent As Processor
         Sub New(Parent As Processor)
-            Me.Width = 256
-            Me.Height = 128
-            Me.Offset = 2
+            Me.Width = 128
+            Me.Height = 64
+            Me.Offset = 3
             Me.Redraw = False
             Me.Parent = Parent
             Me.Background = New SolidBrush(Color.White)
@@ -22,18 +21,18 @@ Namespace Components
             Me.Buffer = New Byte(Me.Width - 1, Me.Height - 1) {}
         End Sub
         Public Sub Allocate(x As Integer, y As Integer, buffer As Byte())
-            Dim px As Integer = x, py As Integer = y, before As Byte, after As Byte
+            Dim px As Integer = x, py As Integer = y, before As Byte, after As Byte, flag As Byte = &H0
             Me.Parent.Collision = &H0
             For i As Integer = 0 To buffer.Length - 1
                 For j As Integer = 0 To 7
-                    If Me.BitToString(buffer(i))(j) = Char.Parse("1") Then
+                    If Me.BitsToChar(buffer(i))(j) = "1"c Then
                         If (px + j >= 0 And px + j <= Me.Width) And (py + i >= 0 And py + i <= Me.Height) Then
                             If px + j < Width AndAlso py + i < Height Then
                                 before = Me.Buffer(px + j, py + i)
+                                If Me.Buffer(px + j, py + i) = &H1 Then flag = &H1
                                 Me.Buffer(px + j, py + i) = CByte(Me.Buffer(px + j, py + i) Xor &H1)
                                 after = Me.Buffer(px + j, py + i)
-                                Me.Redraw = True
-                                If (before = 1 AndAlso after = 0) Then              '// Collision occoured
+                                If (before = 1 AndAlso after = 0) Then
                                     Me.Parent.Collision = &H1
                                 End If
                             End If
@@ -41,10 +40,12 @@ Namespace Components
                     End If
                 Next
             Next
+            If (flag = &H0) Then Me.Redraw = True
         End Sub
         Public Sub Refresh()
             Using bm As New Bitmap(Me.Width * Me.Offset, Me.Height * Me.Offset)
                 Using g As Graphics = Graphics.FromImage(bm)
+                    g.SmoothingMode = SmoothingMode.None
                     g.CompositingMode = CompositingMode.SourceCopy
                     g.PixelOffsetMode = PixelOffsetMode.Half
                     g.InterpolationMode = InterpolationMode.NearestNeighbor
@@ -56,7 +57,7 @@ Namespace Components
                         Next
                     Next
                 End Using
-                Me.Screen = CType(bm.Clone, Bitmap)
+                Me.Parent.UpdateViewport(CType(bm.Clone, Image))
             End Using
             Me.Redraw = False
         End Sub
@@ -98,8 +99,9 @@ Namespace Components
                     Me.Buffer(x, y) = &H0
                 Next
             Next
+            Me.Redraw = True
         End Sub
-        Private Function BitToString(value As Integer) As Char()
+        Private Function BitsToChar(value As UInt16) As Char()
             Return Convert.ToString(value, 2).PadLeft(8, "0"c).ToCharArray()
         End Function
     End Class

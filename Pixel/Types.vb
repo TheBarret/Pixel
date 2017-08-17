@@ -4,7 +4,7 @@
     OP_LD
     OP_ST
     OP_STV
-    OP_POP
+    OP_RSP
     OP_JUMP
     OP_CALL
     OP_RET
@@ -25,6 +25,9 @@
     OP_AND
     OP_OR
     OP_XOR
+    OP_NOT
+    OP_INC
+    OP_DEC
     OP_SHR
     OP_SHL
     OP_OV
@@ -39,6 +42,7 @@
     OP_PRINTV
     OP_CLS
     OP_END
+    OP_SEED
     T_END
     T_EOF
     T_SPACE

@@ -7,23 +7,27 @@ Public Class Machine
     Public Event MachineInactive()
     Public Event Failure(Ex As Exception)
     Public Property Running As Boolean
-    Private Property FrameRate As Integer
+    Public Property Processor As Processor
+    Private Property FrameRate As Long
     Private Property Check As DateTime
     Private Property Timer As Stopwatch
     Private Property Wait As ManualResetEvent
     Private Property ByteStream As Byte()
-    Private Property Processor As Processor
-    Protected Friend Property Viewport As Control
+    Private Property Viewport As Control
     Sub New(Viewport As Control)
         Me.Viewport = Viewport
     End Sub
-    Public Sub Compile(Filename As String)
+    Public Function Compile(Filename As String) As Boolean
         Try
-            Me.ByteStream = New ByteStream(New Lexer(Filename, New Grammars.Pixel).Parse).Compile()
+            Using stream As New ByteStream(New Lexer(Filename, New Grammars.Pixel).Parse)
+                Me.ByteStream = stream.Compile()
+            End Using
+            Return True
         Catch ex As Exception
             RaiseEvent Failure(ex)
+            Return False
         End Try
-    End Sub
+    End Function
     Public Sub Start(Framerate As Integer)
         If (Me.ByteStream.Length > 0) Then
             Call New Thread(Sub() Me.Run(Me.ByteStream, Framerate)) With {.IsBackground = True}.Start()
@@ -50,6 +54,7 @@ Public Class Machine
     Private Sub Run(Bytecode() As Byte, FrameRate As Integer)
         Try
             Me.Processor = New Processor(Me)
+            AddHandler Me.Processor.OnViewportUpdate, AddressOf Me.ViewportUpdate
             Processor.WriteBlock(Locations.Entrypoint, Bytecode)
             If (Me.Running) Then
                 Me.Running = False
@@ -71,9 +76,13 @@ Public Class Machine
                     Processor.Clock()
                     Interlocked.Increment(Me.FrameRate)
                 End If
+                If (Me.Processor.Display.Redraw) Then
+                    Me.Processor.Display.Refresh()
+                End If
             Loop While Me.Running
-            Memory.Dump(".\Dump.bin", Processor.ReadBlock(&H0, &HFFFF))
+            Memory.Dump(".\Memory.bin", Processor.ReadBlock(&H0, &HFFFF))
             Processor.Dispose()
+            RemoveHandler Me.Processor.OnViewportUpdate, AddressOf Me.ViewportUpdate
         Catch ex As Exception
             RaiseEvent Failure(ex)
             Me.Running = False
@@ -81,5 +90,10 @@ Public Class Machine
             Me.Wait.Set()
             RaiseEvent MachineInactive()
         End Try
+    End Sub
+    Private Sub ViewportUpdate(im As Drawing.Image)
+        SyncLock im
+            Me.Viewport.BackgroundImage = im
+        End SyncLock
     End Sub
 End Class
