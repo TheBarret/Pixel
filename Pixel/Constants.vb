@@ -15,7 +15,8 @@ Public Enum Locations As UInt16
     Keys = &H200
     KeysMax = &H2E6
     Collision = &H2E8
-    Entrypoint = &H2EA
+    VRam = &H2EA
+    Entrypoint = &H22EA
 End Enum
 Public Enum Keys As UInt16
     A = 4

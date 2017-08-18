@@ -18,7 +18,7 @@ Namespace Grammars
             Me.Rules.Add(New Rule(New Regex("^\bRETURN\b", Me.Options), Types.OP_RET))
             Me.Rules.Add(New Rule(New Regex("^\bADD\b", Me.Options), Types.OP_ADD))
             Me.Rules.Add(New Rule(New Regex("^\bSUB\b", Me.Options), Types.OP_SUB))
-            Me.Rules.Add(New Rule(New Regex("^\bPMUL\b", Me.Options), Types.OP_MUL))
+            Me.Rules.Add(New Rule(New Regex("^\bMUL\b", Me.Options), Types.OP_MUL))
             Me.Rules.Add(New Rule(New Regex("^\bDIV\b", Me.Options), Types.OP_DIV))
             Me.Rules.Add(New Rule(New Regex("^\bMOD\b", Me.Options), Types.OP_MOD))
             Me.Rules.Add(New Rule(New Regex("^\bAND\b", Me.Options), Types.OP_AND))

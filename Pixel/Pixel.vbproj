@@ -75,6 +75,7 @@
     <Compile Include="Assembler\Lexer.vb" />
     <Compile Include="Assembler\Token.vb" />
     <Compile Include="Components\Display.vb" />
+    <Compile Include="Components\IComponent.vb" />
     <Compile Include="Components\Keyboard.vb" />
     <Compile Include="Components\Memory.vb" />
     <Compile Include="Components\Processor.vb" />
@@ -82,6 +83,7 @@
     <Compile Include="Controls\Viewport.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\Visualizer.vb" />
     <Compile Include="Extensions.vb" />
     <Compile Include="Grammars\Pixel.vb" />
     <Compile Include="Instructions.vb" />

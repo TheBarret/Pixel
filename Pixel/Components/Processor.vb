@@ -14,8 +14,8 @@ Namespace Components
         Sub New(Parent As Machine)
             Me.Parent = Parent
             Me.Seed = &H0
-            Me.Display = New Display(Me)
             Me.Keyboard = New Keyboard(Me)
+            Me.Display = New Display(Me, 128, 64)
             Me.Pointer = Locations.Entrypoint
             Me.Instructions = New List(Of Instruction)
             Me.Instructions.Add(New Instruction(Types.OP_NOP))
@@ -334,7 +334,7 @@ Namespace Components
                 Case Types.OP_SCR
                     Dim direction As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
                     Dim value As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3)))
-                    Me.Display.Scroll(direction, value)
+                    Me.Display.Shift(direction, value)
                     Me.Pointer = CUShort(Me.Pointer + 5)
             End Select
         End Sub

@@ -14,6 +14,14 @@ Namespace Components
                 Me.WriteByte(i, &H0)
             Next
         End Sub
+        Public Property VRam(x As Int32, y As Int32, offset As UInt32) As Byte
+            Get
+                Return Me.ReadByte(CUShort(Locations.VRam + ((y * offset) + x)))
+            End Get
+            Set(value As Byte)
+                Me.WriteByte(CUShort(Locations.VRam + ((y * offset) + x)), value)
+            End Set
+        End Property
         Public Property Pointer(Optional Offset As UInt16 = 0) As UInt16
             Get
                 Return Me.ReadUInt(CUShort(Locations.Pointer + Offset))

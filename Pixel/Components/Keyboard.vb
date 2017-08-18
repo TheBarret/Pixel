@@ -1,10 +1,10 @@
 ﻿Namespace Components
     Public Class Keyboard
-        Private Parent As Processor
+        Inherits Component
         Private Property Key As UInt16
         Private Property Mapping As Dictionary(Of Char, UInt16)
         Sub New(Parent As Processor)
-            Me.Parent = Parent
+            MyBase.New(Parent)
             Me.Mapping = New Dictionary(Of Char, UInt16)
             For i As UInt16 = Locations.Keys To Locations.KeysMax Step 4
                 Me.Mapping.Add(ChrW(Me.Parent.ReadUInt(i)), Me.Parent.ReadUInt(CUShort(i + 2)))

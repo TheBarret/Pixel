@@ -8,7 +8,7 @@ Public Class Machine
     Public Event Failure(Ex As Exception)
     Public Property Running As Boolean
     Public Property Processor As Processor
-    Private Property FrameRate As Long
+    Private Property Frames As Long
     Private Property Check As DateTime
     Private Property Timer As Stopwatch
     Private Property Wait As ManualResetEvent
@@ -46,8 +46,8 @@ Public Class Machine
             Me.Processor.Keyboard.ReleaseKey(ChrW(Params.KeyValue))
         End If
     End Sub
-    Public Function GetFps() As Integer
-        Dim current As Integer = CInt(Interlocked.Exchange(Me.FrameRate, 0) / (DateTime.Now - Me.Check).TotalSeconds)
+    Public Function Framerate() As Integer
+        Dim current As Integer = CInt(Interlocked.Exchange(Me.Frames, 0) / (DateTime.Now - Me.Check).TotalSeconds)
         Me.Check = DateTime.Now
         Return current
     End Function
@@ -60,7 +60,7 @@ Public Class Machine
                 Me.Running = False
                 Me.Wait.WaitOne()
             End If
-            Me.FrameRate = 0
+            Me.Frames = 0
             Me.Check = DateTime.Now
             Me.Running = True
             Me.Timer = New Stopwatch
@@ -74,7 +74,7 @@ Public Class Machine
                 If (Me.Timer.ElapsedMilliseconds >= (1000 / FrameRate)) Then
                     Me.Timer.Restart()
                     Processor.Clock()
-                    Interlocked.Increment(Me.FrameRate)
+                    Interlocked.Increment(Me.Frames)
                 End If
                 If (Me.Processor.Display.Redraw) Then
                     Me.Processor.Display.Refresh()
