@@ -1,7 +1,6 @@
-# Pixel [Work in Progress]
-Tiny 16bit Virtual Machine
+# Pixel
 
-Elements of this project are subject to change along the way of development, frequent updates are to be expected.
+A small 16bit Virtual Machine with assembler to create small programs or games
 
 ![](http://i.imgur.com/OpMIVK3.png)
 
