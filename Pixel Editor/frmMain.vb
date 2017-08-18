@@ -4,8 +4,8 @@ Imports System.Text
 Imports System.Threading
 Imports Timer = System.Timers.Timer
 Public Class frmMain
+    Private Property VMem As Vmem
     Private Property Timer As Timer
-    Private Property Vism As Visualizer
     Private Property Machine As Machine
     Private Property ExitLock As Object
     Private Property ExitFlag As Boolean
@@ -13,7 +13,7 @@ Public Class frmMain
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.ExitFlag = False
         Me.ExitLock = New Object
-        Me.Vism = New Visualizer(Me.vpVmem, 64, 0)
+        Me.VMem = New Vmem(Me.vpVmem, &H40, &H0)
         Me.Machine = New Machine(Me.Viewport)
         AddHandler Me.Machine.Failure, AddressOf Me.Failure
         AddHandler Me.Machine.MachineActive, AddressOf Me.MachineActive
@@ -40,7 +40,7 @@ Public Class frmMain
         If (Me.Machine.Compile(Me.Filename)) Then
             Me.TabContainer.SelectedTab = Me.tabDisplay
             Me.AddOutputLog("Executing...")
-            Me.Machine.Start(5000)
+            Me.Machine.Start(400)
         End If
     End Sub
     Private Sub stripBtnStop_Click(sender As Object, e As EventArgs) Handles stripBtnStop.Click
@@ -60,12 +60,9 @@ Public Class frmMain
             Me.lbStripSelected.Text = "Selected: 0"
         End If
     End Sub
-    Private Sub tbOffset_Scroll(sender As Object, e As EventArgs) Handles tbOffset.Scroll
-        Me.Vism.Offset = Me.tbOffset.Value
-    End Sub
     Private Sub FpsTick(sender As Object, e As Timers.ElapsedEventArgs)
-        Me.UpdateFps(Me.Machine.Framerate)
-        Call New Thread(Sub() Me.Vism.Update(Me.Machine.Processor.Memory)) With {.IsBackground = True}.Start()
+        Me.UpdateFps(Me.Machine.GetFps)
+        Call New Thread(Sub() Me.VMem.Update(Me.Machine.Processor.Memory)) With {.IsBackground = True}.Start()
     End Sub
     Private Sub Failure(ex As Exception)
         Me.AddOutputLog(String.Format("Error: {0}", ex.Message))
@@ -81,7 +78,7 @@ Public Class frmMain
         RemoveHandler Me.Timer.Elapsed, AddressOf Me.FpsTick
         Me.AddOutputLog("Program has stopped")
         Me.SwitchGUI(False)
-        Me.Vism.Clear()
+        Me.VMem.Clear()
     End Sub
     Private Sub FlagForShutdown()
         SyncLock Me.ExitLock
@@ -99,7 +96,6 @@ Public Class frmMain
         If (Me.InvokeRequired) Then
             Me.Invoke(Sub() Me.SwitchGUI(state))
         Else
-            Me.tbOffset.Enabled = state
             Me.stripBtnStop.Enabled = state
             Me.stripBtnStart.Enabled = Not state
         End If

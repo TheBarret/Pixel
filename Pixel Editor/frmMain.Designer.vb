@@ -28,8 +28,9 @@ Partial Class frmMain
         Me.cbFiles = New System.Windows.Forms.ComboBox()
         Me.Usercode = New System.Windows.Forms.RichTextBox()
         Me.tabDisplay = New System.Windows.Forms.TabPage()
+        Me.Viewport = New Pixel.Viewport()
         Me.tabMemory = New System.Windows.Forms.TabPage()
-        Me.tbOffset = New System.Windows.Forms.TrackBar()
+        Me.vpVmem = New Pixel.Viewport()
         Me.tabTools = New System.Windows.Forms.TabPage()
         Me.cmdCopySprite = New System.Windows.Forms.Button()
         Me.cmdResetButtons = New System.Windows.Forms.Button()
@@ -41,13 +42,10 @@ Partial Class frmMain
         Me.ToolStrip1 = New System.Windows.Forms.ToolStrip()
         Me.stripBtnStop = New System.Windows.Forms.ToolStripButton()
         Me.stripBtnStart = New System.Windows.Forms.ToolStripButton()
-        Me.Viewport = New Pixel.Viewport()
-        Me.vpVmem = New Pixel.Viewport()
         Me.TabContainer.SuspendLayout()
         Me.tabEditor.SuspendLayout()
         Me.tabDisplay.SuspendLayout()
         Me.tabMemory.SuspendLayout()
-        CType(Me.tbOffset, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tabTools.SuspendLayout()
         Me.Strip.SuspendLayout()
         Me.ToolStrip1.SuspendLayout()
@@ -109,9 +107,17 @@ Partial Class frmMain
         Me.tabDisplay.Text = "Display"
         Me.tabDisplay.UseVisualStyleBackColor = True
         '
+        'Viewport
+        '
+        Me.Viewport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
+        Me.Viewport.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Viewport.Location = New System.Drawing.Point(115, 18)
+        Me.Viewport.Name = "Viewport"
+        Me.Viewport.Size = New System.Drawing.Size(386, 194)
+        Me.Viewport.TabIndex = 8
+        '
         'tabMemory
         '
-        Me.tabMemory.Controls.Add(Me.tbOffset)
         Me.tabMemory.Controls.Add(Me.vpVmem)
         Me.tabMemory.Location = New System.Drawing.Point(4, 22)
         Me.tabMemory.Name = "tabMemory"
@@ -120,17 +126,15 @@ Partial Class frmMain
         Me.tabMemory.Text = "Visualization"
         Me.tabMemory.UseVisualStyleBackColor = True
         '
-        'tbOffset
+        'vpVmem
         '
-        Me.tbOffset.Enabled = False
-        Me.tbOffset.LargeChange = 64
-        Me.tbOffset.Location = New System.Drawing.Point(6, 318)
-        Me.tbOffset.Maximum = 4096
-        Me.tbOffset.Name = "tbOffset"
-        Me.tbOffset.Size = New System.Drawing.Size(609, 42)
-        Me.tbOffset.SmallChange = 64
-        Me.tbOffset.TabIndex = 11
-        Me.tbOffset.TickFrequency = 512
+        Me.vpVmem.BackColor = System.Drawing.SystemColors.AppWorkspace
+        Me.vpVmem.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.vpVmem.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.vpVmem.Location = New System.Drawing.Point(6, 5)
+        Me.vpVmem.Name = "vpVmem"
+        Me.vpVmem.Size = New System.Drawing.Size(609, 307)
+        Me.vpVmem.TabIndex = 10
         '
         'tabTools
         '
@@ -237,26 +241,6 @@ Partial Class frmMain
         Me.stripBtnStart.Size = New System.Drawing.Size(36, 36)
         Me.stripBtnStart.Text = "Start"
         '
-        'Viewport
-        '
-        Me.Viewport.BackColor = System.Drawing.SystemColors.AppWorkspace
-        Me.Viewport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.Viewport.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Viewport.Location = New System.Drawing.Point(51, 28)
-        Me.Viewport.Name = "Viewport"
-        Me.Viewport.Size = New System.Drawing.Size(512, 256)
-        Me.Viewport.TabIndex = 8
-        '
-        'vpVmem
-        '
-        Me.vpVmem.BackColor = System.Drawing.SystemColors.AppWorkspace
-        Me.vpVmem.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.vpVmem.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.vpVmem.Location = New System.Drawing.Point(6, 5)
-        Me.vpVmem.Name = "vpVmem"
-        Me.vpVmem.Size = New System.Drawing.Size(609, 307)
-        Me.vpVmem.TabIndex = 10
-        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -278,8 +262,6 @@ Partial Class frmMain
         Me.tabEditor.ResumeLayout(False)
         Me.tabDisplay.ResumeLayout(False)
         Me.tabMemory.ResumeLayout(False)
-        Me.tabMemory.PerformLayout()
-        CType(Me.tbOffset, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tabTools.ResumeLayout(False)
         Me.tabTools.PerformLayout()
         Me.Strip.ResumeLayout(False)
@@ -309,6 +291,5 @@ Partial Class frmMain
     Friend WithEvents lbStripFramerate As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents tabMemory As System.Windows.Forms.TabPage
     Friend WithEvents vpVmem As Pixel.Viewport
-    Friend WithEvents tbOffset As System.Windows.Forms.TrackBar
 
 End Class

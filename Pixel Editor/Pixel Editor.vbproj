@@ -103,6 +103,7 @@
     <Compile Include="Sprites.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Vmem.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frmMain.resx">
