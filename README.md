@@ -86,7 +86,7 @@ end		          | no params 	                  		| Terminates execution of progra
 ----------------------------------------------------------------------------------------------------
 Limitations
 ----------------------------------------------------------------------------------------------------
-The 'if' and 'strcmp' type statements assume the skipped instruction to be 8 bytes, this means instructions
+The 'if' and 'strcmp' type statements assume the skipped instruction to be 3 bytes, this means instructions
 that take up more bytes will not work.
 
 The following instructions do not work with if/strcmp -statement:
