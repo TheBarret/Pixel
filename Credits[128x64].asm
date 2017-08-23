@@ -16,19 +16,20 @@ clear | jmp [main]
 	jmp [draw_line]
 
 :draw_text
-	if [ti] #23 return
+	strlen [intro][tlen]
+	ifv [ti][tlen]  return
 	print [tx][ty][ti][intro]
 	inc [ti] #1
 	inc [tx] #5
 	jmp [draw_text]	
 
 :pointer
-	key [input]
-	if [input] #0 return
-	ifv [input] [pu] call [pointer_up]
-	ifv [input] [pd] call [pointer_down]
-	ifv [input] [pl] call [pointer_left]
-	ifv [input] [pr] call [pointer_right]
+	input [key]
+	if [key] #0 return
+	ifv [key] [pu] call [pointer_up]
+	ifv [key] [pd] call [pointer_down]
+	ifv [key] [pl] call [pointer_left]
+	ifv [key] [pr] call [pointer_right]
 	call [pointer_draw]
 	return
 
@@ -73,11 +74,12 @@ clear | jmp [main]
 :py		15
 :lx		0
 :ly		8
-:input		0
+:key		0
 :step		2
 :tx		0
 :ty		1
 :ti		0
+:tlen	0
 :pu		{W}
 :pd		{S}
 :pl		{A}

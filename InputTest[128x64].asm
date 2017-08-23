@@ -11,31 +11,35 @@ clear | jmp [init]
 :tx			1
 :ty			1
 :ti			0
-:input			0				;key input buffer
+:key		0				;key input buffer
 :x			64
 :y			32
 :d			2
 :s			8
 :c			0
+:l			0
 :info			"Use 'WASD' keys..."
 
-:init	if [ti] #18 jmp [main]
+:init
+	strlen [info][l]
+	ifv [ti][l] jmp [main]
 	print [tx][ty][ti][info]
 	inc [ti] #1
 	inc [tx] #5
 	jmp [init]
-:main	key [input]					;fetch key buffer
+:main
+	input [key]					;fetch key buffer
 	call [worker]
 	stcol [c]					;store collision flag
 	if [c] #1 clear
 	jmp [main]
 
 :worker
-	ifv [input] [up] call [draw_up]
-	ifv [input] [down] call [draw_down]
-	ifv [input] [right] call [draw_right]
-	ifv [input] [left] call [draw_left]
-	ifv [input] [exit] end
+	ifv [key] [up] call [draw_up]
+	ifv [key] [down] call [draw_down]
+	ifv [key] [right] call [draw_right]
+	ifv [key] [left] call [draw_left]
+	ifv [key] [exit] end
 	return
 :draw_up
 	storev [d] #0

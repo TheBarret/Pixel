@@ -4,10 +4,11 @@
 clear | jmp [main]
 
 :counter	0
-:string		"Count:"
-:x			10
-:y			10
-:i			0
+:string	"Count:"
+:x		10
+:y		10
+:i		0
+:len		0
 :timer		0
 
 :main	call [print_text]			;print out text
@@ -27,7 +28,8 @@ clear | jmp [main]
 	print [x][y][i][string]
 	inc [i] #1
 	inc [x] #6
-	if [i] #6 return
+	strlen [string] [len]
+	ifv [i] [len] return
 	jmp [print_text]
 
 :reset	storev [counter] #0
