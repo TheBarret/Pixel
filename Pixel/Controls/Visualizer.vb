@@ -1,11 +1,13 @@
 ﻿Imports System.Drawing
 Imports System.Windows.Forms
+
 Public Class Visualizer
     Public Property Offset As Integer
     Private Property Lock As Object
     Private Property Width As Integer
     Private Property Height As Integer
     Private Property Viewport As Control
+
     Sub New(Viewport As Control, Length As Integer, Offset As UInt16)
         Me.Width = Length \ 2
         Me.Height = Length \ 2
@@ -13,6 +15,7 @@ Public Class Visualizer
         Me.Viewport = Viewport
         Me.Lock = New Object
     End Sub
+
     Public Sub Clear()
         If (Me.Viewport.InvokeRequired) Then
             Me.Viewport.Invoke(Sub() Me.Clear())
@@ -22,6 +25,7 @@ Public Class Visualizer
             End SyncLock
         End If
     End Sub
+
     Public Sub Update(Memory() As Byte)
         If (Memory IsNot Nothing) Then
             If (Me.Viewport.InvokeRequired) Then
@@ -52,5 +56,5 @@ Public Class Visualizer
             End If
         End If
     End Sub
-End Class
 
+End Class

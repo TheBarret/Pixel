@@ -1,6 +1,8 @@
 ﻿Imports System.Drawing
 Imports System.Drawing.Drawing2D
+
 Namespace Components
+
     Public Class Display
         Inherits Component
         Public Property Redraw As Boolean
@@ -9,6 +11,7 @@ Namespace Components
         Private Property Offset As UInt16
         Private Property Background As Brush
         Private Property Foreground As Brush
+
         Sub New(Parent As Processor, Width As UInt16, Height As UInt16)
             MyBase.New(Parent)
             Me.Width = Width
@@ -18,6 +21,7 @@ Namespace Components
             Me.Background = New SolidBrush(Color.White)
             Me.Foreground = New SolidBrush(Color.Red)
         End Sub
+
         Public Sub Allocate(x As Integer, y As Integer, buffer As Byte())
             Dim px As Integer = x, py As Integer = y, before As Byte, after As Byte, update As Boolean = True
             Me.Parent.Collision = &H0
@@ -38,6 +42,7 @@ Namespace Components
             Next
             If (update) Then Me.Redraw = True
         End Sub
+
         Public Sub Refresh()
             Using bm As New Bitmap(Me.Width * Me.Offset, Me.Height * Me.Offset)
                 Using g As Graphics = Graphics.FromImage(bm)
@@ -57,6 +62,7 @@ Namespace Components
             End Using
             Me.Redraw = False
         End Sub
+
         Public Sub Shift(Direction As UInt16, Value As UInt16)
             Dim vcopy(,) As Byte = New Byte(Me.Width, Me.Height) {}
             Try
@@ -97,6 +103,7 @@ Namespace Components
                 Erase vcopy
             End Try
         End Sub
+
         Public Sub Clear()
             For y As Integer = 0 To Me.Height - 1
                 For x As Integer = 0 To Me.Width - 1
@@ -105,6 +112,7 @@ Namespace Components
             Next
             Me.Redraw = True
         End Sub
+
         Private Property Memory(x As Integer, y As Integer) As Byte
             Get
                 Return Me.Parent.VRam(x, y, Me.Width)
@@ -113,8 +121,11 @@ Namespace Components
                 Me.Parent.VRam(x, y, Me.Width) = value
             End Set
         End Property
+
         Private Function BitsToChar(value As UInt16) As Char()
             Return Convert.ToString(value, 2).PadLeft(8, "0"c).ToCharArray()
         End Function
+
     End Class
+
 End Namespace

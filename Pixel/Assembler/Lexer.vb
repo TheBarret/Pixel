@@ -1,11 +1,14 @@
 ﻿Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
+
 Namespace Assembler
+
     Public Class Lexer
         Inherits List(Of Token)
         Private Property Grammar As IGrammar
         Private Property Usercode As StringBuilder
+
         Sub New(Filename As String, Grammar As IGrammar)
             If (File.Exists(Filename)) Then
                 Me.Grammar = Grammar
@@ -17,6 +20,7 @@ Namespace Assembler
                 End Using
             End If
         End Sub
+
         Public Function Parse() As List(Of Token)
             If (Me.Usercode.Length > 0 And Me.Grammar.Rules.Count > 0) Then
                 Dim i As Integer = 0, match As Match, last As Types, flagged As Boolean
@@ -56,6 +60,7 @@ Namespace Assembler
             Me.Grammar = Nothing
             Return Me
         End Function
-    End Class
-End Namespace
 
+    End Class
+
+End Namespace

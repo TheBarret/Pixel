@@ -1,8 +1,6 @@
-﻿Imports System.Text.RegularExpressions
-Imports System.Globalization
+﻿Public Module Extensions
 
-Public Module Extensions
-    <System.Runtime.CompilerServices.Extension> _
+    <System.Runtime.CompilerServices.Extension>
     Public Function StringToUInt16(Str As String) As UInt16
         Dim value As UInt16 = 0
         If (UInt16.TryParse(Str.Trim, value)) Then
@@ -10,21 +8,25 @@ Public Module Extensions
         End If
         Throw New Exception(String.Format("Unable to convert '{0}' to number", Str))
     End Function
-    <System.Runtime.CompilerServices.Extension> _
+
+    <System.Runtime.CompilerServices.Extension>
     Public Function StringToByte(Str As String) As Byte
         Return Convert.ToByte(Str.Trim.Remove(0, 1), 2)
     End Function
-    <System.Runtime.CompilerServices.Extension> _
+
+    <System.Runtime.CompilerServices.Extension>
     Public Function Random(value As UInt16, Optional Seed As Integer = 0) As UInt16
         If (Seed = 0) Then Seed = Environment.TickCount
         Static rnd As New Random(Seed)
         Return CUShort(rnd.Next(0, value + 1))
     End Function
-    <System.Runtime.CompilerServices.Extension> _
+
+    <System.Runtime.CompilerServices.Extension>
     Public Function Truncate(value As String, max As Integer) As String
         Return If(value.Length <= max, value, value.Substring(0, max) + "...")
     End Function
-    <System.Runtime.CompilerServices.Extension> _
+
+    <System.Runtime.CompilerServices.Extension>
     Public Function ToKeyIndex(ch As Char) As UInt16
         Select Case Char.ToUpper(ch)
             Case "A"c : Return Keys.A
@@ -88,4 +90,5 @@ Public Module Extensions
             Case Else : Return Keys.Space
         End Select
     End Function
+
 End Module

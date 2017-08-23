@@ -16,7 +16,7 @@
     OP_IFNV
     OP_IFLV
     OP_IFGV
-    OP_STKEY
+    OP_INPUT
     OP_ADD
     OP_SUB
     OP_MUL
@@ -40,6 +40,8 @@
     OP_DRAW
     OP_PRINT
     OP_PRINTV
+    OP_STRLEN
+    OP_STRCMP
     OP_CLS
     OP_END
     OP_SEED

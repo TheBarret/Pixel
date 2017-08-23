@@ -1,19 +1,24 @@
 ﻿Imports System.IO
+
 Namespace Components
+
     Public MustInherit Class Memory
         Implements IDisposable
         Public Property Memory As Byte()
+
         Sub New()
             Me.Reset()
             Me.WriteBlock(Locations.Fonts, My.Resources.fonts)
             Me.WriteBlock(Locations.Keys, My.Resources.characters)
         End Sub
+
         Public Sub Reset()
             Me.Memory = New Byte(UInt16.MaxValue) {}
             For i As UInt16 = 0 To UInt16.MaxValue - 1
                 Me.WriteByte(i, &H0)
             Next
         End Sub
+
         Public Property VRam(x As Int32, y As Int32, offset As UInt32) As Byte
             Get
                 Return Me.ReadByte(CUShort(Locations.VRam + ((y * offset) + x)))
@@ -22,6 +27,7 @@ Namespace Components
                 Me.WriteByte(CUShort(Locations.VRam + ((y * offset) + x)), value)
             End Set
         End Property
+
         Public Property Pointer(Optional Offset As UInt16 = 0) As UInt16
             Get
                 Return Me.ReadUInt(CUShort(Locations.Pointer + Offset))
@@ -30,6 +36,7 @@ Namespace Components
                 Me.WriteUInt(CUShort(Locations.Pointer + Offset), value)
             End Set
         End Property
+
         Public Property Collision() As UInt16
             Get
                 Return Me.ReadUInt(Locations.Collision)
@@ -38,6 +45,7 @@ Namespace Components
                 Me.WriteUInt(Locations.Collision, value)
             End Set
         End Property
+
         Public Property Overflow() As UInt16
             Get
                 Return Me.ReadUInt(Locations.Overflow)
@@ -46,6 +54,7 @@ Namespace Components
                 Me.WriteUInt(Locations.Overflow, value)
             End Set
         End Property
+
         Public Property Address() As UInt16
             Get
                 Return Me.ReadUInt(Locations.AddressPtr)
@@ -54,6 +63,7 @@ Namespace Components
                 Me.WriteUInt(Locations.AddressPtr, value)
             End Set
         End Property
+
         Public Property Stack() As UInt16
             Get
                 Return Me.ReadUInt(Locations.StackPtr)
@@ -62,10 +72,12 @@ Namespace Components
                 Me.WriteUInt(Locations.StackPtr, value)
             End Set
         End Property
+
         Public Function PeekAddress() As UShort
             If (Me.Address >= 2) Then Return Me.ReadUInt(CUShort(Locations.Address + Me.Address - 2))
             Throw New Exception("Address stack out of range")
         End Function
+
         Public Function PopAddress() As UShort
             If (Me.Address >= 0) Then
                 Try
@@ -76,6 +88,7 @@ Namespace Components
             End If
             Throw New Exception("Address stack out of range")
         End Function
+
         Public Sub PushAddress(Value As UInt16)
             If (Me.Address <= Locations.AddressMax) Then
                 Me.WriteUInt(CUShort(Locations.Address + Me.Address), Value)
@@ -84,10 +97,12 @@ Namespace Components
             End If
             Throw New Exception("Address stack out of range")
         End Sub
+
         Public Function Peek() As UShort
             If (Me.Stack >= 2) Then Return Me.ReadUInt(CUShort(Locations.Stack + Me.Stack - 2))
             Throw New Exception("Stack out of range")
         End Function
+
         Public Function Pop() As UShort
             If (Me.Stack >= 0) Then
                 Try
@@ -98,6 +113,7 @@ Namespace Components
             End If
             Throw New Exception("Stack out of range")
         End Function
+
         Public Sub Push(Value As UInt16)
             If (Me.Stack <= Locations.StackMax) Then
                 Me.WriteUInt(CUShort(Locations.Stack + Me.Stack), Value)
@@ -106,6 +122,7 @@ Namespace Components
             End If
             Throw New Exception("Stack out of range")
         End Sub
+
         Public Function NumberToSprite(num As Char) As Byte()
             If (Char.IsNumber(num)) Then
                 Select Case num
@@ -123,6 +140,7 @@ Namespace Components
             End If
             Return Me.ReadBlock(340, 5)
         End Function
+
         Public Shared Sub Dump(Filename As String, Buffer() As Byte)
             If (File.Exists(Filename)) Then File.Delete(Filename)
             Using fs As New FileStream(Filename, FileMode.Create, FileAccess.Write, FileShare.None)
@@ -132,30 +150,35 @@ Namespace Components
                 End Using
             End Using
         End Sub
+
         Public Function ReadByte(Address As Byte) As Byte
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
                 Return Me.Memory(Address)
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Function
+
         Public Function ReadByte(Address As UInt16) As Byte
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
                 Return Me.Memory(Address)
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Function
+
         Public Function ReadUInt(Address As Byte) As UInt16
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
                 Return BitConverter.ToUInt16(New Byte() {Me.ReadByte(CByte(Address + 1)), Me.ReadByte(Address)}, 0)
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Function
+
         Public Function ReadUInt(Address As UInt16) As UInt16
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
                 Return BitConverter.ToUInt16(New Byte() {Me.ReadByte(CUShort(Address + 1)), Me.ReadByte(Address)}, 0)
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Function
+
         Public Sub WriteByte(Address As UInt16, Value As Byte)
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
                 Me.Memory(Address) = Value
@@ -163,6 +186,7 @@ Namespace Components
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Sub
+
         Public Sub WriteUInt(Address As Byte, Value As UInt16)
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
                 Dim data() As Byte = BitConverter.GetBytes(Value)
@@ -172,6 +196,7 @@ Namespace Components
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Sub
+
         Public Sub WriteUInt(Address As UInt16, Value As UInt16)
             If (Address >= 0 AndAlso Address <= UInt16.MaxValue) Then
                 Dim data() As Byte = BitConverter.GetBytes(Value)
@@ -181,6 +206,7 @@ Namespace Components
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Sub
+
         Public Function ReadBlock(Address As UInt16, Length As UInt16) As Byte()
             If (Address >= 0 AndAlso Address + Length <= UInt16.MaxValue) Then
                 Dim data() As Byte = New Byte(Length) {}
@@ -191,6 +217,7 @@ Namespace Components
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Function
+
         Public Sub WriteBlock(Address As UInt16, ParamArray Values() As Byte)
             If (Address >= 0 AndAlso Address + Values.Length <= UInt16.MaxValue) Then
                 For i As Integer = 0 To Values.Length - 1
@@ -200,8 +227,11 @@ Namespace Components
             End If
             Throw New Exception(String.Format("Memory address out of range '0x{0}'", Address.ToString("X")))
         End Sub
+
 #Region "IDisposable Support"
+
         Private disposedValue As Boolean
+
         Protected Overridable Sub Dispose(disposing As Boolean)
             If Not Me.disposedValue Then
                 If disposing Then
@@ -210,10 +240,14 @@ Namespace Components
             End If
             Me.disposedValue = True
         End Sub
+
         Public Sub Dispose() Implements IDisposable.Dispose
             Dispose(True)
             GC.SuppressFinalize(Me)
         End Sub
+
 #End Region
+
     End Class
+
 End Namespace

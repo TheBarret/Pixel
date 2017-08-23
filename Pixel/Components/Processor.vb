@@ -1,8 +1,7 @@
-﻿Imports System.Threading
-Imports System.Windows.Forms
-Imports System.Drawing
+﻿Imports System.Drawing
 
 Namespace Components
+
     Public Class Processor
         Inherits Memory
         Protected Friend Property Seed As UInt16
@@ -11,6 +10,7 @@ Namespace Components
         Protected Friend Property Parent As Machine
         Private Property Instructions As List(Of Instruction)
         Public Event OnViewportUpdate(im As Image)
+
         Sub New(Parent As Machine)
             Me.Parent = Parent
             Me.Seed = &H0
@@ -46,7 +46,7 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Types.OP_SHL))
             Me.Instructions.Add(New Instruction(Types.OP_OV))
             Me.Instructions.Add(New Instruction(Types.OP_COL))
-            Me.Instructions.Add(New Instruction(Types.OP_STKEY))
+            Me.Instructions.Add(New Instruction(Types.OP_INPUT))
             Me.Instructions.Add(New Instruction(Types.OP_SCR))
             Me.Instructions.Add(New Instruction(Types.OP_READ))
             Me.Instructions.Add(New Instruction(Types.OP_WRITE))
@@ -56,10 +56,13 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Types.OP_DRAW))
             Me.Instructions.Add(New Instruction(Types.OP_PRINT))
             Me.Instructions.Add(New Instruction(Types.OP_PRINTV))
+            Me.Instructions.Add(New Instruction(Types.OP_STRLEN))
+            Me.Instructions.Add(New Instruction(Types.OP_STRCMP))
             Me.Instructions.Add(New Instruction(Types.OP_CLS))
             Me.Instructions.Add(New Instruction(Types.OP_END))
             Me.Instructions.Add(New Instruction(Types.OP_SEED))
         End Sub
+
         Public Sub Clock()
             Dim instruction As Instruction = Me.GetInstruction(Me.ReadByte(Me.Pointer))
             Select Case instruction.Opcode
@@ -109,7 +112,10 @@ Namespace Components
                      Types.OP_CLS,
                      Types.OP_SCR
                     Me.VRamOperations(instruction)
-                Case Types.OP_STKEY
+                Case Types.OP_STRLEN,
+                     Types.OP_STRCMP
+                    Me.StringOperations(instruction)
+                Case Types.OP_INPUT
                     Me.KeyboardOperations(instruction)
                 Case Types.OP_RND,
                      Types.OP_OV,
@@ -118,6 +124,7 @@ Namespace Components
                     Me.ExtendedOperations(instruction)
             End Select
         End Sub
+
         Private Sub BasicOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_LD
@@ -148,13 +155,15 @@ Namespace Components
                     Me.Parent.Abort()
             End Select
         End Sub
+
         Private Sub KeyboardOperations(instruction As Instruction)
             Select Case instruction.Opcode
-                Case Types.OP_STKEY
+                Case Types.OP_INPUT
                     Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), Me.Keyboard.GetKeyValue())
                     Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
+
         Private Sub CompareOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_IF
@@ -207,6 +216,40 @@ Namespace Components
                     End If
             End Select
         End Sub
+
+        Private Sub StringOperations(instruction As Instruction)
+            Select Case instruction.Opcode
+                Case Types.OP_STRLEN
+                    Dim len As UInt16 = 0
+                    Dim src As UInt16 = Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))
+                    Dim dst As UInt16 = Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3))
+                    For i As Integer = src To src + Byte.MaxValue Step 2
+                        If (Me.ReadUInt(CUShort(i)) = 0) Then Exit For
+                        len = CUShort(len + 1)
+                    Next
+                    Me.WriteUInt(dst, len)
+                    Me.Pointer = CUShort(Me.Pointer + 5)
+                Case Types.OP_STRCMP
+                    Dim isequal As Boolean = True
+                    Dim src As UInt16 = Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))
+                    Dim dst As UInt16 = Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3))
+                    For i As Integer = 0 To Byte.MaxValue Step 2
+                        Dim a As UInt16 = Me.ReadUInt(CUShort(i + src))
+                        Dim b As UInt16 = Me.ReadUInt(CUShort(i + dst))
+                        If (a = 0 AndAlso b = 0) Then Exit For
+                        If (a <> b) Then
+                            isequal = False
+                            Exit For
+                        End If
+                    Next
+                    If (isequal) Then
+                        Me.Pointer = CUShort(Me.Pointer + 5)
+                    Else
+                        Me.Pointer = CUShort(Me.Pointer + 8)
+                    End If
+            End Select
+        End Sub
+
         Private Sub MemoryOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_READ
@@ -216,10 +259,12 @@ Namespace Components
                     Me.WriteUInt(Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))), Me.Pop)
                     Me.Pointer = CUShort(Me.Pointer + 3)
                 Case Types.OP_ADDR
+                    Dim v = Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1))
                     Me.Push(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
                     Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
+
         Private Sub ArithmeticOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_ADD
@@ -275,6 +320,7 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 5)
             End Select
         End Sub
+
         Private Sub BitwiseOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_AND
@@ -305,6 +351,7 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
+
         Private Sub VRamOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_CLS
@@ -338,6 +385,7 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 5)
             End Select
         End Sub
+
         Private Sub ExtendedOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_SEED
@@ -354,19 +402,24 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
+
         Private Function GetInstruction(Opcode As UInt16) As Instruction
             If (Me.Instructions.Where(Function(x) x.Opcode = Opcode).Any) Then
                 Return Me.Instructions.Where(Function(x) x.Opcode = Opcode).FirstOrDefault
             End If
             Throw New Exception(String.Format("Undefined instruction at 0x{0} '{1}'", Me.Pointer.ToString("X"), Opcode.ToString))
         End Function
+
         Protected Friend Sub UpdateViewport(im As Image)
             RaiseEvent OnViewportUpdate(im)
         End Sub
+
         Protected Overrides Sub Dispose(disposing As Boolean)
             Me.Display = Nothing
             Me.Instructions = Nothing
             MyBase.Dispose(disposing)
         End Sub
+
     End Class
+
 End Namespace

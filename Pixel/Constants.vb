@@ -2,6 +2,7 @@
     Scan
     Write
 End Enum
+
 Public Enum Locations As UInt16
     Pointer = &H0
     Overflow = &H2
@@ -18,6 +19,7 @@ Public Enum Locations As UInt16
     VRam = &H2EA
     Entrypoint = &H22EA
 End Enum
+
 Public Enum Keys As UInt16
     A = 4
     B = 10
