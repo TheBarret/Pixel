@@ -185,12 +185,12 @@ abcdefghijklmnopqrstuvwxyz
 Example of a simple key hook
 ```
 :program
-	key [input]
-	if [input] [exit] end
+	input [key]
+	if [key] [exit] end
 	jmp [program]
 
 :exit		{Q}
-:input		0
+:key		0
 ```
 
 Psuedo code:
