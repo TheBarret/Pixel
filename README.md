@@ -20,10 +20,12 @@ jmp [main]
 :x		50			;variable block
 :y		50
 :i		0
+:len		0
 :str		"Hello, World!"
 
 :main	call [next]
-	if [i] #13 end			;determine if we reached end of string
+	strlen [str][len]
+	ifv [i][len] end		;determine if we reached end of string
 	jmp [main]			;keep looping until we do so
 
 :next	print [x][y][i][str]		;print out character index on x and y from 'str' variable
@@ -75,7 +77,9 @@ draw		          | [x][y][label]		                | Writes data to vram from labe
 print			  | [x][y][index][label]			| Writes character index to vram from label as string with x and y coords
 printv			  | [x][y][var]					| Writes numeric value of a variable as string, same as 'print' without the index
 stcol			  | ([label])					| Stores collision value to variable (1 or 0)
-key			  | ([label])					| Stores keystroke value to variable
+strlen			  | ([label])([var])				| Stores string length in variable
+strcmp			  | ([string])([string])			| Performs a condition test string == string, executes next instruction if true
+input			  | ([label])					| Stores keystroke value to variable
 clear		          | no params			                | Clears vram memory (blanks screen)
 end		          | no params 	                  		| Terminates execution of program
 ```
@@ -83,7 +87,7 @@ end		          | no params 	                  		| Terminates execution of progra
 ----------------------------------------------------------------------------------------------------
 Limitations
 ----------------------------------------------------------------------------------------------------
-The 'if' type statements assume the skipped instruction to be 8 bytes, this means instructions
+The 'if' and 'strcmp' type statements assume the skipped instruction to be 8 bytes, this means instructions
 that take up more bytes will not work.
 
 The following instructions do not work with if-statements:
