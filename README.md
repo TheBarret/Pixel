@@ -14,22 +14,24 @@ Example of 'Hello, World' in Pixel language
 ;************************************
 ; Program: Hello, World!
 ;************************************
-jmp [main]
+clear | jmp [init]
 
-:x		32
-:y		32
-:i		0
-:len		0
-:str		"Hello, World!"
+:x	32			;variable declarations
+:y	32
+:i	0
+:len	0
+:str	"Hello, World!"
 
-:main	call [next]			;call print procedure 
-	strlen [str][len]		;store string length
-	ifv [i][len] end		;compare length with index, if length match end
+:init				;initializer
+	strlen [str][len]
+:main				;main loop
+	call [next]
+	ifv [i][len] end	;end program when we reached our string length
 	jmp [main]
-	
-:next	print [x][y][i][str]		;print character at x and y, index of [str]
-	inc [i] #1			;increase index
-	inc [x] #5			;increase x position
+:next				;increase index and x position and print char
+	print [x][y][i][str]
+	inc [i] #1
+	inc [x] #5
 	return
 ```
 
