@@ -40,7 +40,7 @@ Function	      	  | Parameters                    		| Description
 push 		          | (#<num>|0x<hex>|[label])			| Loads value onto the stack, labels will translate as label address
 pop		          | no params			                | Pops value from the stack
 load		          | ([label])			                | Loads variable onto the stack
-store		          | ([label])			                | Stores value from stack to variable
+store		          | ([label])			                | Pops value from stack and stores to variable
 storev		          | ([label]) (#<num>|0x<hex>)	                | Stores value to variable
 jmp		          | ([label])			                | Jumps to label location
 call		          | ([label])			                | Call procedure
