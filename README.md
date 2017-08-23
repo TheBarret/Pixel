@@ -37,7 +37,7 @@ Instructions
 ```
 Function	      	  | Parameters                    		| Description
 --------------------------+---------------------------------------------+---------------------------------------------------
-push 		          | (#<num>|0x<hex>|[label])			| Loads value onto the stack
+push 		          | (#<num>|0x<hex>|[label])			| Loads value onto the stack, labels will translate ad label address
 pop		          | no params			                | Pops value from the stack
 load		          | ([label])			                | Loads variable onto the stack
 store		          | ([label])			                | Stores value from stack to variable
