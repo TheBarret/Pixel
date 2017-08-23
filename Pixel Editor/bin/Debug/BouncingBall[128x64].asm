@@ -34,7 +34,7 @@ clear | jmp [init]
 
 :left	load [x] | load [step] | sub | store [x] | return
 :right	load [x] | load [step] | add | store [x] | return
-:up		load [y] | load [step] | sub | store [y] | return
+:up	load [y] | load [step] | sub | store [y] | return
 :down	load [y] | load [step] | add | store [y] | return
 
 :change_left  | storev [vx] #0 | return

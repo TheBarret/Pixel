@@ -13,6 +13,7 @@ clear | seed 0xff | jmp [init]
 :ti		0
 :tx		25
 :ty		7
+:len		0
 :author	"Made by Barret"
 
 :init	call [intro]
@@ -38,7 +39,8 @@ clear | seed 0xff | jmp [init]
 	jmp [main]
 
 :intro
-	if [ti] #14 return
+	strlen [author][len]
+	ifv [ti][len] return
 	print [tx][ty][ti][author]
 	inc [ti] #1
 	inc [tx] #5
