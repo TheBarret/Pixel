@@ -111,10 +111,11 @@ Params: x, y, [address]
 
 ```
 :string	"Hello!"
-	push #10
-	push #10
-	push [string]
-	call [@print]
+
+push #10
+push #10
+push [string]
+call [@print]
 ```
 
 [@printv]
@@ -124,10 +125,11 @@ Params: x, y, [address]
 
 ```
 :number	100
-	push #10
-	push #10
-	push [number]
-	call [@printv]
+
+push #10
+push #10
+push [number]
+call [@printv]
 ```
 
 [@sleep]
@@ -135,8 +137,8 @@ Delays the current procedure by given number of cycles.
 
 Params: int
 ```
-	push #60
-	call [@sleep]
+push #60
+call [@sleep]
 ```
 
 [@scroll]
@@ -144,9 +146,9 @@ Scrolls display to specified direction and steps
 
 Params: direction steps
 ```
-	push #0
-	push #1
-	call [@scroll]
+push #0
+push #1
+call [@scroll]
 ```
 
 ----------------------------------------------------------------------------------------------------
@@ -186,7 +188,7 @@ The value of a variable must be in straight forward format, no hexadecimals or s
 	load [foo]
 	inc [foo] #5
 	end
-		
+
 :foo	5
 ```
 
@@ -203,18 +205,34 @@ String data is decoded by the assembler into font address values, the 'print' in
 then enumerate for each character index and draw them on the given x and y position.
 
 ```
-jmp [program]
-
-:x		:1
-:y		:1
-:i		:0
-:string 	"A"
+:foo	"Hello!"
 
 :program
-	print [x][y][i][string]
+	push #10	;push x
+	push #10	;push y
+	push [foo]	;push address
+	call [@print]	;call built-in print function
 	end
 ```
-This would print the letter 'A' on the screen, because i is 0 and the string array begins with 0.
+
+This process can also be achieved manually by doing the following
+
+```
+:x	10		;variable block
+:y	10
+:i	0
+:len	0
+:str	"Hello!"
+
+:program
+	strlen [str][len]	;store string length
+:loop
+	if [i][len] end		;condition test for length, if reached, end program
+	print [x][y][i][str]	;print out character on i in string
+	inc [i] #1		;increase index
+	inc [x] #6		;increase x
+	jmp [loop]		;loop back...
+```
 
 ----------------------------------------------------------------------------------------------------
 keyboard input
