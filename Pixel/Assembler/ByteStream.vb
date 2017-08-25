@@ -1,8 +1,7 @@
-﻿Imports System.Globalization
-Imports System.IO
-
+﻿Imports System.IO
+Imports System.Globalization
+Imports Pixel.Components
 Namespace Assembler
-
     Public Class ByteStream
         Inherits MemoryStream
         Private Property Index As Integer
@@ -10,19 +9,16 @@ Namespace Assembler
         Private Property Token As Token
         Private Property TokenStream As List(Of Token)
         Private Property Labels As Dictionary(Of String, UInt16)
-
         Sub New(Tokens As List(Of Token))
             Me.TokenStream = Tokens
             Me.Labels = New Dictionary(Of String, UInt16)
         End Sub
-
         Public Function Compile() As Byte()
             Me.Parse(Mode.Scan)
             Me.Parse(Mode.Write)
-            Components.Memory.Dump(".\Program.bin", Me.ToArray)
+            Memory.Dump(".\Program.bin", Me.ToArray)
             Return Me.ToArray
         End Function
-
         Private Sub Parse(Mode As Mode)
             If (Me.TokenStream.Count = 0) Then Return
             Me.Index = 0
@@ -31,7 +27,7 @@ Namespace Assembler
             Do
                 Select Case Me.Token.Type
                     Case Types.OP_PUSH
-                        Me.Expect(1, New Types() {Types.T_CONST_NUMBER, Types.T_CONST_HEXADECIMAL})
+                        Me.Expect(1, New Types() {Types.T_CONST_NUMBER, Types.T_CONST_HEXADECIMAL, Types.T_LOCATION})
                         If (Mode = Pixel.Mode.Write) Then
                             Me.WriteByte(Me.Token.ToByte)
                         End If
@@ -358,9 +354,17 @@ Namespace Assembler
                         End If
                         Me.Location += 1
                         Me.NextToken()
+                  
                     Case Types.OP_STRCMP
                         Me.Expect(1, New Types() {Types.T_LOCATION})
                         Me.Expect(2, New Types() {Types.T_LOCATION})
+                        If (Mode = Pixel.Mode.Write) Then
+                            Me.WriteByte(Me.Token.ToByte)
+                        End If
+                        Me.Location += 1
+                        Me.NextToken()
+                    Case Types.OP_MODE
+                        Me.Expect(1, New Types() {Types.T_CONST_NUMBER, Types.T_CONST_HEXADECIMAL})
                         If (Mode = Pixel.Mode.Write) Then
                             Me.WriteByte(Me.Token.ToByte)
                         End If
@@ -413,43 +417,64 @@ Namespace Assembler
                         End If
                         Me.Location += 2
                         Me.NextToken()
+                    Case Types.SPECIAL_PRINT
+                        Me.Expect(1, New Types() {Types.T_LOCATION})
+                        Me.Expect(2, New Types() {Types.T_LOCATION})
+                        Me.Expect(3, New Types() {Types.T_LOCATION})
+                        Me.Expect(4, New Types() {Types.T_LOCATION})
+                        If (Mode = Pixel.Mode.Write) Then
+                            Me.WriteByte(Me.Token.ToByte)
+                        End If
+                        Me.Location += 1
+                        Me.NextToken()
+                    Case Types.SPECIAL_PRINTV
+                        Me.Expect(1, New Types() {Types.T_LOCATION})
+                        Me.Expect(2, New Types() {Types.T_LOCATION})
+                        Me.Expect(3, New Types() {Types.T_LOCATION})
+                        If (Mode = Pixel.Mode.Write) Then
+                            Me.WriteByte(Me.Token.ToByte)
+                        End If
+                        Me.Location += 1
+                        Me.NextToken()
+                    Case Types.SPECIAL_STRLA
+                        Me.Expect(1, New Types() {Types.T_LOCATION})
+                        Me.Expect(2, New Types() {Types.T_LOCATION})
+                        If (Mode = Pixel.Mode.Write) Then
+                            Me.WriteByte(Me.Token.ToByte)
+                        End If
+                        Me.Location += 1
+                        Me.NextToken()
                 End Select
                 If (Me.Token.Type = Types.T_END) Then Me.NextToken()
             Loop Until Me.Token.Type = Types.T_EOF
         End Sub
-
         Private Sub NextToken()
             Me.Index += 1
             Me.Token = Me.TokenStream(Me.Index)
         End Sub
-
         Private Function Peek(Optional offset As Integer = 0) As Token
             If (Me.Index + offset) > Me.TokenStream.Count Then
                 Return New Token(Types.T_EOF)
             End If
             Return Me.TokenStream(Me.Index + offset)
         End Function
-
         Private Sub Expect(offset As Integer, ParamArray Types() As Types)
             For Each tokentype As Types In Types
                 If (tokentype = Me.Peek(offset).Type) Then Return
             Next
             Throw New Exception(String.Format("Expecting '{0}' where '{1} {2}'", String.Join(" Or ", Types), Me.Peek.Match.Value, Me.Peek(1).Match.Value))
         End Sub
-
         Private Sub Fill(length As Integer, Optional Value As UInt16 = 0)
             For i As Integer = 1 To length
                 Me.WriteUInt16(Value)
                 Me.Location += 2
             Next
         End Sub
-
         Private Sub WriteUInt16(Value As UInt16)
             Dim bytes() As Byte = BitConverter.GetBytes(Value)
             Me.WriteByte(bytes(1))
             Me.WriteByte(bytes(0))
         End Sub
-
         Private Sub WriteValue(Token As Token)
             Select Case Token.Type
                 Case Types.T_CONST_NUMBER
@@ -470,7 +495,6 @@ Namespace Assembler
                     Throw New Exception(String.Format("Undefined value type '{0}'", Token.Type))
             End Select
         End Sub
-
         Private Sub SetLabel(Line As String, Location As UInt16)
             Dim reference As String = Line.Substring(1).ToUpper
             If (Not Me.Labels.ContainsKey(reference)) Then
@@ -479,13 +503,11 @@ Namespace Assembler
             End If
             Throw New Exception(String.Format("Label '{0}' already exist", reference))
         End Sub
-
         Private Function GetLabel(Line As String) As UInt16
             Dim reference As String = Line.Substring(1, Line.Length - 2).ToUpper
             If (Me.Labels.ContainsKey(reference)) Then Return Me.Labels(reference)
             Throw New Exception(String.Format("Label '{0}' does not exist", Line))
         End Function
-
         Private Sub WriteKey(ch As String)
             Dim chrindex As Integer = AscW(ch)
             For i As Integer = 0 To My.Resources.characters.Length - 1 Step 4
@@ -497,14 +519,12 @@ Namespace Assembler
                 End If
             Next
         End Sub
-
         Private Sub WriteString(Line As String)
             For Each ch As Char In Line.Substring(1, Line.Length - 2).ToCharArray
                 Me.WriteUInt16(ch.ToKeyIndex)
             Next
             Me.WriteUInt16(0)
         End Sub
-
         Public Overrides Function ToString() As String
             Return String.Format("Length: {0} Tokens: {1} Labels: {2}", Me.Length, Me.TokenStream.Count, Me.Labels.Count)
         End Function

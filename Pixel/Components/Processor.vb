@@ -7,12 +7,12 @@ Namespace Components
         Protected Friend Property Seed As UInt16
         Protected Friend Property Display As Display
         Protected Friend Property Keyboard As Keyboard
-        Protected Friend Property Parent As Machine
+        Protected Friend Property Machine As Machine
         Private Property Instructions As List(Of Instruction)
-        Public Event OnViewportUpdate(im As Image)
+        Public Event OnViewportUpdate(Sender As Object, im As Image)
 
-        Sub New(Parent As Machine)
-            Me.Parent = Parent
+        Sub New(Machine As Machine)
+            Me.Machine = Machine
             Me.Seed = &H0
             Me.Keyboard = New Keyboard(Me)
             Me.Display = New Display(Me, 128, 64)
@@ -58,11 +58,14 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Types.OP_PRINTV))
             Me.Instructions.Add(New Instruction(Types.OP_STRLEN))
             Me.Instructions.Add(New Instruction(Types.OP_STRCMP))
+            Me.Instructions.Add(New Instruction(Types.OP_MODE))
             Me.Instructions.Add(New Instruction(Types.OP_CLS))
             Me.Instructions.Add(New Instruction(Types.OP_END))
             Me.Instructions.Add(New Instruction(Types.OP_SEED))
+            Me.Instructions.Add(New Instruction(Types.SPECIAL_PRINT))
+            Me.Instructions.Add(New Instruction(Types.SPECIAL_PRINTV))
+            Me.Instructions.Add(New Instruction(Types.SPECIAL_STRLA))
         End Sub
-
         Public Sub Clock()
             Dim instruction As Instruction = Me.GetInstruction(Me.ReadByte(Me.Pointer))
             Select Case instruction.Opcode
@@ -110,7 +113,8 @@ Namespace Components
                      Types.OP_PRINTV,
                      Types.OP_PRINT,
                      Types.OP_CLS,
-                     Types.OP_SCR
+                     Types.OP_SCR,
+                     Types.OP_MODE
                     Me.VRamOperations(instruction)
                 Case Types.OP_STRLEN,
                      Types.OP_STRCMP
@@ -122,6 +126,10 @@ Namespace Components
                      Types.OP_COL,
                      Types.OP_SEED
                     Me.ExtendedOperations(instruction)
+                Case Types.SPECIAL_PRINT,
+                     Types.SPECIAL_PRINTV,
+                     Types.SPECIAL_STRLA
+                    Me.LibraryOperations(instruction)
             End Select
         End Sub
 
@@ -152,7 +160,7 @@ Namespace Components
                 Case Types.OP_RET
                     Me.Pointer = Me.PopAddress
                 Case Types.OP_END
-                    Me.Parent.Abort()
+                    Me.Machine.Abort()
             End Select
         End Sub
 
@@ -383,9 +391,14 @@ Namespace Components
                     Dim value As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3)))
                     Me.Display.Shift(direction, value)
                     Me.Pointer = CUShort(Me.Pointer + 5)
+                Case Types.OP_MODE
+                    Select Case Me.ReadUInt(CUShort(Me.Pointer + 1))
+                        Case 0 : Me.Display.Mode(64, 32, 8)
+                        Case 1 : Me.Display.Mode(128, 64, 4)
+                    End Select
+                    Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
-
         Private Sub ExtendedOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_SEED
@@ -402,24 +415,49 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
-
+        Private Sub LibraryOperations(instruction As Instruction)
+            Select Case instruction.Opcode
+                Case Types.SPECIAL_STRLA
+                    Dim len As UInt16 = 0
+                    Dim src As UInt16 = Locations.Entrypoint + Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                    Dim dst As UInt16 = Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3))
+                    For i As Integer = src To src + Byte.MaxValue Step 2
+                        If (Me.ReadUInt(CUShort(i)) = 0) Then Exit For
+                        len = CUShort(len + 1)
+                    Next
+                    Me.WriteUInt(dst, len)
+                    Me.Pointer = CUShort(Me.Pointer + 5)
+                Case Types.SPECIAL_PRINT
+                    Dim x As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                    Dim y As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3)))
+                    Dim i As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 5)))
+                    Dim addr As UInt16 = Locations.Entrypoint + Me.ReadUInt(CUShort(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 7))))
+                    Me.Display.Allocate(x, y, Me.ReadBlock(Me.ReadUInt(CUShort(addr + (i * 2))), 5))
+                    Me.Pointer = CUShort(Me.Pointer + 9)
+                Case Types.SPECIAL_PRINTV
+                    Dim x As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                    Dim y As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3)))
+                    Dim num As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 5)))))
+                    For Each ch As Char In num.ToString.ToCharArray
+                        Me.Display.Allocate(x, y, Me.NumberToSprite(ch))
+                        x = CUShort(x + 5)
+                    Next
+                    Me.Pointer = CUShort(Me.Pointer + 7)
+            End Select
+        End Sub
         Private Function GetInstruction(Opcode As UInt16) As Instruction
             If (Me.Instructions.Where(Function(x) x.Opcode = Opcode).Any) Then
                 Return Me.Instructions.Where(Function(x) x.Opcode = Opcode).FirstOrDefault
             End If
             Throw New Exception(String.Format("Undefined instruction at 0x{0} '{1}'", Me.Pointer.ToString("X"), Opcode.ToString))
         End Function
-
         Protected Friend Sub UpdateViewport(im As Image)
-            RaiseEvent OnViewportUpdate(im)
+            RaiseEvent OnViewportUpdate(Me, im)
         End Sub
-
         Protected Overrides Sub Dispose(disposing As Boolean)
             Me.Display = Nothing
             Me.Instructions = Nothing
             MyBase.Dispose(disposing)
         End Sub
-
     End Class
-
 End Namespace

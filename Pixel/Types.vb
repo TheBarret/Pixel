@@ -42,9 +42,15 @@
     OP_PRINTV
     OP_STRLEN
     OP_STRCMP
+    OP_MODE
     OP_CLS
     OP_END
     OP_SEED
+
+    SPECIAL_PRINT
+    SPECIAL_PRINTV
+    SPECIAL_STRLA
+
     T_END
     T_EOF
     T_SPACE

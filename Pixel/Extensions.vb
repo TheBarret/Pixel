@@ -6,7 +6,7 @@
         If (UInt16.TryParse(Str.Trim, value)) Then
             Return value
         End If
-        Throw New Exception(String.Format("Unable to convert '{0}' to number", Str))
+        Throw New Exception(String.Format("Unable to convert '{0}' to UInt16", Str))
     End Function
 
     <System.Runtime.CompilerServices.Extension>

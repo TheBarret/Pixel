@@ -16,6 +16,10 @@ Namespace Assembler
                 Using fs As New FileStream(Filename, FileMode.Open, FileAccess.Read)
                     Using reader As New StreamReader(fs)
                         Me.Usercode.Append(reader.ReadToEnd)
+                        Me.Usercode.Append(My.Resources.Print)
+                        Me.Usercode.Append(My.Resources.Print_num)
+                        Me.Usercode.Append(My.Resources.Sleep)
+                        Me.Usercode.Append(My.Resources.Scroll)
                     End Using
                 End Using
             End If

@@ -24,9 +24,12 @@
         End Sub
 
         Public Function GetKeyValue() As UInt16
-            Return Me.Key
+            Try
+                Return Me.Key
+            Finally
+                Me.Key = &H0
+            End Try
         End Function
-
     End Class
 
 End Namespace

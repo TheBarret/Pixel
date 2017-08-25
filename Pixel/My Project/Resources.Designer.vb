@@ -79,5 +79,98 @@ Namespace My.Resources
                 Return CType(obj,Byte())
             End Get
         End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to ;*************************************************************
+        '''; NAME			: PRINT
+        '''; DESCRIPTION	: PRINTS STRING ON COORDINATES
+        '''; PARAMS		: X Y [ADDRESS]
+        ''';*************************************************************
+        ''':@print
+        '''	store [@print_addr]
+        '''	store [@print_y]
+        '''	store [@print_x]
+        '''	strlen_addr [@print_addr][@print_len]
+        ''':@print_loop
+        '''	call [@print_next_char]
+        '''	ifv [@print_i][@print_len] jmp [@print_cleanup]
+        '''	jmp [@print_loop]
+        ''':@print_next_char
+        '''	print_addr [@print_x][@print_y][@print_i][@print_addr]
+        '''	inc [@print_i [rest of string was truncated]&quot;;.
+        '''</summary>
+        Friend ReadOnly Property Print() As String
+            Get
+                Return ResourceManager.GetString("Print", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to ;*************************************************************
+        '''; NAME			: PRINTV
+        '''; DESCRIPTION	: PRINTS VARIABLE NUMBER ON COORDINATES
+        '''; PARAMS		: X Y [ADDRESS]
+        ''';*************************************************************
+        ''':@printv
+        '''	store [@printv_var]
+        '''	store [@printv_y]
+        '''	store [@printv_x]
+        '''	print_addrv [@printv_x][@printv_y][@printv_var]
+        '''	return
+        ''':@printv_var	0
+        ''':@printv_x		0
+        ''':@printv_y		0.
+        '''</summary>
+        Friend ReadOnly Property Print_num() As String
+            Get
+                Return ResourceManager.GetString("Print_num", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to ;*************************************************************
+        '''; NAME			: SCROLL
+        '''; DESCRIPTION	: SHIFT DISPLAY BUFFER
+        '''; PARAMS		: DIRECTION STEPS
+        ''';*************************************************************
+        '''
+        ''':@scroll
+        '''	store [@scroll_steps]
+        '''	store [@scroll_direction]
+        '''	scr [@scroll_direction][@scroll_steps]
+        '''	store [@scroll_steps] #0
+        '''	store [@scroll_direction] #0
+        '''	return
+        ''':@scroll_steps		0
+        ''':@scroll_direction	0
+        '''	.
+        '''</summary>
+        Friend ReadOnly Property Scroll() As String
+            Get
+                Return ResourceManager.GetString("Scroll", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to ;*************************************************************
+        '''; NAME			: SLEEP
+        '''; DESCRIPTION	: MAKE VM SLEEP FOR N CYCLES
+        '''; PARAMS		: N
+        ''';*************************************************************
+        '''
+        ''':@sleep
+        '''	store [@sleep_timer]
+        ''':@sleep_loop
+        '''	if [@sleep_timer] #0 return
+        '''	dec [@sleep_timer] #1
+        '''	jmp [@sleep_loop]
+        ''':@sleep_timer	0
+        '''	.
+        '''</summary>
+        Friend ReadOnly Property Sleep() As String
+            Get
+                Return ResourceManager.GetString("Sleep", resourceCulture)
+            End Get
+        End Property
     End Module
 End Namespace

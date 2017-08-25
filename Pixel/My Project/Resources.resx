@@ -124,4 +124,16 @@
   <data name="fonts" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\fonts.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Print" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Library\Print.asm;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="Print_num" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Library\Print.num.asm;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="Sleep" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Library\Sleep.asm;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="Scroll" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Library\Scroll.asm;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

@@ -1,11 +1,8 @@
 ﻿Imports System.Text.RegularExpressions
 Imports Pixel.Assembler
-
 Namespace Grammars
-
     Public Class Pixel
         Implements IGrammar
-
         Sub New()
             Me.Rules = New List(Of Rule)
             Me.Rules.Add(New Rule(New Regex("^(\r\n|\r|\n|\|)", Me.Options), Types.T_END))
@@ -56,30 +53,29 @@ Namespace Grammars
             Me.Rules.Add(New Rule(New Regex("^\bPRINT\b", Me.Options), Types.OP_PRINT))
             Me.Rules.Add(New Rule(New Regex("^\bSTRLEN\b", Me.Options), Types.OP_STRLEN))
             Me.Rules.Add(New Rule(New Regex("^\bSTRCMP\b", Me.Options), Types.OP_STRCMP))
+            Me.Rules.Add(New Rule(New Regex("^\bMODE\b", Me.Options), Types.OP_MODE))
             Me.Rules.Add(New Rule(New Regex("^0x[a-f0-9]+", Me.Options), Types.T_CONST_HEXADECIMAL))
             Me.Rules.Add(New Rule(New Regex("^[0-9]+", Me.Options), Types.T_VARIABLE))
-            Me.Rules.Add(New Rule(New Regex("^(:)(?:[a-z][a-z0-9_]*)", Me.Options), Types.T_LABEL))
-            Me.Rules.Add(New Rule(New Regex("^\[(?:[a-z][a-z0-9_]*)\]", Me.Options), Types.T_LOCATION))
+            Me.Rules.Add(New Rule(New Regex("^(:)(?:[a-z@][a-z0-9_]*)", Me.Options), Types.T_LABEL))
+            Me.Rules.Add(New Rule(New Regex("^\[(?:[a-z@][a-z0-9_]*)\]", Me.Options), Types.T_LOCATION))
             Me.Rules.Add(New Rule(New Regex("^\.((0|1)|\s+(0|1)){8}", Me.Options), Types.T_SPRITEDATA))
             Me.Rules.Add(New Rule(New Regex("^\#[a-z0-9]+", Me.Options), Types.T_CONST_NUMBER))
             Me.Rules.Add(New Rule(New Regex("^("".*?"")", Me.Options), Types.T_CONST_STRING))
             Me.Rules.Add(New Rule(New Regex("^\{(.*?)\}", Me.Options), Types.T_CONST_KEY))
+            Me.Rules.Add(New Rule(New Regex("^\b_STRLA\b", Me.Options), Types.SPECIAL_STRLA))
+            Me.Rules.Add(New Rule(New Regex("^\b_PRINTA\b", Me.Options), Types.SPECIAL_PRINT))
+            Me.Rules.Add(New Rule(New Regex("^\b_PRINTAV\b", Me.Options), Types.SPECIAL_PRINTV))
         End Sub
-
         Public Property Rules As List(Of Rule) Implements IGrammar.Rules
-
         Public ReadOnly Property Name As String Implements IGrammar.Name
             Get
-                Return "Pixel Assembly"
+                Return "Pixel Assembly Language"
             End Get
         End Property
-
         Public ReadOnly Property Options As RegexOptions Implements IGrammar.Options
             Get
                 Return RegexOptions.Singleline Or RegexOptions.IgnoreCase
             End Get
         End Property
-
     End Class
-
 End Namespace
