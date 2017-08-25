@@ -14,25 +14,16 @@ Example of 'Hello, World' in Pixel language
 ;************************************
 ; Program: Hello, World!
 ;************************************
-clear | jmp [init]
+clear | jmp [main]
 
-:x	32			;variable declarations
-:y	32
-:i	0
-:len	0
-:str	"Hello, World!"
+:var	"Hello, World!"
 
-:init				;initializer
-	strlen [str][len]
-:main				;main loop
-	call [next]
-	ifv [i][len] end	;end program when we reached our string length
-	jmp [main]
-:next				;increase index and x position and print char
-	print [x][y][i][str]
-	inc [i] #1
-	inc [x] #5
-	return
+:main
+	push #20
+	push #20
+	push [var]
+	call [@print]
+	end
 ```
 
 Instructions
@@ -66,14 +57,14 @@ writeAt			  | ([label])					| Writes stack value to memory address
 readAt			  | ([label])					| Reads memory address and pushes value onto the stack
 seed			  | (#number)					| Number used to calculate a starting value for the pseudo-random number sequence (0 = default)
 random			  | (#<num>|0x<hex>)				| Pushes random number, starting from 0 and the parameter defines max range
-if			  | [label] (#number)				| Performs a condition test x == y, executes next instruction if true
-ifn			  | [label] (#number) 				| Performs a condition test x != y, executes next instruction if true
-ifg			  | [label] (#number)				| Performs a condition test x >  y, executes next instruction if true
-ifl			  | [label] (#number) 				| Performs a condition test x <  y, executes next instruction if true
-ifv			  | [label] [label]				| Performs a condition test x == y, executes next instruction if true
-ifnv			  | [label] [label] 				| Performs a condition test x != y, executes next instruction if true
-ifgv			  | [label] [label]				| Performs a condition test x >  y, executes next instruction if true
-iflv			  | [label] [label] 				| Performs a condition test x <  y, executes next instruction if true
+if			  | [label] (#number)				| Condition test x == y, executes next instruction if true
+ifn			  | [label] (#number) 				| Condition test x != y, executes next instruction if true
+ifg			  | [label] (#number)				| Condition test x >  y, executes next instruction if true
+ifl			  | [label] (#number) 				| Condition test x <  y, executes next instruction if true
+ifv			  | [label] [label]				| Condition test x == y, executes next instruction if true
+ifnv			  | [label] [label] 				| Condition test x != y, executes next instruction if true
+ifgv			  | [label] [label]				| Condition test x >  y, executes next instruction if true
+iflv			  | [label] [label] 				| Condition test x <  y, executes next instruction if true
 draw		          | [x][y][label]		                | Writes data to vram from label with x and y coords
 print			  | [x][y][index][label]			| Writes character index to vram from label as string with x and y coords
 printv			  | [x][y][var]					| Writes numeric value of a variable as string, same as 'print' without the index
@@ -83,6 +74,12 @@ strcmp			  | ([string])([string])			| Performs a condition test string == string
 input			  | ([label])					| Stores keystroke value to variable
 clear		          | no params			                | Clears vram memory (blanks screen)
 end		          | no params 	                  		| Terminates execution of program
+--------------------------+---------------------------------------------+---------------------------------------------------
+_print			  | [x][y][address]				| Internally used opcode for printing a string given by address
+_printv			  | [x][y][address]				| Internally used opcode for printing a variable number given by address
+_strla			  | [address][variable]				| Internally used opcode for obtaining a string length given by address
+
+
 ```
 
 ----------------------------------------------------------------------------------------------------
@@ -101,9 +98,62 @@ The following instructions do not work with if/strcmp -statement:
 - storev
 
 ----------------------------------------------------------------------------------------------------
+Build-In functions
+----------------------------------------------------------------------------------------------------
+
+Pixel has build-in functions that simplify the making of certain procedures, 
+these functions are included into the user assembly.
+
+[@print]
+Simplified version of the print.
+
+Params: x, y, [address]
+
+```
+:string	"Hello!"
+	push #10
+	push #10
+	push [string]
+	call [@print]
+```
+
+[@printv]
+Simplified version of the printv.
+
+Params: x, y, [address]
+
+```
+:number	100
+	push #10
+	push #10
+	push [number]
+	call [@printv]
+```
+
+[@sleep]
+Delays the current procedure by given number of cycles.
+
+Params: int
+```
+	push #60
+	call [@sleep]
+```
+
+[@scroll]
+Scrolls display to specified direction and steps
+
+Params: direction steps
+```
+	push #0
+	push #1
+	call [@scroll]
+```
+
+----------------------------------------------------------------------------------------------------
 Sprites
 ----------------------------------------------------------------------------------------------------
-Sprites can be made from a binary array of 8x6, compiler assumes only  1's and 0's in this order
+Sprites can be made from a binary array that is 8x6, the format is shown below.
+
 ```
 jmp [program]
 
@@ -128,8 +178,8 @@ This would produce the letter 'A' drawn on the screen at position variables x an
 ----------------------------------------------------------------------------------------------------
 Variables
 ----------------------------------------------------------------------------------------------------
-Variables can be defined with labels followed by a number, the compiler assumes an UInt16 value
-The value of a variable must be in a plain number format, no hexadecimals or such.
+Variables can be defined with labels followed by a number, the compiler assumes an UInt16 value.
+The value of a variable must be in straight forward format, no hexadecimals or such.
 
 ```
 :program
@@ -163,8 +213,6 @@ jmp [program]
 :program
 	print [x][y][i][string]
 	end
-
-
 ```
 This would print the letter 'A' on the screen, because i is 0 and the string array begins with 0.
 
@@ -205,35 +253,3 @@ do
 	if (input == exit) { exit }
 Loop
 ```
-
-----------------------------------------------------------------------------------------------------
-Loop example with increasing variable and condition test
-----------------------------------------------------------------------------------------------------
-```
-:program
-	if [foo] #10 end
-	call [add]
-	jmp [program]
-
-:add
-	load [i]
-	inc [i] #1
-	return
-
-:i	:0
-```
-
-Psuedo code:
-```
-declare i = 0
-
-do
-	if (i == 10)  {
-		exit
-	} else {
-		i += 1
-	}
-loop
-```
-
-
