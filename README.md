@@ -65,7 +65,7 @@ ifv			  | [label] [label]				| Condition test x == y, executes next instruction 
 ifnv			  | [label] [label] 				| Condition test x != y, executes next instruction if true
 ifgv			  | [label] [label]				| Condition test x >  y, executes next instruction if true
 iflv			  | [label] [label] 				| Condition test x <  y, executes next instruction if true
-draw		          | [x][y][label]		                | Writes data to vram from label with x and y coords
+draw		          | [x][y][label]		                | Draw sprite to vram from defined label at x and y
 print			  | [x][y][index][label]			| Writes character index to vram from label as string with x and y coords
 printv			  | [x][y][var]					| Writes numeric value of a variable as string, same as 'print' without the index
 stcol			  | ([label])					| Stores collision value to variable (1 or 0)
