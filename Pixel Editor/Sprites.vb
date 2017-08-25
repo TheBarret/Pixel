@@ -1,5 +1,6 @@
 ﻿Partial Class frmMain
     Private Property SpriteButtons As List(Of SpriteButton)
+
     Private Sub InitializeSpriteEditor()
         Me.SpriteButtons = New List(Of SpriteButton)
         Dim x As Integer = 20, y As Integer = 40
@@ -12,6 +13,7 @@
             Me.SpriteButtons.Add(btn)
         Next
     End Sub
+
     Private Sub SpriteButton(sender As Object, e As EventArgs)
         Dim button As SpriteButton = TryCast(sender, SpriteButton)
         If (button IsNot Nothing) Then
@@ -25,6 +27,7 @@
         End If
         Me.SpriteArrayUpdate()
     End Sub
+
     Private Sub SpriteArrayUpdate()
         Dim cnt As Integer = 1, values As New List(Of String)
         Me.tbSpriteArray.Clear()
@@ -40,20 +43,23 @@
             End If
         Next
     End Sub
+
     Private Sub cmdCopySprite_Click(sender As Object, e As EventArgs) Handles cmdCopySprite.Click
         Clipboard.Clear()
         Clipboard.SetText(Me.tbSpriteArray.Text)
         Me.tbSpriteArray.SelectAll()
         Me.tbSpriteArray.Focus()
     End Sub
+
     Private Sub cmdResetButtons_Click(sender As Object, e As EventArgs) Handles cmdResetButtons.Click
         For i As Integer = 3 To Me.tabTools.Controls.Count - 1
             If (TypeOf Me.tabTools.Controls(i) Is SpriteButton) Then
                 CType(Me.tabTools.Controls(i), SpriteButton).Value = 0
                 Me.tabTools.Controls(i).BackColor = Color.FromKnownColor(KnownColor.Control)
             End If
-            
+
         Next
         Me.SpriteArrayUpdate()
     End Sub
+
 End Class
