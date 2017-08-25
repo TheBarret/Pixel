@@ -235,6 +235,34 @@ This process can also be achieved manually by doing the following
 ```
 
 ----------------------------------------------------------------------------------------------------
+Printing numeric values of variables
+----------------------------------------------------------------------------------------------------
+In order to print out a value of a variable we use a different print command called printv
+
+```
+:number	100
+
+:program
+	push #10
+	push #10
+	push [number]
+	call [@printv]	
+	end
+```
+
+This process can also be achieved manually by doing the following
+
+```
+:x	10
+:y	10
+:number	100
+
+:program
+	printv [x][y][number]
+	end
+```
+
+----------------------------------------------------------------------------------------------------
 keyboard input
 ----------------------------------------------------------------------------------------------------
 Keys can be defined with { and }, the assembler will convert the keys to memory address values
