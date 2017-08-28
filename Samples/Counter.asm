@@ -1,6 +1,9 @@
 ﻿;************************************
 ; Program: Display counter
 ;************************************
+include print
+include common
+
 clear | mode #0 | jmp [main]
 
 :counter	0
