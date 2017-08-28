@@ -14,6 +14,9 @@ Example of 'Hello, World' in Pixel language
 ;************************************
 ; Program: Hello, World!
 ;************************************
+
+include print
+
 clear | jmp [main]
 
 :var	"Hello, World!"
