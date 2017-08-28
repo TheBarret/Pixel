@@ -2,7 +2,7 @@
 
 A small 16bit Virtual Machine with assembler to create small programs or games
 
-![](http://i.imgur.com/OpMIVK3.png)
+![](http://i.imgur.com/5p2vWKb.png)
 
 Memory Visualization
 
