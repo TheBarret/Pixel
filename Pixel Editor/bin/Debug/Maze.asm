@@ -1,6 +1,7 @@
 ;************************************
 ; Program: Continuous Maze Generator
 ;************************************
+include common
 clear | jmp [main]
 
 :x		0

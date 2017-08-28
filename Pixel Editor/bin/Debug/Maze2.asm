@@ -2,6 +2,9 @@
 ; Program: Continuous Maze Generator
 ; Version: 2
 ;************************************
+include print
+include common
+
 clear | seed 0xff | mode #1 | jmp [init]
 
 :x		0
