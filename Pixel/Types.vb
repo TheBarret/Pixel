@@ -1,5 +1,5 @@
 ﻿Public Enum Types As Byte
-    OP_NOP = 0
+    OP_NOP = &H0
     OP_PUSH
     OP_LD
     OP_ST
@@ -47,9 +47,11 @@
     OP_END
     OP_SEED
 
+    SPECIAL_DRAWA
     SPECIAL_PRINT
     SPECIAL_PRINTV
     SPECIAL_STRLA
+    SPECIAL_INCLUDE
 
     T_END
     T_EOF
@@ -63,4 +65,6 @@
     T_CONST_STRING
     T_CONST_NUMBER
     T_CONST_HEXADECIMAL
+
+    DATA
 End Enum

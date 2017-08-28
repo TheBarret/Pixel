@@ -2,7 +2,6 @@
 Imports System.Windows.Forms
 Imports Pixel.Assembler
 Imports Pixel.Components
-
 Public Class Machine
     Public Event MachineActive(Sender As Object)
     Public Event MachineInactive(Sender As Object)
@@ -62,8 +61,8 @@ Public Class Machine
                 Me.Wait.WaitOne()
             End If
             Me.Frames = 0
-            Me.Check = DateTime.Now
             Me.Running = True
+            Me.Check = DateTime.Now
             Me.Timer = New Stopwatch
             Me.Wait = New ManualResetEvent(False)
             RaiseEvent MachineActive(Me)

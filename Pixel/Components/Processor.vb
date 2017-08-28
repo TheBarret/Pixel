@@ -1,19 +1,17 @@
 ﻿Imports System.Drawing
 
 Namespace Components
-
     Public Class Processor
         Inherits Memory
-        Protected Friend Property Seed As UInt16
         Protected Friend Property Display As Display
         Protected Friend Property Keyboard As Keyboard
         Protected Friend Property Machine As Machine
         Private Property Instructions As List(Of Instruction)
         Public Event OnViewportUpdate(Sender As Object, im As Image)
-
         Sub New(Machine As Machine)
             Me.Machine = Machine
-            Me.Seed = &H0
+            Me.RndSeed = &H0
+            Me.FontOffset = &H6
             Me.Keyboard = New Keyboard(Me)
             Me.Display = New Display(Me, 128, 64)
             Me.Pointer = Locations.Entrypoint
@@ -32,6 +30,9 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Types.OP_MUL))
             Me.Instructions.Add(New Instruction(Types.OP_DIV))
             Me.Instructions.Add(New Instruction(Types.OP_MOD))
+            Me.Instructions.Add(New Instruction(Types.OP_AND))
+            Me.Instructions.Add(New Instruction(Types.OP_XOR))
+            Me.Instructions.Add(New Instruction(Types.OP_OR))
             Me.Instructions.Add(New Instruction(Types.OP_INC))
             Me.Instructions.Add(New Instruction(Types.OP_DEC))
             Me.Instructions.Add(New Instruction(Types.OP_IF))
@@ -62,6 +63,7 @@ Namespace Components
             Me.Instructions.Add(New Instruction(Types.OP_CLS))
             Me.Instructions.Add(New Instruction(Types.OP_END))
             Me.Instructions.Add(New Instruction(Types.OP_SEED))
+            Me.Instructions.Add(New Instruction(Types.SPECIAL_DRAWA))
             Me.Instructions.Add(New Instruction(Types.SPECIAL_PRINT))
             Me.Instructions.Add(New Instruction(Types.SPECIAL_PRINTV))
             Me.Instructions.Add(New Instruction(Types.SPECIAL_STRLA))
@@ -128,11 +130,11 @@ Namespace Components
                     Me.ExtendedOperations(instruction)
                 Case Types.SPECIAL_PRINT,
                      Types.SPECIAL_PRINTV,
+                     Types.SPECIAL_DRAWA,
                      Types.SPECIAL_STRLA
                     Me.LibraryOperations(instruction)
             End Select
         End Sub
-
         Private Sub BasicOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_LD
@@ -163,7 +165,6 @@ Namespace Components
                     Me.Machine.Abort()
             End Select
         End Sub
-
         Private Sub KeyboardOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_INPUT
@@ -171,7 +172,6 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
-
         Private Sub CompareOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_IF
@@ -224,7 +224,6 @@ Namespace Components
                     End If
             End Select
         End Sub
-
         Private Sub StringOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_STRLEN
@@ -257,7 +256,6 @@ Namespace Components
                     End If
             End Select
         End Sub
-
         Private Sub MemoryOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_READ
@@ -272,7 +270,6 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
-
         Private Sub ArithmeticOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_ADD
@@ -328,7 +325,6 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 5)
             End Select
         End Sub
-
         Private Sub BitwiseOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_AND
@@ -359,12 +355,10 @@ Namespace Components
                     Me.Pointer = CUShort(Me.Pointer + 3)
             End Select
         End Sub
-
         Private Sub VRamOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_CLS
                     Me.Display.Clear()
-                    Me.Display.Redraw = True
                     Me.Pointer = CUShort(Me.Pointer + 3)
                 Case Types.OP_DRAW
                     Dim x As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
@@ -383,7 +377,7 @@ Namespace Components
                     Dim num As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 5)))
                     For Each ch As Char In num.ToString.ToCharArray
                         Me.Display.Allocate(x, y, Me.NumberToSprite(ch))
-                        x = CUShort(x + 5)
+                        x = CUShort(x + 6)
                     Next
                     Me.Pointer = CUShort(Me.Pointer + 7)
                 Case Types.OP_SCR
@@ -402,10 +396,10 @@ Namespace Components
         Private Sub ExtendedOperations(instruction As Instruction)
             Select Case instruction.Opcode
                 Case Types.OP_SEED
-                    Me.Seed = Me.ReadUInt(CUShort(Me.Pointer + 1))
+                    Me.RndSeed = Me.ReadUInt(CUShort(Me.Pointer + 1))
                     Me.Pointer = CUShort(Me.Pointer + 3)
                 Case Types.OP_RND
-                    Me.Push(Me.ReadUInt(CUShort(Me.Pointer + 1)).Random(Me.Seed))
+                    Me.Push(Me.ReadUInt(CUShort(Me.Pointer + 1)).Random(Me.RndSeed))
                     Me.Pointer = CUShort(Me.Pointer + 3)
                 Case Types.OP_COL
                     Me.WriteUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)), Me.Collision)
@@ -427,6 +421,12 @@ Namespace Components
                     Next
                     Me.WriteUInt(dst, len)
                     Me.Pointer = CUShort(Me.Pointer + 5)
+                Case Types.SPECIAL_DRAWA
+                    Dim x As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
+                    Dim y As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3)))
+                    Dim addr As UInt16 = Me.ReadUInt(CUShort(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 5))))
+                    Me.Display.Allocate(x, y, Me.ReadBlock(addr, 5))
+                    Me.Pointer = CUShort(Me.Pointer + 7)
                 Case Types.SPECIAL_PRINT
                     Dim x As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 1)))
                     Dim y As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 3)))
@@ -440,7 +440,7 @@ Namespace Components
                     Dim num As UInt16 = Me.ReadUInt(Locations.Entrypoint + Me.ReadUInt(CUShort(Locations.Entrypoint + Me.ReadUInt(CUShort(Me.Pointer + 5)))))
                     For Each ch As Char In num.ToString.ToCharArray
                         Me.Display.Allocate(x, y, Me.NumberToSprite(ch))
-                        x = CUShort(x + 5)
+                        x = CUShort(x + 6)
                     Next
                     Me.Pointer = CUShort(Me.Pointer + 7)
             End Select

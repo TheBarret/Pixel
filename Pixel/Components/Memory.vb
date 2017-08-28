@@ -5,19 +5,33 @@ Namespace Components
     Public MustInherit Class Memory
         Implements IDisposable
         Public Property Memory As Byte()
-
         Sub New()
             Me.Reset()
             Me.WriteBlock(Locations.Fonts, My.Resources.fonts)
             Me.WriteBlock(Locations.Keys, My.Resources.characters)
         End Sub
-
         Public Sub Reset()
             Me.Memory = New Byte(UInt16.MaxValue) {}
             For i As UInt16 = 0 To UInt16.MaxValue - 1
                 Me.WriteByte(i, &H0)
             Next
         End Sub
+        Public Property FontOffset() As UInt16
+            Get
+                Return Me.ReadUInt(Locations.FontOffset)
+            End Get
+            Set(value As UInt16)
+                Me.WriteUInt(Locations.FontOffset, value)
+            End Set
+        End Property
+        Public Property RndSeed() As UInt16
+            Get
+                Return Me.ReadUInt(Locations.RndSeed)
+            End Get
+            Set(value As UInt16)
+                Me.WriteUInt(Locations.RndSeed, value)
+            End Set
+        End Property
         Public Property Pointer(Optional Offset As UInt16 = 0) As UInt16
             Get
                 Return Me.ReadUInt(CUShort(Locations.Pointer + Offset))
@@ -26,7 +40,6 @@ Namespace Components
                 Me.WriteUInt(CUShort(Locations.Pointer + Offset), value)
             End Set
         End Property
-
         Public Property Collision() As UInt16
             Get
                 Try
@@ -39,7 +52,6 @@ Namespace Components
                 Me.WriteUInt(Locations.Collision, value)
             End Set
         End Property
-
         Public Property Overflow() As UInt16
             Get
                 Return Me.ReadUInt(Locations.Overflow)

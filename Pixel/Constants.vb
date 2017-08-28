@@ -2,7 +2,6 @@
     Scan
     Write
 End Enum
-
 Public Enum Locations As UInt16
     Pointer = &H0
     Overflow = &H2
@@ -16,9 +15,10 @@ Public Enum Locations As UInt16
     Keys = &H200
     KeysMax = &H2E6
     Collision = &H2E8
-    Entrypoint = &H302
+    FontOffset = &H2EA
+    RndSeed = &H2EC
+    Entrypoint = &H300
 End Enum
-
 Public Enum Keys As UInt16
     A = 4
     B = 10

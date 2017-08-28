@@ -417,6 +417,15 @@ Namespace Assembler
                         End If
                         Me.Location += 2
                         Me.NextToken()
+                    Case Types.SPECIAL_DRAWA
+                        Me.Expect(1, New Types() {Types.T_LOCATION})
+                        Me.Expect(2, New Types() {Types.T_LOCATION})
+                        Me.Expect(3, New Types() {Types.T_LOCATION})
+                        If (Mode = Pixel.Mode.Write) Then
+                            Me.WriteByte(Me.Token.ToByte)
+                        End If
+                        Me.Location += 1
+                        Me.NextToken()
                     Case Types.SPECIAL_PRINT
                         Me.Expect(1, New Types() {Types.T_LOCATION})
                         Me.Expect(2, New Types() {Types.T_LOCATION})

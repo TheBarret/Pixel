@@ -63,8 +63,10 @@ Namespace Grammars
             Me.Rules.Add(New Rule(New Regex("^("".*?"")", Me.Options), Types.T_CONST_STRING))
             Me.Rules.Add(New Rule(New Regex("^\{(.*?)\}", Me.Options), Types.T_CONST_KEY))
             Me.Rules.Add(New Rule(New Regex("^\b_STRLA\b", Me.Options), Types.SPECIAL_STRLA))
+            Me.Rules.Add(New Rule(New Regex("^\b_DRAWA\b", Me.Options), Types.SPECIAL_DRAWA))
             Me.Rules.Add(New Rule(New Regex("^\b_PRINTA\b", Me.Options), Types.SPECIAL_PRINT))
             Me.Rules.Add(New Rule(New Regex("^\b_PRINTAV\b", Me.Options), Types.SPECIAL_PRINTV))
+            Me.Rules.Add(New Rule(New Regex("^\bINCLUDE\b\s([a-z0-9]+)", Me.Options), Types.SPECIAL_INCLUDE))
         End Sub
         Public Property Rules As List(Of Rule) Implements IGrammar.Rules
         Public ReadOnly Property Name As String Implements IGrammar.Name

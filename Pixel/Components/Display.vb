@@ -18,7 +18,6 @@ Namespace Components
             Me.Background = New SolidBrush(Color.Black)
             Me.Foreground = New SolidBrush(Color.WhiteSmoke)
         End Sub
-
         Public Sub Mode(w As UInt16, h As UInt16, Optional Offset As UInt16 = 0)
             Me.Offset = Offset
             Me.Width = w
@@ -26,7 +25,6 @@ Namespace Components
             Me.Memory = New Byte(Width * Height) {}
             Me.Redraw = True
         End Sub
-
         Public Sub Allocate(x As Integer, y As Integer, buffer As Byte())
             SyncLock Me.Memory
                 Dim px As Integer = x, py As Integer = y, before As Byte, after As Byte, update As Boolean = True
@@ -49,7 +47,6 @@ Namespace Components
                 If (update) Then Me.Redraw = True
             End SyncLock
         End Sub
-
         Public Sub Refresh()
             Using bm As New Bitmap(Me.Width * Me.Offset, Me.Height * Me.Offset)
                 Using g As Graphics = Graphics.FromImage(bm)
@@ -69,9 +66,8 @@ Namespace Components
             End Using
             Me.Redraw = False
         End Sub
-
         Public Sub Shift(Direction As UInt16, Value As UInt16)
-                Dim vcopy(,) As Byte = New Byte(Me.Width, Me.Height) {}
+            Dim vcopy(,) As Byte = New Byte(Me.Width, Me.Height) {}
             Try
                 SyncLock Me.Memory
                     For y As Integer = 0 To Me.Height - 1
@@ -112,7 +108,6 @@ Namespace Components
                 Erase vcopy
             End Try
         End Sub
-
         Public Sub Clear()
             SyncLock Me.Memory
                 For y As Integer = 0 To Me.Height - 1
@@ -123,7 +118,6 @@ Namespace Components
                 Me.Redraw = True
             End SyncLock
         End Sub
-
         Private Property VRam(x As Int32, y As Int32) As Byte
             Get
                 Return Me.Memory(CUShort((y * Me.Width) + x))
@@ -132,11 +126,8 @@ Namespace Components
                 Me.Memory(CUShort((y * Me.Width) + x)) = value
             End Set
         End Property
-
         Private Function BitsToChar(value As UInt16) As Char()
             Return Convert.ToString(value, 2).PadLeft(8, "0"c).ToCharArray()
         End Function
-
     End Class
-
 End Namespace
