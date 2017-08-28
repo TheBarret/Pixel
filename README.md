@@ -75,11 +75,12 @@ input			  | ([label])					| Stores keystroke value to variable
 clear		          | no params			                | Clears vram memory (blanks screen)
 end		          | no params 	                  		| Terminates execution of program
 --------------------------+---------------------------------------------+---------------------------------------------------
+_drawa			  | [x][y][address]				| Internally used opcode for drawing a sprite given by address
 _print			  | [x][y][address]				| Internally used opcode for printing a string given by address
 _printv			  | [x][y][address]				| Internally used opcode for printing a variable number given by address
 _strla			  | [address][variable]				| Internally used opcode for obtaining a string length given by address
-
-
+--------------------------+---------------------------------------------+---------------------------------------------------
+include			  | <print|common>				| Import build-in functions
 ```
 
 ----------------------------------------------------------------------------------------------------
@@ -98,11 +99,12 @@ The following instructions do not work with if/strcmp -statement:
 - storev
 
 ----------------------------------------------------------------------------------------------------
-Build-In functions
+Import Build-In functions
 ----------------------------------------------------------------------------------------------------
 
 Pixel has build-in functions that simplify the making of certain procedures, 
 these functions are included into the user assembly.
+
 
 [@print]
 Simplified version of the print.
@@ -110,6 +112,8 @@ Simplified version of the print.
 Params: x, y, [address]
 
 ```
+include print
+
 :string	"Hello!"
 
 push #10
@@ -124,6 +128,8 @@ Simplified version of the printv.
 Params: x, y, [address]
 
 ```
+include print
+
 :number	100
 
 push #10
@@ -137,6 +143,8 @@ Delays the current procedure by given number of cycles.
 
 Params: int
 ```
+include common
+
 push #60
 call [@sleep]
 ```
@@ -146,6 +154,8 @@ Scrolls display to specified direction and steps
 
 Params: direction steps
 ```
+include common
+
 push #0
 push #1
 call [@scroll]
@@ -205,6 +215,8 @@ String data is decoded by the assembler into font address values, the 'print' in
 then enumerate for each character index and draw them on the given x and y position.
 
 ```
+include print
+
 :foo	"Hello!"
 
 :program
@@ -240,6 +252,8 @@ Printing numeric values of variables
 In order to print out a value of a variable we use a different print command called printv
 
 ```
+include print
+
 :number	100
 
 :program
