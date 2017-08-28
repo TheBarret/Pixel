@@ -48,7 +48,7 @@ Public Class frmMain
         If (Me.Machine.Compile(Me.Filename)) Then
             Me.TabContainer.SelectedTab = Me.tabDisplay
             Me.AddOutputLog("Executing...")
-            Me.Machine.Start(5000)
+            Me.Machine.Start(100000)
         End If
     End Sub
 
@@ -61,6 +61,7 @@ Public Class frmMain
         Dim filename As String = Me.cbFiles.Items(Me.cbFiles.SelectedIndex).ToString
         If (File.Exists(String.Format(".\{0}", filename))) Then
             Me.Usercode.Text = File.ReadAllText(String.Format(".\{0}", filename), Encoding.UTF8)
+            Me.Usercode.Focus()
         End If
     End Sub
 

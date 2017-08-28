@@ -38,7 +38,7 @@ Partial Class frmMain
         Me.Strip = New System.Windows.Forms.StatusStrip()
         Me.lbStripSelected = New System.Windows.Forms.ToolStripStatusLabel()
         Me.lbStripFramerate = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.ToolStrip1 = New System.Windows.Forms.ToolStrip()
+        Me.ToolStrip = New System.Windows.Forms.ToolStrip()
         Me.stripBtnStop = New System.Windows.Forms.ToolStripButton()
         Me.stripBtnStart = New System.Windows.Forms.ToolStripButton()
         Me.Viewport = New Pixel.Viewport()
@@ -50,7 +50,7 @@ Partial Class frmMain
         CType(Me.tbOffset, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tabTools.SuspendLayout()
         Me.Strip.SuspendLayout()
-        Me.ToolStrip1.SuspendLayout()
+        Me.ToolStrip.SuspendLayout()
         Me.SuspendLayout()
         '
         'TabContainer
@@ -190,6 +190,7 @@ Partial Class frmMain
         Me.Strip.Location = New System.Drawing.Point(0, 664)
         Me.Strip.Name = "Strip"
         Me.Strip.Size = New System.Drawing.Size(638, 22)
+        Me.Strip.SizingGrip = False
         Me.Strip.TabIndex = 6
         '
         'lbStripSelected
@@ -205,14 +206,14 @@ Partial Class frmMain
         Me.lbStripFramerate.Size = New System.Drawing.Size(70, 17)
         Me.lbStripFramerate.Text = "Framerate: 0"
         '
-        'ToolStrip1
+        'ToolStrip
         '
-        Me.ToolStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.stripBtnStop, Me.stripBtnStart})
-        Me.ToolStrip1.Location = New System.Drawing.Point(0, 0)
-        Me.ToolStrip1.Name = "ToolStrip1"
-        Me.ToolStrip1.Size = New System.Drawing.Size(638, 39)
-        Me.ToolStrip1.TabIndex = 7
-        Me.ToolStrip1.Text = "ToolStrip1"
+        Me.ToolStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.stripBtnStop, Me.stripBtnStart})
+        Me.ToolStrip.Location = New System.Drawing.Point(0, 0)
+        Me.ToolStrip.Name = "ToolStrip"
+        Me.ToolStrip.Size = New System.Drawing.Size(638, 39)
+        Me.ToolStrip.TabIndex = 7
+        Me.ToolStrip.Text = "ToolStrip1"
         '
         'stripBtnStop
         '
@@ -242,7 +243,7 @@ Partial Class frmMain
         Me.Viewport.BackColor = System.Drawing.SystemColors.AppWorkspace
         Me.Viewport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.Viewport.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Viewport.Location = New System.Drawing.Point(51, 28)
+        Me.Viewport.Location = New System.Drawing.Point(52, 26)
         Me.Viewport.Name = "Viewport"
         Me.Viewport.Size = New System.Drawing.Size(512, 256)
         Me.Viewport.TabIndex = 8
@@ -262,7 +263,7 @@ Partial Class frmMain
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(638, 686)
-        Me.Controls.Add(Me.ToolStrip1)
+        Me.Controls.Add(Me.ToolStrip)
         Me.Controls.Add(Me.Strip)
         Me.Controls.Add(Me.tbOutput)
         Me.Controls.Add(Me.TabContainer)
@@ -284,8 +285,8 @@ Partial Class frmMain
         Me.tabTools.PerformLayout()
         Me.Strip.ResumeLayout(False)
         Me.Strip.PerformLayout()
-        Me.ToolStrip1.ResumeLayout(False)
-        Me.ToolStrip1.PerformLayout()
+        Me.ToolStrip.ResumeLayout(False)
+        Me.ToolStrip.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -303,7 +304,7 @@ Partial Class frmMain
     Friend WithEvents cbFiles As System.Windows.Forms.ComboBox
     Friend WithEvents Strip As System.Windows.Forms.StatusStrip
     Friend WithEvents lbStripSelected As System.Windows.Forms.ToolStripStatusLabel
-    Friend WithEvents ToolStrip1 As System.Windows.Forms.ToolStrip
+    Friend WithEvents ToolStrip As System.Windows.Forms.ToolStrip
     Friend WithEvents stripBtnStop As System.Windows.Forms.ToolStripButton
     Friend WithEvents stripBtnStart As System.Windows.Forms.ToolStripButton
     Friend WithEvents lbStripFramerate As System.Windows.Forms.ToolStripStatusLabel
