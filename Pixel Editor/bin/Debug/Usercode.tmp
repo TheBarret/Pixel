@@ -1,6 +1,9 @@
 ;************************************
 ; Program: Hello, World!
 ;************************************
+
+include print
+
 clear | jmp [main]
 
 :var	"Hello, World!"
